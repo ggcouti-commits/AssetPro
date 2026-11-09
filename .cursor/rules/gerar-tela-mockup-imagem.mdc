@@ -1,0 +1,16 @@
+---
+description: Sempre que gerar tela, entregar mockup HTML e imagem PNG
+alwaysApply: true
+---
+
+# Gerar tela = mockup + imagem
+
+Quando o Fenômeno pedir para **gerar a tela**, mockup, layout, print, ou “como fica na tela”:
+
+1. **HTML** em `docs/screens/mockup-<nome>.html` (mesmo visual dos mockups existentes).
+2. **PNG** — gerar a imagem de verdade (`GenerateImage` e/ou screenshot do HTML). Gravar em `docs/screens/<nome>.png`.
+3. Mostrar a **imagem** na resposta. HTML sozinho **não** conta.
+
+Não entregue só o arquivo `.html`. Não diga “abre o HTML no browser” no lugar da PNG.
+
+Se a tela existir em mais de um estado (antes/depois, abas), uma PNG por estado ou uma PNG comparando os estados.

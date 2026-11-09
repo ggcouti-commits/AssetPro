@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Rede na mesma campanha</title>
+<style>
+  :root{--navy:#123B6E;--navy3:#1B4C86;--page:#F4F6F8;--border:#E1E5EA;--title:#1B3E6F;--label:#6B7683;--ok:#2E7D32;--okbg:#E5F6E6}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#E8ECF0;margin:0}
+  .shot{width:1280px;height:820px;background:var(--page);display:flex;position:relative;overflow:hidden}
+  .sb{width:220px;background:var(--navy);color:#fff;padding:16px 12px}
+  .brand{font-weight:700;padding:4px 8px 18px}
+  .ni{height:40px;border-radius:8px;display:flex;align-items:center;padding:0 12px;font-weight:650;color:#E8F0FA;margin-bottom:4px}
+  .ni.on{background:var(--navy3)}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .top{height:64px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px}
+  .tt{font-size:20px;font-weight:700;color:var(--title)}
+  .ts{font-size:12px;color:var(--label);margin-top:2px}
+  .body{padding:18px 22px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;width:360px}
+  .k{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--label)}
+  .cn{font-size:16px;font-weight:700;color:var(--title);margin-top:6px}
+  .cm{font-size:12px;color:var(--label);margin-top:4px}
+  .chip{display:inline-flex;margin-top:10px;margin-right:6px;height:24px;align-items:center;padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;background:#EAF3FF;color:#1B4C86}
+  .chip.g{background:var(--okbg);color:var(--ok)}
+  .bar{height:8px;background:#EEF0F3;border-radius:99px;margin-top:14px;overflow:hidden}
+  .bar b{display:block;height:100%;width:33%;background:#3BAA48}
+  .mask{position:absolute;inset:0;background:rgba(18,59,110,.45);display:flex;align-items:center;justify-content:center}
+  .dlg{width:740px;background:#fff;border-radius:14px;box-shadow:0 18px 48px rgba(18,59,110,.25)}
+  .hd{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:12px}
+  .dt{font-size:18px;font-weight:700;color:var(--title)}
+  .ds{font-size:12.5px;color:var(--label);margin-top:3px;line-height:1.4}
+  .x{width:32px;height:32px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 32px}
+  .bd{padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+  .fl{font-size:11px;font-weight:700;color:var(--label);letter-spacing:.3px}
+  .fi{height:38px;margin-top:5px;border:1px solid var(--border);border-radius:8px;background:#F7FAFD;display:flex;align-items:center;padding:0 12px;font-weight:650;color:var(--title)}
+  .fi.lock{background:#F3F5F7;color:#5C6770}
+  .grid{display:grid;grid-template-columns:1.3fr .7fr .8fr;gap:10px}
+  .seg{display:flex;background:#EEF3F8;border-radius:9px;padding:3px;gap:3px;margin-top:5px}
+  .seg b{flex:1;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--label);font-size:13px}
+  .seg .on{background:var(--navy);color:#fff}
+  .file{border:1.5px dashed #B7C8DC;border-radius:10px;background:#F7FAFD;padding:12px 14px;display:flex;align-items:center;gap:12px}
+  .fn{font-weight:700;color:var(--title);font-size:13px}
+  .fm{font-size:12px;color:var(--label);margin-top:2px}
+  .pick{margin-left:auto;height:30px;padding:0 10px;border-radius:7px;border:1px solid var(--navy);color:var(--navy);font-size:12px;font-weight:700;display:flex;align-items:center}
+  .note{background:#F4F8FC;border:1px solid #C5D4E6;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--title);line-height:1.45}
+  .note b{display:block;margin-bottom:2px}
+  .ft{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px 16px;border-top:1px solid var(--border)}
+  .ghost,.pri{height:36px;padding:0 14px;border-radius:8px;font-weight:700;font-size:13px;display:flex;align-items:center}
+  .ghost{border:1px solid var(--border);background:#fff;color:var(--title)}
+  .pri{background:var(--navy);color:#fff}
+  .split{display:flex;gap:28px;padding:22px;align-items:flex-start}
+  .phone{width:360px;height:760px;background:#F4F6F8;border:1px solid var(--border);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
+  .phd{background:var(--navy);color:#fff;padding:16px}
+  .phdt{font-size:16px;font-weight:700}
+  .phds{font-size:12px;opacity:.85;margin-top:3px}
+  .pb{padding:12px;display:flex;flex-direction:column;gap:10px}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 12px;min-height:88px}
+  .tile b{display:block;margin-top:8px;color:var(--title);font-size:14px}
+  .tile span{display:block;margin-top:2px;font-size:11px;color:var(--label)}
+  .tile.on{outline:3px solid #2E9B4A}
+  .pcard{background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+  .sec{font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--label)}
+  .wide{width:1480px;height:820px;background:#E8ECF0}
+</style>
+</head>
+<body>
+<div class="shot" id="inicio"></div>
+<div class="shot" id="depois"></div>
+<div class="wide" id="resultado"></div>
+<script>
+function app(inner){
+  return `<aside class="sb"><div class="brand">assetexperts</div><div class="ni on">Home</div><div class="ni">Importar / Exportar</div><div class="ni">Projetos</div></aside><section class="main"><header class="top"><div><div class="tt">Home</div><div class="ts">Um card por campanha</div></div></header><div class="body"><div class="card"><div class="k">ELÉTRICA</div><div class="cn">Elétrica Jan 2027</div><div class="cm">Em andamento · 12 subestações</div><span class="chip">4 de 12 revisadas</span><div class="bar"><b></b></div></div></div></section>${inner}`;
+}
+function dlg(title, sub, body, button){
+  return `<div class="mask"><div class="dlg"><div class="hd"><div><div class="dt">${title}</div><div class="ds">${sub}</div></div><div class="x">✕</div></div><div class="bd">${body}</div><div class="ft"><div class="ghost">Cancelar</div><div class="pri">${button}</div></div></div></div>`;
+}
+const rede = `<div><div class="fl">REDE DESTA CAMPANHA</div><div class="seg"><b class="on">Com base</b><b>Sem base</b><b>Não tem</b></div></div>
+<div><div class="fl">PLANILHA DA REDE</div><div class="file"><div><div class="fn">Base Rede Jan 2027.xlsx</div><div class="fm">PRJ-1042 · PRJ-1048 · PRJ-1101 entram nesta campanha</div></div><div class="pick">Trocar</div></div></div>
+<div class="note"><b>Não nasce outro card.</b>As subestações e os projetos de rede ficam em Elétrica Jan 2027. No celular, Levantamento abre as subestações e Rede abre os projetos.</div>`;
+document.getElementById("inicio").innerHTML = app(dlg(
+  "Novo projeto",
+  "A campanha ainda vai começar. Subestação e rede nascem juntas.",
+  `<div><div class="fl">NOME DO PROJETO</div><div class="fi">Elétrica Jan 2027</div></div>
+   <div class="grid"><div><div class="fl">PERÍODO</div><div class="fi">Janeiro</div></div><div><div class="fl">ANO</div><div class="fi">2027</div></div><div><div class="fl">SETOR</div><div class="fi">Elétrico</div></div></div>
+   <div><div class="fl">PLANILHA DAS SUBESTAÇÕES</div><div class="file"><div><div class="fn">Base Subestacoes.xlsx</div><div class="fm">12 instalações</div></div><div class="pick">Trocar</div></div></div>
+   ${rede}`,
+  "Importar projeto"
+));
+document.getElementById("depois").innerHTML = app(dlg(
+  "Incluir rede",
+  "A campanha já está em andamento. A base chegou agora e entra nela.",
+  `<div><div class="fl">CAMPANHA</div><div class="fi lock">Elétrica Jan 2027 · 12 subestações · 4 já revisadas</div></div>
+   ${rede}`,
+  "Incluir nesta campanha"
+));
+document.getElementById("resultado").innerHTML = `<div class="split">
+  <div class="shot" style="border-radius:12px;border:1px solid #E1E5EA">
+    <aside class="sb"><div class="brand">assetexperts</div><div class="ni on">Home</div><div class="ni">Importar / Exportar</div></aside>
+    <section class="main"><header class="top"><div><div class="tt">Home</div><div class="ts">Continua um card só</div></div></header>
+    <div class="body"><div class="card" style="width:420px"><div class="k">ELÉTRICA</div><div class="cn">Elétrica Jan 2027</div><div class="cm">Em andamento</div><span class="chip">12 subestações</span><span class="chip g">3 projetos de rede</span><div class="bar"><b></b></div></div></div></section>
+  </div>
+  <div class="phone">
+    <div class="phd"><div class="phdt">Elétrica Jan 2027</div><div class="phds">Em andamento</div></div>
+    <div class="pb">
+      <div class="pair">
+        <div class="tile"><b>Levantamento</b><span>12 subestações</span></div>
+        <div class="tile on"><b>Rede</b><span>3 projetos</span></div>
+      </div>
+      <div class="sec">PROJETOS DESTA CAMPANHA</div>
+      <div class="pcard"><div class="cn">PRJ-1042</div><div class="cm">5 postes · 3 trafos · 4 chaves</div></div>
+      <div class="pcard"><div class="cn">PRJ-1048</div><div class="cm">4 trafos</div></div>
+      <div class="pcard"><div class="cn">PRJ-1101</div><div class="cm">5 postes</div></div>
+    </div>
+  </div>
+</div>`;
+const q = new URLSearchParams(location.search).get("estado");
+if (q) ["inicio","depois","resultado"].forEach(id => { if (id !== q) document.getElementById(id).style.display = "none"; });
+</script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+# Schema — lista Inventario (dummy das colecoes)
+#
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Fonte da lista: importacao + exportacao + baixar.
+# App.OnStart (Mobile): ClearCollect com ESTE dummy, Clear, LoadData,
+# depois o bloco "forcar" (Collect dummy + Set Last + Remove + Blank).
+# Desktop: depois do Clear(colInventarioBase), o mesmo forcar (sem LoadData).
+#
+# Nao entra: Author, anexos, @odata. Title entra (SP obriga).
+# colCampoOffline soma campos da FILA (nao existem na lista).
+
+# Numero = 0. Texto = "". Sim/Nao = "".
+
+---
+
+## A. Dummy Inventario (colInventarioBase / colItensSEConsulta)
+
+```
+{
+    ID: 0;
+    Title: "";
+    CodInventario: "";
+    CodSE: "";
+    NomeSE: "";
+    CodAsset: "";
+    IdItem: 0;
+    Imobilizado: "";
+    CodTUC: 0;
+    DescricaoTUC: "";
+    IdUC: "";
+    TI: 0;
+    LocalInstalacao: 0;
+    ArranjoFisico: 0;
+    CM: 0;
+    AtributoA1: 0;
+    AtributoA2: 0;
+    AtributoA3: 0;
+    AtributoA4: 0;
+    AtributoA5: 0;
+    AtributoA6: 0;
+    ValorA1: 0;
+    ValorA2: 0;
+    ValorA3: 0;
+    ValorA4: 0;
+    ValorA5: 0;
+    ValorA6: 0;
+    DescricaoBem: "";
+    Quantidade: 0;
+    QuantidadeCampo: 0;
+    Unidade: "";
+    Elegivel: "";
+    Reserva: "";
+    Fabricante: "";
+    Modelo: "";
+    NumSerie: "";
+    Ano: 0;
+    Bay: "";
+    CodOperacao: "";
+    Projeto: "";
+    Observacoes: "";
+    Status: "";
+    Sobra: "";
+    ValidadoPor: "";
+    Origem: ""
+}
+```
+
+---
+
+## B. Dummy fila (colCampoOffline) = Inventario + visita
+
+```
+{
+    IdRegistro: GUID();
+    TipoRegistro: "";
+    CodTemp: "";
+    SobraTipo: "";
+    Sincronizada: false;
+    IdInventario: 0;
+    ID: 0;
+    Title: "";
+    CodInventario: "";
+    CodSE: "";
+    NomeSE: "";
+    CodAsset: "";
+    IdItem: 0;
+    Imobilizado: "";
+    CodTUC: 0;
+    DescricaoTUC: "";
+    IdUC: "";
+    TI: 0;
+    LocalInstalacao: 0;
+    ArranjoFisico: 0;
+    CM: 0;
+    AtributoA1: 0;
+    AtributoA2: 0;
+    AtributoA3: 0;
+    AtributoA4: 0;
+    AtributoA5: 0;
+    AtributoA6: 0;
+    ValorA2: "";
+    ValorA3: "";
+    ValorA4: "";
+    ValorA5: "";
+    ValorA6: "";
+    DescricaoBem: "";
+    Quantidade: 0;
+    QuantidadeCampo: 0;
+    Unidade: "";
+    Elegivel: "";
+    Reserva: "";
+    Fabricante: "";
+    Modelo: "";
+    NumSerie: "";
+    Ano: 0;
+    Bay: "";
+    CodOperacao: "";
+    Projeto: "";
+    Observacoes: "";
+    Status: "";
+    Sobra: "";
+    ValidadoPor: "";
+    Origem: ""
+}
+```
+
+# ValorA2…A6 na fila sao TEXTO (faixa / livre). Na base sao numero (codigo ANEEL).
+# Sobra = lista (SOBRA_FISICA | SOBRA_CONTABIL | vazio). SobraTipo = fila:
+# so SOBRA_FISICA ou vazio. NAO_ENCONTRADO NAO vai em SobraTipo — o item fica
+# na BASE (TipoRegistro = NAO_ENCONTRADO; Inventario.Sobra = SOBRA_CONTABIL no envio).
+# IdInventario = ID do SharePoint depois do envio. Nao e IdItem (ordem da planilha) nem IdUC.
+
+---
+
+## 1. App.OnStart (Mobile) → ClearCollect colCampoOffline
+
+Apaga o ClearCollect inteiro. Cola:
+
+```
+ClearCollect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "";
+        CodTemp: "";
+        SobraTipo: "";
+        Sincronizada: false;
+        IdInventario: 0;
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA2: "";
+        ValorA3: "";
+        ValorA4: "";
+        ValorA5: "";
+        ValorA6: "";
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+```
+
+# Logo depois, o Clear + LoadData que ja existem. Nao tira o LoadData.
+
+---
+
+## 2. App.OnStart (Mobile) → ClearCollect colInventarioBase
+
+Apaga o ClearCollect inteiro. Cola:
+
+```
+ClearCollect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+```
+
+---
+
+## 3. App.OnStart (Mobile) → FIM, depois dos LoadData
+
+Apaga o Collect({CM: 0}) / Collect({Reserva: ""}) / Collect misto. Cola:
+
+```
+Collect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Set(varItemFoto; Last(colInventarioBase));;
+Remove(colInventarioBase; Last(colInventarioBase));;
+Set(varItemFoto; Blank());;
+
+Collect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "";
+        CodTemp: "";
+        SobraTipo: "";
+        Sincronizada: false;
+        IdInventario: 0;
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA2: "";
+        ValorA3: "";
+        ValorA4: "";
+        ValorA5: "";
+        ValorA6: "";
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Set(varRegistroAtual; Last(colCampoOffline));;
+Remove(colCampoOffline; Last(colCampoOffline));;
+Set(varRegistroAtual; Blank())
+```
+
+# O Set(Last) ANTES do Remove grava o tipo de varItemFoto / varRegistroAtual.
+# Dummy tem que ser o registro INTEIRO. Collect so com {CM: 0} apaga Reserva de novo.
+
+---
+
+## 4. App.OnStart (Desktop) → depois do Clear(colInventarioBase)
+
+# Desktop nao tem LoadData. O Filter(Inventario) no clique da campanha traz a lista.
+# O dummy ainda vale: varItemFoto / gblItemConsultaSelecionado nascem da colecao vazia.
+
+Apaga o `Clear(colInventarioBase);;` solto. Cola o Clear + o mesmo Collect/Set/Remove/Blank do passo 3 (so o bloco colInventarioBase, sem colCampoOffline).
+
+---
+
+## 5. Tela_ItensConsulta → OnVisible (no lugar do Collect {CM: 0; CodAsset: ""})
+
+Apaga:
+
+```
+Collect(colItensSEConsulta; {CM: 0; CodAsset: ""});;
+Clear(colItensSEConsulta);;
+```
+
+Cola:
+
+```
+Collect(
+    colItensSEConsulta;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Set(gblItemConsultaSelecionado; Last(colItensSEConsulta));;
+Clear(colItensSEConsulta);;
+Set(gblItemConsultaSelecionado; Blank());;
+```
+
+# O ForAll que ja copia colInventarioBase continua na sequencia.
+
+---
+
+## Conferencia
+
+| Colecao | Onde | Dummy |
+|---------|------|--------|
+| `colCampoOffline` | Mobile OnStart | B (lista + fila) |
+| `colInventarioBase` | Mobile OnStart + forcar pos-LoadData | A |
+| `colInventarioBase` | Desktop OnStart (colecao vazia) | A |
+| `colItensSEConsulta` | Tela_ItensConsulta.OnVisible | A |
+
+`varRegistroAtual` = tipo de `colCampoOffline`. `varItemFoto` = tipo de `colInventarioBase`. Play no app depois de colar.

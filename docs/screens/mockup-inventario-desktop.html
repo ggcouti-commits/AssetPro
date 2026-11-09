@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Inventário: galeria + edição na mesma tela</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy2:#1B4C86; --track:#0E2E55; --green:#3BAA48;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA; --title:#1B3E6F;
+    --label:#6B7683; --text:#2A3138; --primary:#348FFD;
+    --okbg:#DFF3E3; --oktx:#2E7D32; --warnbg:#FDF0DC; --warntx:#8A5300;
+    --fieldbg:#D6E8FF; --fieldtx:#1B4C86; --pendbg:#EEF0F3; --pendtx:#6B7683;
+    --strip:#EBF4FF; --input:#F4F6F8; --sel:#E8F1FB; --danger:#B3261E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    color:var(--text); padding:22px 22px 28px;
+  }
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1100px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+
+  .app{width:1280px; height:720px; display:flex; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--page)}
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni svg{flex:0 0 18px}
+  .ni.on{background:var(--navy2); color:#fff}
+  .hint{margin-top:14px; padding:10px 11px; border-radius:8px; background:rgba(255,255,255,.08); font-size:10.5px; line-height:1.45; color:#C9DCF2}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .barhd{background:var(--navy); color:#fff; padding:10px 18px 10px; display:flex; align-items:flex-start; gap:12px}
+  .back{width:36px; height:36px; border-radius:9px; border:1px solid rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; flex:0 0 36px}
+  .hdmid{flex:1; min-width:0}
+  .hdt{font-size:16px; font-weight:700}
+  .hds{font-size:12px; color:#9EC4F0; margin-top:3px}
+  .cam{width:42px; height:42px; border-radius:10px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; position:relative}
+  .badge{position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:var(--green); color:#fff; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center}
+  .pg{background:var(--track); padding:7px 18px}
+  .pgt{display:flex; justify-content:space-between; color:#fff; font-size:11.5px; font-weight:700}
+  .pbar{height:6px; background:rgba(255,255,255,.18); border-radius:4px; margin-top:5px}
+  .pbar i{display:block; height:100%; width:25%; background:var(--green); border-radius:4px}
+
+  .tools{background:#fff; border-bottom:1px solid var(--border); padding:8px 14px; display:flex; align-items:center; gap:8px}
+  .tab{height:30px; padding:0 12px; border-radius:999px; font-size:12px; font-weight:700; border:1px solid var(--border); background:#fff; color:var(--label); display:flex; align-items:center}
+  .tab.on{background:var(--navy); border-color:var(--navy); color:#fff}
+  .add{margin-left:auto; height:30px; padding:0 12px; border-radius:8px; background:var(--navy); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px}
+
+  .split{flex:1; min-height:0; display:flex}
+
+  /* cGaleriaItens */
+  .gal{width:360px; flex:0 0 360px; border-right:1px solid var(--border); display:flex; flex-direction:column; min-height:0; background:var(--page)}
+  .gscroll{padding:10px; display:flex; flex-direction:column; gap:8px; overflow:hidden; flex:1}
+
+  .ic{background:#fff; border:1px solid var(--border); border-radius:10px; padding:10px 11px 9px; display:flex; flex-direction:column; gap:6px}
+  .ic.on{border-color:#7AADD8; background:var(--sel); box-shadow:inset 3px 0 0 var(--navy)}
+  .it{font-size:12.5px; font-weight:700; color:var(--title); line-height:1.25}
+  .icmeta{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  .qtd{display:flex; gap:14px}
+  .qk{font-size:9px; font-weight:700; color:var(--label); letter-spacing:.4px}
+  .qv{font-size:12px; font-weight:700; color:var(--title)}
+  .amber{color:var(--warntx)}
+  .st{font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:999px; flex:0 0 auto}
+  .st-ok{background:var(--okbg); color:var(--oktx)}
+  .st-no{background:#FDECEA; color:var(--danger)}
+  .st-pend{background:var(--pendbg); color:var(--pendtx)}
+
+  /* cEdicaoItem */
+  .ed{flex:1; min-width:0; display:flex; flex-direction:column; background:#fff}
+  .edhd{padding:10px 14px 9px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; gap:10px}
+  .edhdt{font-size:14.5px; font-weight:700; color:var(--title); line-height:1.25}
+  .edhds{font-size:11.5px; color:var(--label); margin-top:3px}
+  .edcam{width:36px; height:36px; border-radius:9px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; flex:0 0 36px; margin-left:auto; position:relative; background:#fff}
+  .edcam .badge{background:var(--navy)}
+
+  .edsc{padding:10px 14px 8px; display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; overflow:hidden}
+  .sec{font-size:10px; font-weight:700; color:var(--label); letter-spacing:.7px; padding:2px 2px 0}
+
+  .g2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+  .fld{border:1px solid var(--border); border-radius:10px; padding:8px 10px 9px; background:#fff}
+  .fld.wide{grid-column:1 / -1}
+  .ftop{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px}
+  .fl{font-size:11.5px; font-weight:700; color:var(--label)}
+  .fb{font-size:11px; font-weight:700; color:var(--label)}
+  .inp{height:32px; border:1px solid var(--border); border-radius:7px; background:var(--input); display:flex; align-items:center; padding:0 10px; font-size:13px; font-weight:650; color:var(--title)}
+  .inprow{display:flex; align-items:center; gap:6px}
+  .inp.flex{flex:1}
+  .un{width:56px; flex:0 0 56px; height:32px; border:1px solid var(--border); border-radius:7px; background:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 8px; font-size:12px; font-weight:700; color:var(--title)}
+  .un:after{content:""; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-top:5px solid #8A93A0}
+  .dv{font-size:11px; font-weight:700; flex:0 0 auto}
+  .ok{color:var(--oktx)}
+  .div{color:var(--danger)}
+  .area{height:52px; align-items:flex-start; padding-top:8px; font-weight:500; color:#5A6370}
+
+  .edact{border-top:1px solid var(--border); padding:10px 14px; display:flex; gap:8px; background:#fff}
+  .ab{flex:1; height:40px; border-radius:9px; display:flex; align-items:center; justify-content:center; gap:6px; font-size:13px; font-weight:700}
+  .no{background:#FDECEA; color:var(--danger); border:1px solid #F5C6C2}
+  .yes{background:#E8F6EA; color:var(--oktx); border:1px solid #C7E6CB}
+  .sobra{background:var(--fieldbg); color:var(--fieldtx); border:1px solid #B7D4F5}
+
+  .dock{background:#fff; border-top:1px solid var(--border); padding:10px 14px; display:flex; flex-direction:column; gap:6px}
+  .fin{height:42px; border-radius:10px; background:#C5CDD6; color:#fff; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center}
+  .fin.on{background:var(--green)}
+  .finhint{font-size:11px; color:var(--label); text-align:center}
+  .st-sobra{background:var(--fieldbg); color:var(--fieldtx)}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · INVENTÁRIO · ONLINE</div>
+  <h1>Menu Inventários → projeto → SE → ficha + foto</h1>
+  <p class="lead">Clique no card abre a ficha ao lado. <b>Confirmado</b>, <b>Não encontrado</b> e <b>Sobra</b> gravam <b>direto no SharePoint</b> (sem fila offline). Foto sobe na hora. <b>Finalizar SE</b> só libera quando todos os itens da base tiverem desfecho. Fluxo: escolher inventário → escolher SE → preencher → desfecho.</p>
+
+  <div class="app" id="app">
+    <aside class="sb">
+      <div class="brand">
+        <div class="logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/><circle cx="12" cy="6.2" r="1.5" fill="#fff" stroke="none"/><circle cx="17.2" cy="15.4" r="1.5" fill="#fff" stroke="none"/><circle cx="6.8" cy="15.4" r="1.5" fill="#fff" stroke="none"/></svg>
+        </div>
+        <div class="brandname">Infralytics</div>
+      </div>
+      <div class="user">
+        <div class="av">RA</div>
+        <div class="uname"><b>Ricardo Alves</b>inventariante</div>
+      </div>
+      <nav class="nav">
+        <div class="ni on">
+          <svg width="18" height="18" viewBox="0 0 512 512" fill="#fff"><path d="M128 80H384V448H128V80Z"/><path d="M192 48H320V112H192V48Z"/></svg>
+          Inventários
+        </div>
+        <div class="hint">Passo 3. Clique no item — a edição abre ao lado. Sem Navigate.</div>
+      </nav>
+      <div class="foot">
+        <div class="theme"><span class="on">Light</span><span>Dark</span></div>
+        <div class="ver">v.1.0.0</div>
+      </div>
+    </aside>
+
+    <section class="main">
+      <div class="barhd">
+        <div class="back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <div class="hdmid">
+          <div class="hdt">SE-005 — Sub. Est. Litoral</div>
+          <div class="hds">Neoenergia Pernambuco · Agosto 2026</div>
+        </div>
+        <div class="cam">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M4 8h3l2-2h6l2 2h3v10H4z"/><circle cx="12" cy="13" r="3.2"/></svg>
+          <div class="badge">3</div>
+        </div>
+      </div>
+      <div class="pg">
+        <div class="pgt"><span>2 de 8 itens revisados</span><span>25%</span></div>
+        <div class="pbar"><i></i></div>
+      </div>
+      <div class="tools">
+        <div class="tab on">BASE (8)</div>
+        <div class="tab">SOBRAS (0)</div>
+        <div class="add">+ Adicionar item</div>
+      </div>
+
+      <div class="split">
+        <div class="gal" id="cGaleriaItens">
+          <div class="gscroll">
+            <div class="ic on">
+              <div class="it">570.1 — TRANSFORMADOR DE FORÇA</div>
+              <div class="icmeta">
+                <div class="qtd">
+                  <div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div>
+                  <div><div class="qk">CONTADO</div><div class="qv amber">—</div></div>
+                </div>
+                <span class="st st-pend">Pendente</span>
+              </div>
+            </div>
+            <div class="ic">
+              <div class="it">110.1 — ARMAZENAGEM DE COMBUSTÍVEL</div>
+              <div class="icmeta">
+                <div class="qtd">
+                  <div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div>
+                  <div><div class="qk">CONTADO</div><div class="qv amber">—</div></div>
+                </div>
+                <span class="st st-pend">Pendente</span>
+              </div>
+            </div>
+            <div class="ic">
+              <div class="it">210.03 — DISJUNTOR TRIPOLAR 72,5 kV</div>
+              <div class="icmeta">
+                <div class="qtd">
+                  <div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div>
+                  <div><div class="qk">CONTADO</div><div class="qv">1,0 UN</div></div>
+                </div>
+                <span class="st st-ok">Confirmado</span>
+              </div>
+            </div>
+            <div class="ic">
+              <div class="it">230.01 — SECCIONADORA TRIPOLAR</div>
+              <div class="icmeta">
+                <div class="qtd">
+                  <div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div>
+                  <div><div class="qk">CONTADO</div><div class="qv amber">—</div></div>
+                </div>
+                <span class="st st-no">Não encontrado</span>
+              </div>
+            </div>
+            <div class="ic">
+              <div class="it">310.2 — RELÉ DE PROTEÇÃO</div>
+              <div class="icmeta">
+                <div class="qtd">
+                  <div><div class="qk">BASE</div><div class="qv">2,0 UN</div></div>
+                  <div><div class="qk">CONTADO</div><div class="qv amber">—</div></div>
+                </div>
+                <span class="st st-pend">Pendente</span>
+              </div>
+            </div>
+            <div class="ic">
+              <div class="it">SOBRA-SE005-01 — DISJUNTOR AUX</div>
+              <div class="icmeta">
+                <div class="qtd">
+                  <div><div class="qk">BASE</div><div class="qv">—</div></div>
+                  <div><div class="qk">CONTADO</div><div class="qv">1,0 UN</div></div>
+                </div>
+                <span class="st st-sobra">Sobra</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ed" id="cEdicaoItem">
+          <div class="edhd">
+            <div>
+              <div class="edhdt">570.1 — TRANSFORMADOR DE FORÇA</div>
+              <div class="edhds">Clique no card da esquerda preenche este painel · mesmas regras do celular</div>
+            </div>
+            <div class="edcam">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B3E6F" stroke-width="1.8"><path d="M4 8h3l2-2h6l2 2h3v10H4z"/><circle cx="12" cy="13" r="3"/></svg>
+              <div class="badge">1</div>
+            </div>
+          </div>
+          <div class="edsc">
+            <div class="g2">
+              <div class="fld">
+                <div class="ftop"><span class="fl">Quantidade</span><span class="fb">base: 1 UN</span></div>
+                <div class="inprow">
+                  <div class="inp flex">1</div>
+                  <div class="un">UN</div>
+                  <span class="dv ok">confere</span>
+                </div>
+              </div>
+              <div class="fld">
+                <div class="ftop"><span class="fl">Classificação TUC</span><span class="fb">base: 570</span></div>
+                <div class="inp">570 — Transformador de força</div>
+              </div>
+            </div>
+            <div class="sec">DADOS TÉCNICOS DO EQUIPAMENTO</div>
+            <div class="g2">
+              <div class="fld">
+                <div class="ftop"><span class="fl">Centro modular</span><span class="fb">base: 1</span></div>
+                <div class="inprow">
+                  <div class="inp flex">1 — Equipamentos</div>
+                  <span class="dv ok">confere</span>
+                </div>
+              </div>
+              <div class="fld">
+                <div class="ftop"><span class="fl">Ano</span><span class="fb">base: 2018</span></div>
+                <div class="inp">2018</div>
+              </div>
+              <div class="fld">
+                <div class="ftop"><span class="fl">Fabricante</span><span class="fb">base: —</span></div>
+                <div class="inp">Siemens</div>
+              </div>
+              <div class="fld">
+                <div class="ftop"><span class="fl">Modelo</span><span class="fb">base: —</span></div>
+                <div class="inp">TFO-72</div>
+              </div>
+              <div class="fld">
+                <div class="ftop"><span class="fl">Nº de série</span><span class="fb">base: —</span></div>
+                <div class="inp">SN-88421</div>
+              </div>
+              <div class="fld">
+                <div class="ftop"><span class="fl">Cód. operação</span><span class="fb">base: —</span></div>
+                <div class="inp">OP-5701</div>
+              </div>
+              <div class="fld wide">
+                <div class="ftop"><span class="fl">Observações de campo</span></div>
+                <div class="inp area">Plaqueta lida no painel. Óleo ok.</div>
+              </div>
+            </div>
+          </div>
+          <div class="edact">
+            <div class="ab no">✕ Não encontrado</div>
+            <div class="ab yes">✓ Confirmado</div>
+            <div class="ab sobra">+ Sobra</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dock">
+        <div class="fin">Finalizar subestação</div>
+        <div class="finhint">Ainda faltam 5 itens da base com desfecho · Patch direto no SharePoint</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

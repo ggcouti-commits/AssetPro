@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Tela_Alocacoes · estados Adicionar / Designada / Ocupada</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1;
+    --okbg:#C6E5C5; --oktx:#2D752C;
+    --sel:#E8F1FB; --danger:#F1416C;
+    --pendbg:#EBEAEA; --pendtx:#706F6E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px 22px 36px}
+  body.shot{padding:0}
+  body.shot .doc{display:none}
+  body.shot .app:not(.show), body.shot .board:not(.show){display:none}
+  .doc .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:26px 0 6px}
+  .doc .kicker:first-child{margin-top:0}
+  .doc h1{font-size:22px; font-weight:650; margin-bottom:6px}
+  .doc .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1100px; margin-bottom:16px}
+  .doc .lead b{color:#1a1a1a}
+  .cap{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase; margin:0 0 8px}
+
+  .board{
+    width:1280px; height:720px; background:var(--page); border:1px solid var(--border);
+    border-radius:12px; overflow:hidden; display:flex; flex-direction:column;
+  }
+  body.shot .board.show{border:0; border-radius:0}
+  .bh{height:66px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 22px}
+  .bt{font-size:18px; font-weight:700; color:var(--title)}
+  .bs{font-size:12px; color:var(--label); margin-top:2px}
+  .bpills{display:flex; gap:8px}
+  .pill{height:26px; padding:0 10px; border-radius:999px; font-size:11px; font-weight:700; display:flex; align-items:center}
+  .p-on{background:var(--navy); color:#fff}
+  .p-off{background:var(--pendbg); color:var(--pendtx)}
+  .p-busy{background:#FDECEC; color:var(--danger)}
+  .bgrid{flex:1; display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; padding:16px 20px 20px; min-height:0}
+  .card{background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; display:flex; flex-direction:column}
+  .ch{padding:16px 16px 12px; border-bottom:1px solid #EDF0F3}
+  .ct{font-size:15px; font-weight:700; color:var(--title)}
+  .cm{font-size:12px; color:var(--label); margin-top:4px; line-height:1.45}
+  .code{font-size:11px; font-family:Consolas,monospace; color:var(--navy); margin-top:8px; background:#F7FAFD; border-radius:8px; padding:8px 10px; line-height:1.4}
+  .se{padding:14px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #EDF0F3}
+  .se.hl{background:var(--sel); box-shadow:inset 3px 0 0 var(--navy)}
+  .secod{font-size:13px; font-weight:700; color:var(--title); width:64px; flex:0 0 64px}
+  .sen{flex:1}
+  .sename{font-size:13px; font-weight:700; color:var(--title)}
+  .sem{font-size:11.5px; color:var(--label); margin-top:2px}
+  .add{height:28px; padding:0 10px; border-radius:8px; font-size:11px; font-weight:700; display:flex; align-items:center; background:var(--navy); color:#fff}
+  .add.off{background:#fff; color:var(--pendtx); border:1px solid var(--border)}
+  .footn{margin-top:auto; padding:14px 16px; font-size:12px; color:var(--label); line-height:1.45; border-top:1px solid #EDF0F3}
+
+  .app{width:1280px; height:720px; display:flex; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--page)}
+  body.shot .app.show{border:0; border-radius:0}
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni.on{background:var(--navy3); color:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{height:66px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 20px 0 22px; gap:10px}
+  .back{width:34px; height:34px; border-radius:8px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--title)}
+  .tt{font-size:20px; font-weight:700; color:var(--title)}
+  .ts{font-size:12px; color:var(--label); margin-top:2px}
+  .badge{margin-left:auto; height:26px; padding:0 10px; border-radius:999px; font-size:11px; font-weight:700; display:flex; align-items:center}
+  .body{padding:16px 20px; display:grid; grid-template-columns:300px 1fr 300px; gap:14px; min-height:0; flex:1}
+  .col{background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; display:flex; flex-direction:column}
+  .colh{padding:12px 14px 10px; border-bottom:1px solid #EDF0F3}
+  .colht{font-size:13px; font-weight:700; color:var(--title)}
+  .colhs{font-size:11.5px; color:var(--label); margin-top:2px}
+  .row{padding:13px 14px; border-bottom:1px solid #EDF0F3; display:flex; justify-content:space-between; align-items:center; gap:10px}
+  .row.sel{background:var(--sel); box-shadow:inset 3px 0 0 var(--navy)}
+  .rname{font-size:14px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:12px; color:var(--label); margin-top:2px}
+  .chip{height:21px; padding:0 9px; border-radius:999px; font-size:10px; font-weight:700; display:inline-flex; align-items:center}
+  .c-run{background:#D6E8FF; color:#1B4C86}
+  .c-ok{background:var(--okbg); color:var(--oktx)}
+  .x{width:28px; height:28px; border-radius:8px; border:1px solid #F5C2C7; color:var(--danger); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; background:#FFF6F7}
+  .empty{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px; color:var(--label); font-size:13px; line-height:1.5}
+  .empty b{display:block; color:var(--title); font-size:14px; margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="doc">
+  <div class="kicker">DESKTOP · TELA_ALOCACOES · ESTADOS DO BOTÃO</div>
+  <h1>Adicionar ativo. Designada e Ocupada desativados.</h1>
+  <p class="lead"><b>btnAloAdd</b> tem três textos. Só <b>Adicionar</b> está em <code>DisplayMode.Edit</code>. <b>Designada</b> (já é deste slot) e <b>Ocupada</b> (outro slot) ficam <code>DisplayMode.View</code>. O × da direita só existe nas já designadas a este slot.</p>
+</div>
+
+<div class="cap doc">1 · os três estados lado a lado</div>
+<div class="board" id="cmp">
+  <div class="bh">
+    <div>
+      <div class="bt">btnAloAdd — recurso ligado ou travado</div>
+      <div class="bs">LookUp em Alocacoes · Ativo = Sim · mesma CodInventario + CodSE</div>
+    </div>
+    <div class="bpills">
+      <span class="pill p-on">Adicionar · Edit</span>
+      <span class="pill p-off">Designada · View</span>
+      <span class="pill p-busy">Ocupada · View</span>
+    </div>
+  </div>
+  <div class="bgrid">
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Adicionar</div>
+        <div class="cm">Livre. Ninguém tem essa SE. O escritório grava a linha em <b>Alocacoes</b>.</div>
+        <div class="code">DisplayMode.Edit<br>LookUp … IsBlank(a)</div>
+      </div>
+      <div class="se hl">
+        <div class="secod">SE-002</div>
+        <div class="sen"><div class="sename">Sub. Est. Olinda</div><div class="sem">69 kV · Pendente</div></div>
+        <div class="add">Adicionar</div>
+      </div>
+      <div class="footn">Fill <b>Cor.PrimaryD60</b>. Clique → Patch Ativo = Sim.</div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Designada</div>
+        <div class="cm">Já é deste slot (Ricardo / Inventariante01). Não adiciona de novo.</div>
+        <div class="code">DisplayMode.View<br>a.Login = varUsrSel.Login</div>
+      </div>
+      <div class="se hl">
+        <div class="secod">SE-001</div>
+        <div class="sen"><div class="sename">Sub. Est. Recife I</div><div class="sem">138 kV · Em campo</div></div>
+        <div class="add off">Designada</div>
+      </div>
+      <div class="footn">Para tirar: × na coluna da direita (Ativo = Nao).</div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Ocupada</div>
+        <div class="cm">Outro slot já tem (Otavio). Um editor por SE — o botão não grava.</div>
+        <div class="code">DisplayMode.View<br>a.Login ≠ varUsrSel.Login</div>
+      </div>
+      <div class="se hl">
+        <div class="secod">SE-003</div>
+        <div class="sen"><div class="sename">Sub. Est. Jaboatão</div><div class="sem">13,8 kV · Otavio já tem</div></div>
+        <div class="add off">Ocupada</div>
+      </div>
+      <div class="footn">Meta da linha mostra quem está com a instalação.</div>
+    </div>
+  </div>
+</div>
+
+<div class="cap doc" style="margin-top:28px">2 · tela · Adicionar ativo</div>
+<div class="app" id="add">
+  <aside class="sb">
+    <div class="brand"><div class="logo"></div><div class="brandname">Infralytics</div></div>
+    <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+    <nav class="nav"><div class="ni">Home</div><div class="ni">Projetos</div><div class="ni">Inventários</div><div class="ni">Importar / Exportar</div><div class="ni on">Usuários</div></nav>
+    <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+  </aside>
+  <section class="main">
+    <header class="top">
+      <div class="back">←</div>
+      <div><div class="tt">Designar instalações</div><div class="ts">Ricardo · Inventariante01</div></div>
+      <span class="badge p-on">Adicionar · ativo</span>
+    </header>
+    <div class="body">
+      <div class="col">
+        <div class="colh"><div class="colht">Projeto</div><div class="colhs">Campanhas ativas</div></div>
+        <div class="row sel"><div><div class="rname">Neoenergia PE</div><div class="rmeta">INV-012 · 4 instalações</div></div><span class="chip c-run">Em andamento</span></div>
+        <div class="row"><div><div class="rname">Equatorial MA</div><div class="rmeta">INV-008 · 6 instalações</div></div><span class="chip c-ok">Finalizada</span></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Instalações do projeto</div><div class="colhs">SE livre · DisplayMode.Edit</div></div>
+        <div class="se"><div class="secod">SE-001</div><div class="sen"><div class="sename">Sub. Est. Recife I</div><div class="sem">138 kV · Em campo</div></div><div class="add off">Designada</div></div>
+        <div class="se hl"><div class="secod">SE-002</div><div class="sen"><div class="sename">Sub. Est. Olinda</div><div class="sem">69 kV · Pendente</div></div><div class="add">Adicionar</div></div>
+        <div class="se"><div class="secod">SE-003</div><div class="sen"><div class="sename">Sub. Est. Jaboatão</div><div class="sem">13,8 kV · Otavio já tem</div></div><div class="add off">Ocupada</div></div>
+        <div class="se hl"><div class="secod">SE-004</div><div class="sen"><div class="sename">Sub. Est. Litoral</div><div class="sem">138 kV · Em campo</div></div><div class="add">Adicionar</div></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Já designadas a Ricardo</div><div class="colhs">× ativo nestas linhas</div></div>
+        <div class="se"><div class="sen"><div class="sename">SE-001 · Recife I</div><div class="sem">Neoenergia PE</div></div><div class="x">×</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="cap doc" style="margin-top:28px">3 · tela · Designada desativado</div>
+<div class="app" id="des">
+  <aside class="sb">
+    <div class="brand"><div class="logo"></div><div class="brandname">Infralytics</div></div>
+    <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+    <nav class="nav"><div class="ni">Home</div><div class="ni">Projetos</div><div class="ni">Inventários</div><div class="ni">Importar / Exportar</div><div class="ni on">Usuários</div></nav>
+    <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+  </aside>
+  <section class="main">
+    <header class="top">
+      <div class="back">←</div>
+      <div><div class="tt">Designar instalações</div><div class="ts">Ricardo · Inventariante01</div></div>
+      <span class="badge p-off">Designada · View</span>
+    </header>
+    <div class="body">
+      <div class="col">
+        <div class="colh"><div class="colht">Projeto</div><div class="colhs">Campanhas ativas</div></div>
+        <div class="row sel"><div><div class="rname">Neoenergia PE</div><div class="rmeta">INV-012 · 4 instalações</div></div><span class="chip c-run">Em andamento</span></div>
+        <div class="row"><div><div class="rname">Equatorial MA</div><div class="rmeta">INV-008 · 6 instalações</div></div><span class="chip c-ok">Finalizada</span></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Instalações do projeto</div><div class="colhs">Já deste slot · não clica de novo</div></div>
+        <div class="se hl"><div class="secod">SE-001</div><div class="sen"><div class="sename">Sub. Est. Recife I</div><div class="sem">138 kV · Em campo</div></div><div class="add off">Designada</div></div>
+        <div class="se"><div class="secod">SE-002</div><div class="sen"><div class="sename">Sub. Est. Olinda</div><div class="sem">69 kV · Pendente</div></div><div class="add">Adicionar</div></div>
+        <div class="se"><div class="secod">SE-003</div><div class="sen"><div class="sename">Sub. Est. Jaboatão</div><div class="sem">13,8 kV · Otavio já tem</div></div><div class="add off">Ocupada</div></div>
+        <div class="se"><div class="secod">SE-004</div><div class="sen"><div class="sename">Sub. Est. Litoral</div><div class="sem">138 kV · Em campo</div></div><div class="add">Adicionar</div></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Já designadas a Ricardo</div><div class="colhs">Tira por aqui</div></div>
+        <div class="se hl"><div class="sen"><div class="sename">SE-001 · Recife I</div><div class="sem">Neoenergia PE</div></div><div class="x">×</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="cap doc" style="margin-top:28px">4 · tela · Ocupada desativado</div>
+<div class="app" id="ocu">
+  <aside class="sb">
+    <div class="brand"><div class="logo"></div><div class="brandname">Infralytics</div></div>
+    <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+    <nav class="nav"><div class="ni">Home</div><div class="ni">Projetos</div><div class="ni">Inventários</div><div class="ni">Importar / Exportar</div><div class="ni on">Usuários</div></nav>
+    <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+  </aside>
+  <section class="main">
+    <header class="top">
+      <div class="back">←</div>
+      <div><div class="tt">Designar instalações</div><div class="ts">Ricardo · Inventariante01</div></div>
+      <span class="badge p-busy">Ocupada · View</span>
+    </header>
+    <div class="body">
+      <div class="col">
+        <div class="colh"><div class="colht">Projeto</div><div class="colhs">Campanhas ativas</div></div>
+        <div class="row sel"><div><div class="rname">Neoenergia PE</div><div class="rmeta">INV-012 · 4 instalações</div></div><span class="chip c-run">Em andamento</span></div>
+        <div class="row"><div><div class="rname">Equatorial MA</div><div class="rmeta">INV-008 · 6 instalações</div></div><span class="chip c-ok">Finalizada</span></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Instalações do projeto</div><div class="colhs">Outro slot · um editor por SE</div></div>
+        <div class="se"><div class="secod">SE-001</div><div class="sen"><div class="sename">Sub. Est. Recife I</div><div class="sem">138 kV · Em campo</div></div><div class="add off">Designada</div></div>
+        <div class="se"><div class="secod">SE-002</div><div class="sen"><div class="sename">Sub. Est. Olinda</div><div class="sem">69 kV · Pendente</div></div><div class="add">Adicionar</div></div>
+        <div class="se hl"><div class="secod">SE-003</div><div class="sen"><div class="sename">Sub. Est. Jaboatão</div><div class="sem">13,8 kV · Otavio já tem</div></div><div class="add off">Ocupada</div></div>
+        <div class="se"><div class="secod">SE-004</div><div class="sen"><div class="sename">Sub. Est. Litoral</div><div class="sem">138 kV · Em campo</div></div><div class="add">Adicionar</div></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Já designadas a Ricardo</div><div class="colhs">Jaboatão não entra aqui</div></div>
+        <div class="se"><div class="sen"><div class="sename">SE-001 · Recife I</div><div class="sem">Neoenergia PE</div></div><div class="x">×</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="cap doc" style="margin-top:28px">5 · tela · nada designado (× desativado / lista vazia)</div>
+<div class="app" id="vazio">
+  <aside class="sb">
+    <div class="brand"><div class="logo"></div><div class="brandname">Infralytics</div></div>
+    <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+    <nav class="nav"><div class="ni">Home</div><div class="ni">Projetos</div><div class="ni">Inventários</div><div class="ni">Importar / Exportar</div><div class="ni on">Usuários</div></nav>
+    <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+  </aside>
+  <section class="main">
+    <header class="top">
+      <div class="back">←</div>
+      <div><div class="tt">Designar instalações</div><div class="ts">Ricardo · Inventariante01</div></div>
+      <span class="badge p-off">Lista vazia</span>
+    </header>
+    <div class="body">
+      <div class="col">
+        <div class="colh"><div class="colht">Projeto</div><div class="colhs">Campanhas ativas</div></div>
+        <div class="row sel"><div><div class="rname">Neoenergia PE</div><div class="rmeta">INV-012 · 4 instalações</div></div><span class="chip c-run">Em andamento</span></div>
+        <div class="row"><div><div class="rname">Equatorial MA</div><div class="rmeta">INV-008 · 6 instalações</div></div><span class="chip c-ok">Finalizada</span></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Instalações do projeto</div><div class="colhs">Nenhuma ainda deste slot</div></div>
+        <div class="se hl"><div class="secod">SE-001</div><div class="sen"><div class="sename">Sub. Est. Recife I</div><div class="sem">138 kV · Em campo</div></div><div class="add">Adicionar</div></div>
+        <div class="se hl"><div class="secod">SE-002</div><div class="sen"><div class="sename">Sub. Est. Olinda</div><div class="sem">69 kV · Pendente</div></div><div class="add">Adicionar</div></div>
+        <div class="se"><div class="secod">SE-003</div><div class="sen"><div class="sename">Sub. Est. Jaboatão</div><div class="sem">13,8 kV · Otavio já tem</div></div><div class="add off">Ocupada</div></div>
+        <div class="se hl"><div class="secod">SE-004</div><div class="sen"><div class="sename">Sub. Est. Litoral</div><div class="sem">138 kV · Em campo</div></div><div class="add">Adicionar</div></div>
+      </div>
+      <div class="col">
+        <div class="colh"><div class="colht">Já designadas a Ricardo</div><div class="colhs">0 instalações</div></div>
+        <div class="empty"><b>Nenhuma instalação</b>Escolhe o projeto e clica Adicionar. O × só aparece depois.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  var q = location.search;
+  if (q.indexOf("shot=") >= 0) document.body.classList.add("shot");
+  ["cmp","add","des","ocu","vazio"].forEach(function(id){
+    if (q.indexOf("shot="+id) >= 0) document.getElementById(id).classList.add("show");
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Incluir rede depois</title>
+<style>
+  :root{--navy:#123B6E;--navy3:#1B4C86;--page:#F4F6F8;--border:#E1E5EA;--title:#1B3E6F;--label:#6B7683;--ok:#2E7D32;--okbg:#E5F6E6}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#fff;margin:0}
+  .board{width:1180px;height:640px;display:flex;gap:18px;padding:16px;background:#E8ECF0}
+  .col{flex:1;min-width:0;display:flex;flex-direction:column}
+  .cap{font-size:11px;font-weight:700;letter-spacing:.8px;color:#348FFD;margin-bottom:8px}
+  .app{flex:1;background:var(--page);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;position:relative}
+  .sb{width:168px;background:var(--navy);color:#fff;padding:14px 10px}
+  .brand{font-weight:700;font-size:13px;padding:2px 6px 14px}
+  .ni{height:34px;border-radius:8px;display:flex;align-items:center;padding:0 10px;font-size:13px;font-weight:650;color:#E8F0FA;margin-bottom:4px}
+  .ni.on{background:var(--navy3)}
+  .main{flex:1;display:flex;flex-direction:column}
+  .top{height:52px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px}
+  .tt{font-size:16px;font-weight:700;color:var(--title)}
+  .body{padding:14px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;width:100%}
+  .k{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--label)}
+  .cn{font-size:16px;font-weight:700;color:var(--title);margin-top:4px}
+  .cm{font-size:12px;color:var(--label);margin-top:3px}
+  .row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;gap:8px}
+  .chip{height:24px;display:inline-flex;align-items:center;padding:0 8px;border-radius:999px;font-size:11px;font-weight:700;background:#EAF3FF;color:#1B4C86;margin-right:6px}
+  .chip.g{background:var(--okbg);color:var(--ok)}
+  .btn{height:34px;padding:0 12px;border-radius:8px;background:var(--navy);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center;outline:3px solid #2E9B4A}
+  .bar{height:8px;background:#EEF0F3;border-radius:99px;margin-top:12px;overflow:hidden}
+  .bar b{display:block;height:100%;width:33%;background:#3BAA48}
+  .mask{position:absolute;inset:0;background:rgba(18,59,110,.42);display:flex;align-items:center;justify-content:center;padding:12px}
+  .dlg{width:100%;background:#fff;border-radius:12px;box-shadow:0 12px 32px rgba(18,59,110,.2)}
+  .hd{padding:12px 14px;border-bottom:1px solid var(--border)}
+  .dt{font-size:16px;font-weight:700;color:var(--title)}
+  .ds{font-size:12px;color:var(--label);margin-top:2px}
+  .bd{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+  .fl{font-size:10px;font-weight:700;letter-spacing:.3px;color:var(--label)}
+  .fi{height:34px;margin-top:4px;border:1px solid var(--border);border-radius:8px;background:#F3F5F7;display:flex;align-items:center;padding:0 10px;font-size:13px;font-weight:650;color:#5C6770}
+  .seg{display:flex;background:#EEF3F8;border-radius:8px;padding:3px;gap:3px;margin-top:4px}
+  .seg b{flex:1;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--label)}
+  .seg .on{background:var(--navy);color:#fff}
+  .file{border:1.5px dashed #B7C8DC;border-radius:8px;padding:8px 10px;background:#F7FAFD;margin-top:4px}
+  .fn{font-size:13px;font-weight:700;color:var(--title)}
+  .fm{font-size:11px;color:var(--label);margin-top:2px}
+  .ft{display:flex;justify-content:flex-end;gap:8px;padding:10px 14px 12px;border-top:1px solid var(--border)}
+  .ghost,.pri{height:32px;padding:0 12px;border-radius:8px;font-size:12.5px;font-weight:700;display:flex;align-items:center}
+  .ghost{border:1px solid var(--border);color:var(--title)}
+  .pri{background:var(--navy);color:#fff}
+</style>
+</head>
+<body>
+  <div class="board" id="board">
+    <div class="col">
+      <div class="cap">1 · NO CARD DA CAMPANHA</div>
+      <div class="app">
+        <aside class="sb"><div class="brand">assetexperts</div><div class="ni on">Home</div><div class="ni">Importar / Exportar</div></aside>
+        <section class="main">
+          <header class="top"><div class="tt">Home</div></header>
+          <div class="body">
+            <div class="card">
+              <div class="k">ELÉTRICA · EM ANDAMENTO</div>
+              <div class="cn">Elétrica Jan 2027</div>
+              <div class="cm">12 subestações · 4 já revisadas</div>
+              <div class="bar"><b></b></div>
+              <div class="row">
+                <span class="chip">Sem rede ainda</span>
+                <div class="btn">Incluir rede</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <div class="col">
+      <div class="cap">2 · A JANELA TRAVA NESSA CAMPANHA</div>
+      <div class="app">
+        <aside class="sb"><div class="brand">assetexperts</div><div class="ni on">Home</div></aside>
+        <section class="main">
+          <header class="top"><div class="tt">Home</div></header>
+          <div class="body"><div class="card" style="opacity:.45"><div class="cn">Elétrica Jan 2027</div></div></div>
+        </section>
+        <div class="mask"><div class="dlg">
+          <div class="hd"><div class="dt">Incluir rede</div><div class="ds">Não cria outra campanha.</div></div>
+          <div class="bd">
+            <div><div class="fl">CAMPANHA</div><div class="fi">Elétrica Jan 2027 · 12 subestações · 4 já revisadas</div></div>
+            <div><div class="fl">REDE DESTA CAMPANHA</div><div class="seg"><b class="on">Com base</b><b>Sem base</b></div></div>
+            <div><div class="fl">PLANILHA DA REDE</div><div class="file"><div class="fn">Base Rede Jan 2027.xlsx</div><div class="fm">PRJ-1042 · PRJ-1048 · PRJ-1101</div></div></div>
+          </div>
+          <div class="ft"><div class="ghost">Cancelar</div><div class="pri">Incluir nesta campanha</div></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

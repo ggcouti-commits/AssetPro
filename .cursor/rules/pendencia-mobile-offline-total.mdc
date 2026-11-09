@@ -1,0 +1,18 @@
+---
+description: Mobile 100% offline — rede só em Baixar dados e Enviar visita
+alwaysApply: true
+---
+
+# Pendência / em montagem — Mobile totalmente offline
+
+Decisão 29.10.2026 · detalhe + ok 08.11.2026 (Fenômeno). Spec: `docs/powerfx/mobile-offline-total.txt`
+
+- **Online só:** `btnBaixarDadosLogin` · `btnBaixarDados` (mesma fórmula) · Enviar visita (Notify se sem rede).
+- **OnStart / OnVisible:** zero Filter/LookUp/Refresh em lista SP. Só `LoadData` + catálogos embutidos.
+- **Baixar:** inventários `Ativo = "Sim"` + SEs desses + BasesJSON+hoje → `colInventarioBase` + Inventariantes + Alocacoes + mestres.
+- **Entrar sem cache de inventariantes:** popup → Baixar dados.
+- **Sessão em cache:** timer da Login mantém. `SessaoVersao` só no Baixar (`tmrSessao` off).
+- **Sair:** limpa sessão; não apaga caches de dados.
+- **Local / foto na visita:** só coleção + SaveData; SP no Enviar.
+- Escopo: **só Mobile** (não Desktop / Inventariantes escritório).
+- **Alocação nova pós-Baixar (item 12, ok 08.11):** só aparece no próximo Baixar. Esperado.

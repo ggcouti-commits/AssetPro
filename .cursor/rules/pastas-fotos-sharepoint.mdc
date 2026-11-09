@@ -1,0 +1,20 @@
+---
+description: Fotos de campo viram pasta no SharePoint (projeto / SE / Visão geral / item). Lista Fotos continua para o app.
+alwaysApply: true
+---
+
+# Pastas de foto — biblioteca `Projetos`
+
+Decisão 2026-09-10 (Fenômeno). Corte 18.09: ata `docs/reunioes/2026-09-18.md`. Spec: `docs/exportacao-fotos-pastas.md`  
+Mockups: `docs/screens/exportar-planilha-fotos.png` · `pastas-fotos-apos-importar.png` · `pastas-fotos-apos-visita.png`
+
+- **App / consulta:** lista **`Fotos`** (`FotoCampo`, `TipoFoto` = `AMBIENTE` / `ITEM`). Não apagar. `TipoFoto` **não** muda de nome.
+- **André / exportação agora:** um botão **Planilha** → `flxExportarCampanha` (`.xlsx` em `Exportacoes`). Foto **não** zipa — já está na biblioteca **`Projetos`**.
+- **Stand-by:** `flxExportarFotos` / `btnExportarFotos` (ZIP). Não montar agora.
+- Árvore: `{PastaProjeto}/{CodSE} - {NomeSE}/Visão geral` ou `.../{código exclusivo}`.
+- Pasta do item = **só o código** (`Coalesce(Imobilizado; CodAsset; "SEM-IMOB")`). **Sem** `DescricaoBem` no path (estoura SharePoint). `Visão geral` é nome reservado. Campanha velha com pasta `Ambiente`: o lote ainda grava nela se `Visão geral` não existir.
+- Criar raiz + SEs + `Visão geral` no **`flxImportarCampanha`**. JPG no **`flxPastaFotosVisita`**: um `Run` depois do `ForAll` do envio (lote). **Não** gatilho por item (300 fotos = 300 runs).
+- **Não** criar pasta no `ForAll` do `btnEnviarVisitaExec`.
+- Coluna `Campanhas.PastaProjeto` grava o nome da pasta uma vez.
+- Excluir projeto: `flxExcluirCampanha` recicla a pasta `{PastaProjeto}` inteira (SEs e itens vão junto). Spec: `docs/automate/flxExcluirCampanha.md`.
+- Rótulo da câmera de cima no mobile: **Visão geral** (controle pode continuar `btnFotosAmbiente`).

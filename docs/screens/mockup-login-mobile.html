@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mobile — Tela_Login</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1; --primaryD60:#153965;
+    --neutralL30:#706F6E; --neutralL90:#EBEAEA;
+    --danger:#C23934; --dangerBg:#FDE7E9;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px 22px 36px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:26px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:720px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  .phones{display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap}
+  .col{display:flex; flex-direction:column; gap:10px}
+  .cap{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase}
+
+  .phone{
+    width:360px; height:740px; border:1px solid var(--border); border-radius:28px;
+    overflow:hidden; background:var(--navy); position:relative;
+    box-shadow:0 18px 40px rgba(18,59,110,.18);
+  }
+  .safe{padding:52px 28px 28px; height:100%; display:flex; flex-direction:column}
+  .brand{display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:36px}
+  .logo{width:64px; height:64px; border-radius:16px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .bname{font-size:22px; font-weight:700; color:#fff}
+  .bsub{font-size:13px; color:#9EC4F0; margin-top:2px}
+  .card{
+    background:#fff; border-radius:16px; padding:22px 20px 20px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .lab{font-size:11px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .inp{
+    height:48px; border:1px solid var(--border); border-radius:10px;
+    background:#F7FAFD; display:flex; align-items:center; padding:0 14px;
+    font-size:15px; color:var(--text);
+  }
+  .inp.ph{color:#9AA3AE}
+  .inp.err{border-color:var(--danger); background:#FFF8F8}
+  .err{font-size:12.5px; color:var(--danger); line-height:1.35; display:none}
+  .err.on{display:block}
+  .btn{
+    height:50px; border-radius:10px; background:var(--primaryD30); color:#fff;
+    font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center;
+    margin-top:6px;
+  }
+  .btn.off{background:#ADADAC}
+  .hint{font-size:11.5px; color:#8AA8C9; text-align:center; margin-top:auto; padding-top:20px}
+</style>
+</head>
+<body>
+  <div class="kicker">MOBILE · TELA_LOGIN · TELA DEDICADA</div>
+  <h1>Login é tela, não overlay.</h1>
+  <p class="lead">A conta Microsoft já está no tablet. Esta tela é a <b>nossa</b>: slot + senha da lista <b>Usuarios</b>, com <code>LookUp</code> no App (sem fluxo). <code>App.StartScreen = Tela_Login</code>. Depois do ok, <code>Navigate(Tela_SelecionarInventario)</code>. Overlay em cima da lista de projetos deixaria a galeria carregar por baixo e o voltar do Android abriria o inventário sem autenticar.</p>
+
+  <div class="phones">
+    <div class="col">
+      <div class="cap">1 · vazio</div>
+      <div class="phone" id="login-vazio">
+        <div class="safe">
+          <div class="brand">
+            <div class="logo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.2" fill="#fff" stroke="none"/></svg></div>
+            <div>
+              <div class="bname">Infralytics</div>
+              <div class="bsub">Inventário em campo</div>
+            </div>
+          </div>
+          <div class="card">
+            <div>
+              <div class="lab">Login</div>
+              <div class="inp ph" style="margin-top:6px">Inventariante01</div>
+            </div>
+            <div>
+              <div class="lab">Senha</div>
+              <div class="inp ph" style="margin-top:6px">••••••••</div>
+            </div>
+            <div class="btn off">Entrar</div>
+          </div>
+          <div class="hint">v.1.0.0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="cap">2 · erro</div>
+      <div class="phone" id="login-erro">
+        <div class="safe">
+          <div class="brand">
+            <div class="logo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.2" fill="#fff" stroke="none"/></svg></div>
+            <div>
+              <div class="bname">Infralytics</div>
+              <div class="bsub">Inventário em campo</div>
+            </div>
+          </div>
+          <div class="card">
+            <div>
+              <div class="lab">Login</div>
+              <div class="inp err" style="margin-top:6px">Inventariante01</div>
+            </div>
+            <div>
+              <div class="lab">Senha</div>
+              <div class="inp err" style="margin-top:6px">••••••••</div>
+            </div>
+            <div class="err on">Login ou senha inválidos.</div>
+            <div class="btn">Entrar</div>
+          </div>
+          <div class="hint">v.1.0.0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

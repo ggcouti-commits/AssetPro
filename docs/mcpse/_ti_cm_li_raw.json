@@ -1,0 +1,633 @@
+{
+  "TI": [
+    [
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      "x",
+      "CODIGO",
+      "DESCRIÇÃO",
+      "CAMPO RESUMO PARA APLICATIVO"
+    ],
+    [
+      null,
+      null,
+      10,
+      "Hidroelétrica;",
+      "10-HID"
+    ],
+    [
+      null,
+      null,
+      11,
+      "Térmica a Combustão – Óleo/Gás/Diesel",
+      "11-TER"
+    ],
+    [
+      null,
+      null,
+      12,
+      "Térmica a Vapor – Carvão",
+      "12-TER"
+    ],
+    [
+      null,
+      null,
+      13,
+      "Térmica a Vapor – Gás",
+      "13-TER"
+    ],
+    [
+      null,
+      null,
+      14,
+      "Térmica a Vapor – Diesel/Querosene/Óleo",
+      "14-TER"
+    ],
+    [
+      null,
+      null,
+      15,
+      "Térmica a Vapor – Biomassa",
+      "15-TER"
+    ],
+    [
+      null,
+      null,
+      16,
+      "Térmica a Vapor – Nuclear",
+      "16-TER"
+    ],
+    [
+      null,
+      null,
+      17,
+      "Solar; e",
+      "17-SOL"
+    ],
+    [
+      null,
+      null,
+      18,
+      "Eólica.",
+      "18-EOL"
+    ],
+    [
+      null,
+      null,
+      19,
+      "Outras",
+      "19-OUT"
+    ],
+    [
+      null,
+      null,
+      20,
+      "Subestações em tensão menor que 230kV (DIT);",
+      "20-DIT"
+    ],
+    [
+      null,
+      null,
+      21,
+      "Subestações em tensão maior ou igual a 230kV e menor que 345kV;",
+      "21-DIT"
+    ],
+    [
+      null,
+      null,
+      22,
+      "Subestações em tensão maior ou igual a 345kV e menor que 500kV;",
+      "22-DIT"
+    ],
+    [
+      null,
+      null,
+      23,
+      "Subestações em tensão maior ou igual a 500kV",
+      "23-DIT"
+    ],
+    [
+      null,
+      null,
+      24,
+      "Linha de Transmissão em tensão menor que 138kV (DIT);",
+      "24-DIT"
+    ],
+    [
+      null,
+      null,
+      25,
+      "Linha de Transmissão em tensão maior ou igual a 138kV e menor que 230kV (DIT);",
+      "25-DIT"
+    ],
+    [
+      null,
+      null,
+      26,
+      "Linha de Transmissão em tensão maior ou igual a 230kV e menor que 345kV; e",
+      "26-DIT"
+    ],
+    [
+      null,
+      null,
+      27,
+      "Linha de Transmissão em tensão maior ou igual a 345kV e menor que 500kV.",
+      "27-DIT"
+    ],
+    [
+      null,
+      null,
+      28,
+      "Linha de Transmissão em tensão maior ou igual a 500kV.",
+      "28-DIT"
+    ],
+    [
+      null,
+      null,
+      29,
+      "Instalação de Transmissão de Interesse Restrito (Subestação ou Linha)",
+      "29-DIT"
+    ],
+    [
+      null,
+      null,
+      30,
+      "Subestações em tensão menor ou igual que 13,8kV;",
+      "30-SDU"
+    ],
+    [
+      null,
+      null,
+      31,
+      "Subestações em tensão maior que 13,8kV e menor ou igual a 34,5kV;",
+      "31-SDU"
+    ],
+    [
+      null,
+      null,
+      32,
+      "Subestações em tensão maior que 34,5kV e menor ou igual a 69kV;",
+      "32-SDU"
+    ],
+    [
+      null,
+      null,
+      33,
+      "Subestações em tensão maior que 69kV e menor ou igual a 138kV;",
+      "33-SDU"
+    ],
+    [
+      null,
+      null,
+      34,
+      "Subestações em tensão maior que 138kV e menor ou igual a 230kV;",
+      "34-SDU"
+    ],
+    [
+      null,
+      null,
+      35,
+      "Linha de Distribuição em tensão menor ou igual que 13,8kV;",
+      "35-LAU"
+    ],
+    [
+      null,
+      null,
+      36,
+      "Linha de Distribuição em tensão maior que 13,8kV e menor ou igual a 34,5kV;",
+      "36-LAU"
+    ],
+    [
+      null,
+      null,
+      37,
+      "Linha de Distribuição em tensão maior que 34,5kV e menor ou igual a 69kV;",
+      "37-LAU"
+    ],
+    [
+      null,
+      null,
+      38,
+      "Linha de Distribuição em tensão maior que 69kV e menor ou igual a 138 kV;",
+      "38-LAU"
+    ],
+    [
+      null,
+      null,
+      39,
+      "Linha de Distribuição em tensão maior que 138kV e menor ou igual a 230kV;",
+      "39-LAU"
+    ],
+    [
+      null,
+      null,
+      50,
+      "Subestações em tensão menor ou igual que 13,8kV;",
+      "50-SDR"
+    ],
+    [
+      null,
+      null,
+      51,
+      "Subestações em tensão maior que 13,8kV e menor ou igual a 34,5kV;",
+      "51-SDR"
+    ],
+    [
+      null,
+      null,
+      52,
+      "Subestações em tensão maior que 34,5kV e menor ou igual a 69kV;",
+      "52-SDR"
+    ],
+    [
+      null,
+      null,
+      53,
+      "Subestações em tensão maior que 69kV e menor ou igual a 138kV;",
+      "53-SDR"
+    ],
+    [
+      null,
+      null,
+      54,
+      "Subestações em tensão maior que 138kV e menor ou igual a 230kV;",
+      "54-SDR"
+    ],
+    [
+      null,
+      null,
+      55,
+      "Linha de Distribuição em tensão menor ou igual que 13,8kV;",
+      "55-LDR"
+    ],
+    [
+      null,
+      null,
+      56,
+      "Linha de Distribuição em tensão maior que 13,8kV e menor ou igual a 34,5kV;",
+      "56-LDR"
+    ],
+    [
+      null,
+      null,
+      57,
+      "Linha de Distribuição em tensão maior que 34,5kV e menor ou igual a 69kV;",
+      "57-LDR"
+    ],
+    [
+      null,
+      null,
+      58,
+      "Linha de Distribuição em tensão maior que 69kV e menor ou igual a 138 kV;",
+      "58-LDR"
+    ],
+    [
+      null,
+      null,
+      59,
+      "Linha de Distribuição em tensão maior que 138kV e menor ou igual a 230kV;",
+      "59-LDR"
+    ],
+    [
+      null,
+      null,
+      40,
+      "Redes de Distribuição Aérea Urbana;",
+      "40-RAU"
+    ],
+    [
+      null,
+      null,
+      41,
+      "Redes de Distribuição Aérea Rural;",
+      "41-RAR"
+    ],
+    [
+      null,
+      null,
+      42,
+      "Redes de Distribuição Subterrânea Urbana;",
+      "42-RSU"
+    ],
+    [
+      null,
+      null,
+      43,
+      "Redes de Distribuição Subterrânea Rural; e",
+      "43-RSR"
+    ],
+    [
+      null,
+      null,
+      44,
+      "Redes de Distribuição Submersa.",
+      "44-RSA"
+    ],
+    [
+      null,
+      null,
+      60,
+      "Linha de Transmissão em tensão menor que 138kV (DIT);",
+      "60-LSS"
+    ],
+    [
+      null,
+      null,
+      61,
+      "Linha de Transmissão em tensão maior ou igual a 138kV e menor que 230kV (DIT);",
+      "61-LSS"
+    ],
+    [
+      null,
+      null,
+      62,
+      "Linha de Transmissão em tensão maior ou igual a 230kV e menor que 345kV; e",
+      "62-LSS"
+    ],
+    [
+      null,
+      null,
+      63,
+      "Linha de Transmissão em tensão maior ou igual a 345kV e menor que 500kV.",
+      "63-LSS"
+    ],
+    [
+      null,
+      null,
+      64,
+      "Linha de Transmissão em tensão maior ou igual a 500kV.",
+      "64-LSS"
+    ],
+    [
+      null,
+      null,
+      65,
+      "Linha de Distribuição em tensão menor ou igual que 13,8kV;",
+      "65-LSS"
+    ],
+    [
+      null,
+      null,
+      66,
+      "Linha de Distribuição em tensão maior que 13,8kV e menor ou igual a 34,5kV;",
+      "66-LSS"
+    ],
+    [
+      null,
+      null,
+      67,
+      "Linha de Distribuição em tensão maior que 34,5kV e menor ou igual a 69kV;",
+      "67-LSS"
+    ],
+    [
+      null,
+      null,
+      68,
+      "Linha de Distribuição em tensão maior que 69kV e menor ou igual a 138 kV;",
+      "68-LSS"
+    ],
+    [
+      null,
+      null,
+      69,
+      "Linha de Distribuição em tensão maior que 138kV e menor ou igual a 230kV",
+      "69-LSS"
+    ],
+    [
+      null,
+      null,
+      70,
+      "Terrenos, edificações, obras civis e benfeitorias da Administração Central; e",
+      "70-TER"
+    ],
+    [
+      null,
+      null,
+      71,
+      "Equipamento geral, o equipamento geral de informática e veículos da Administração Central.",
+      "71-EQP"
+    ],
+    [
+      null,
+      null,
+      72,
+      "Sistema de Comunicação da Administração Central",
+      "72-EQP"
+    ],
+    [
+      null,
+      null,
+      80,
+      "Terrenos, edificações, obras civis e benfeitorias da Administração Específica; e",
+      "80-TER"
+    ],
+    [
+      null,
+      null,
+      81,
+      "Equipamento geral, o equipamento geral de informática e veículos da Administração Específica",
+      "81-EQP"
+    ],
+    [
+      null,
+      null,
+      82,
+      "Sistema de Comunicação da Administração Específica",
+      "82-EQP"
+    ],
+    [
+      null,
+      null,
+      90,
+      "Terrenos, edificações, obras civis e benfeitorias que não integram outras ODI;",
+      "90-TER"
+    ],
+    [
+      null,
+      null,
+      91,
+      "Equipamento geral, o equipamento geral de informática e veículos que não integram ODI específicas;",
+      "91-TEL"
+    ],
+    [
+      null,
+      null,
+      92,
+      "Sistemas de telecomunicação, telecontrole, teleprocessamento, proteção, controle e superv",
+      "92-TEL"
+    ],
+    [
+      null,
+      null,
+      93,
+      "Sistema de medição (que não integram as ODI de Usinas e de SE) área urbana",
+      "93-SMU"
+    ],
+    [
+      null,
+      null,
+      96,
+      "Sistema de medição (que não integram as ODI de Usinas e de SE) – área rural",
+      "96-SMR"
+    ],
+    [
+      null,
+      null,
+      94,
+      "Serviços Auxiliares gerais, inclusive Oficinas Eletromecânicas, Laboratórios e seus equipamentos;",
+      "94-AUX"
+    ],
+    [
+      null,
+      null,
+      95,
+      "Apoio Operacional (exclusivo para ODI específicas de Usina e Subestação);",
+      "95-OUT"
+    ],
+    [
+      null,
+      null,
+      97,
+      "Sistema de despacho de carga",
+      "97-OUT"
+    ],
+    [
+      null,
+      null,
+      98,
+      "Reserva imobilizada (exceto equipamentos reservas exclusivos de usinas e subestações que integram ODI específicas)",
+      "98-RES"
+    ],
+    [
+      null,
+      "x",
+      99,
+      "Intangível (exceto servidões, que integram a ODI específica a que pertence)",
+      "99-INT"
+    ]
+  ],
+  "LI": [
+    [
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      "CODIGO",
+      "DESCRIÇÃO",
+      "CAMPO RESUMO PARA APLICATIVO"
+    ],
+    [
+      null,
+      0,
+      "RD",
+      "0-RD"
+    ],
+    [
+      null,
+      1,
+      "DIT-RPC",
+      "1-DIT-RPC"
+    ],
+    [
+      null,
+      2,
+      "RBSE",
+      "2-RBSE"
+    ],
+    [
+      null,
+      3,
+      "RBNI",
+      "3-RBNI"
+    ],
+    [
+      null,
+      4,
+      "DIT - RCDM",
+      "4-DIT - RCDM"
+    ]
+  ],
+  "CM": [
+    [
+      null,
+      null,
+      null,
+      null
+    ],
+    [
+      null,
+      "CODIGO",
+      "DESCRIÇÃO DE CENTRO MODULAR",
+      "CAMPO RESUMO PARA APLICATIVO"
+    ],
+    [
+      null,
+      0,
+      "Infra-estrutura Geral (MIG)",
+      "0 - MIG"
+    ],
+    [
+      null,
+      1,
+      "Equipamentos",
+      "1 EQP"
+    ],
+    [
+      null,
+      2,
+      "Manobra - Entrada de Linha (EL)",
+      "2 - EL"
+    ],
+    [
+      null,
+      3,
+      "Manobra - Interligação de barramentos (IB)",
+      "3 - IB"
+    ],
+    [
+      null,
+      4,
+      "Manobra - Conexão de Transformador de Força (CT) ou de Transformador de Aterramento (CTA)",
+      "4 - CT"
+    ],
+    [
+      null,
+      5,
+      "Manobra - Conexão de Banco de Capacitores Paralelo (CCP) ou de Banco de Capacitores Série (CCS)",
+      "5 - CCP"
+    ],
+    [
+      null,
+      6,
+      "Manobra - Conexão de Reator de Linha (CRL)",
+      "6 - CRL"
+    ],
+    [
+      null,
+      7,
+      "Manobra - Conexão de Reator de Barra (CRB)",
+      "7 - CRB"
+    ],
+    [
+      null,
+      8,
+      "Manobra - Conexão de Compensador (CC)",
+      "8 - CC"
+    ],
+    [
+      null,
+      9,
+      "Manobra - Conexão de Circuito/Alimentador (CCA)",
+      "9 - CCA"
+    ]
+  ]
+}

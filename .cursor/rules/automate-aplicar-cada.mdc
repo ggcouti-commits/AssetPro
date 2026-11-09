@@ -1,0 +1,19 @@
+---
+description: Aplicar a cada no Automate — sempre fx items('Loop')?['Campo'], nunca conteúdo dinâmico
+alwaysApply: true
+---
+
+# Automate — loop `Aplicar a cada`
+
+O nome do loop (**`Aplicar_Fotos`**, etc.) **não aparece** no conteúdo dinâmico. Não mandar “clica no ID do Aplicar Fotos”.
+
+Dentro do loop, campo **fx**:
+
+```
+items('Aplicar_Fotos')?['ID']
+items('Aplicar_Fotos')?['CodSE']
+items('Aplicar_Fotos')?['CodAsset']
+items('Aplicar_Fotos')?['TipoFoto']
+```
+
+`item()` no **Filtrar matriz** é a linha filtrada (SE / Inventario), não a foto. Foto = `items('Aplicar_Fotos')`.

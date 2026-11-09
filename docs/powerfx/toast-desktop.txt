@@ -1,0 +1,467 @@
+# Toast desktop — notificação própria (2026-09-17)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Mockup: docs/screens/mockup-toast-desktop.html
+# PNG: docs/screens/toast-desktop.png · toast-desktop-tipos.png
+#
+# Troca o Notify() nativo (banner feio no topo). Nao e popup: nao trava a tela.
+# Card no canto superior direito. Some em 3 s ou no X.
+#
+# SO NO DESKTOP. Mobile usa Notify nativo (bandeja do aparelho).
+# Decisao 2026-09-18: docs + regra `.cursor/rules/notify-desktop-mobile.mdc`.
+#
+# Tipos — fundo inteiro (sem faixa na lateral):
+#   OK    = ColorFade(Cor.Success; 90%)  texto Success D30
+#   ERRO  = ColorFade(Cor.Delete; 90%)   texto Cor.Delete
+#   AVISO = Cor.PrimaryL90               texto Cor.PrimaryD30
+# recToastRail e recToastIco ficam Visible = false.
+#
+# Componente cmpToast em CADA tela Desktop que tem cmpMenuV1_1.
+# Mobile: Notify nativo. Nao cola cmpToast nem varToast no app de campo.
+
+## Recorte
+
+# 4 linhas no lugar de Notify:
+#   Set(varToastMsg; "texto");;
+#   Set(varToastTipo; "OK");;     /* OK | ERRO | AVISO */
+#   Set(varToastOn; false);;
+#   Set(varToastOn; true)
+# O false/true reinicia o timer se outro toast ainda estiver na tela.
+
+---
+
+### 1. App (Desktop) → OnStart
+
+Apaga nada. Cola depois de Set(varModoConc; "EXISTENTE");;
+
+```
+Set(varToastOn; false);;
+Set(varToastMsg; "");;
+Set(varToastTipo; "OK")
+```
+
+---
+
+### 2. Componentes → Novo componente → cmpToast
+
+# Largura 400 | Altura 64 | Fill = Transparent (nao usa Cor.)
+# DENTRO do componente NAO existe Cor / TCor. A tela passa a cor, igual o menu.
+
+### 3. cmpToast → propriedades personalizadas (nessa ordem)
+
+| Nome | Tipo | Subtipo | Padrao |
+|------|------|---------|--------|
+| Aberto | Dados | Booleano | `false` |
+| Mensagem | Dados | Texto | `""` |
+| Tipo | Dados | Texto | `"OK"` |
+| OnDismiss | Acao | — | (vazio) |
+| CorCard | Dados | Cor | (branco) |
+| CorBorda | Dados | Cor | (cinza) |
+| CorRail | Dados | Cor | (azul) |
+| CorIcoFundo | Dados | Cor | (azul claro) |
+| CorIco | Dados | Cor | (azul) |
+| CorTexto | Dados | Cor | (azul) |
+| CorX | Dados | Cor | (cinza) |
+
+### 4. cmpToast → inserir Retângulo `recToastBg`
+
+# NA RAIZ do componente. Sem container de layout.
+# Se cToast ja existir: recorta recToastRail, icoToast, lblToastMsg, icoToastX
+# (Ctrl+X) → clica no canvas do cmpToast → cola → apaga o cToast.
+
+# X=0 Y=0 Width=400 Height=64 Radius*=12
+# BorderThickness = 1
+
+### 4b. recToastBg → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.Aberto
+```
+
+### 4c. recToastBg → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.CorCard
+```
+
+### 4d. recToastBg → BorderColor
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.CorBorda
+```
+
+### 5. cmpToast → `recToastRail` → Visible
+
+# Sem faixa na lateral. Nao apaga o controle — so esconde.
+
+Apaga o que estiver la. Cola:
+
+```
+false
+```
+
+### 6. cmpToast → `recToastIco` → Visible
+
+# Quadrado do icone some: o fundo do card ja e a cor do tipo.
+
+Apaga o que estiver la. Cola:
+
+```
+false
+```
+
+### 6b. cmpToast → `imgToastIco` → Fill
+
+# Se o Image do icone pintar um quadrado atras do SVG.
+
+Apaga o que estiver la. Cola:
+
+```
+Color.Transparent
+```
+
+### 6c. Posicao do icone (sem o quadrado)
+
+# imgToastIco (ou icoToast): X=16 Y=20 Width=22 Height=22
+
+### 7. cmpToast → `icoToast` / `imgToastIco` (posicao)
+
+# Pai = raiz. X=16 Y=20 Width=22 Height=22
+
+### 7b. icoToast → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.Aberto
+```
+
+### 7c. icoToast → Icon
+
+Apaga o que estiver la. Cola:
+
+```
+Switch(
+    cmpToast.Tipo;
+    "OK"; Icon.Check;
+    "ERRO"; Icon.Cancel;
+    Icon.Information
+)
+```
+
+### 7d. icoToast → Color
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.CorIco
+```
+
+### 8. cmpToast → HtmlText `htmToastTxt` (troca os dois labels)
+
+# Inserir → Texto → HTML text. Pai = raiz.
+# X = imgToastIco.X + imgToastIco.Width + 20
+# Y = 10
+# Width = imgToastX.X - Self.X
+# Height = Parent.Height - Self.Y
+# Padding* = 0 | Fill = Color.Transparent
+# lblToastTipo e lblToastMsg: Visible = false (nao apaga).
+
+### 8b. htmToastTxt → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.Aberto
+```
+
+### 8c. htmToastTxt → HtmlText
+
+# Cor via JSON do CorTexto (no componente nao existe TCor).
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        hex: Substitute(
+            JSON(cmpToast.CorTexto; JSONFormat.IgnoreBinaryData);
+            Char(34);
+            ""
+        );
+        titulo: Switch(
+            cmpToast.Tipo;
+            "OK"; "OK";
+            "ERRO"; "Erro";
+            "Aviso"
+        )
+    };
+    $"<div style='font-family:Segoe UI, Arial, sans-serif; color:{hex};'>
+        <div style='font-size:12px; font-weight:600; line-height:1.2;'>{titulo}</div>
+        <div style='font-size:16px; font-weight:700; line-height:1.35; margin-top:2px;'>{cmpToast.Mensagem}</div>
+    </div>"
+)
+```
+
+### 8d. lblToastTipo → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+false
+```
+
+### 8e. lblToastMsg → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+false
+```
+
+### 9. cmpToast → inserir Icon `icoToastX`
+
+# Pai = raiz. X=368 Y=20 Width=24 Height=24
+
+### 9b. icoToastX → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.Aberto
+```
+
+### 9c. icoToastX → Color
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.CorX
+```
+
+### 9d. icoToastX → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.OnDismiss()
+```
+
+### 10. cmpToast → inserir Timer `tmrToast`
+
+# Visible = false. Na raiz do componente.
+
+### 10b. tmrToast → Duration
+
+Apaga o que estiver la. Cola:
+
+```
+3000
+```
+
+### 10c. tmrToast → AutoStart
+
+Apaga o que estiver la. Cola:
+
+```
+false
+```
+
+### 10d. tmrToast → Repeat
+
+Apaga o que estiver la. Cola:
+
+```
+false
+```
+
+### 10e. tmrToast → Start
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.Aberto
+```
+
+### 10f. tmrToast → OnTimerEnd
+
+Apaga o que estiver la. Cola:
+
+```
+cmpToast.OnDismiss()
+```
+
+---
+
+### 11. Em CADA tela Desktop com menu → inserir cmpToast
+
+# Ultimo na arvore (por cima de tudo, inclusive popup).
+# Nao vai dentro do cmpMenuV1_1.
+
+X:
+
+```
+Parent.Width - Self.Width - 18
+```
+
+Y:
+
+```
+14
+```
+
+Width = `400` | Height = `64`
+
+### 11b. cmpToast_1 → Aberto
+
+Apaga o que estiver la. Cola:
+
+```
+varToastOn
+```
+
+### 11c. cmpToast_1 → Mensagem
+
+Apaga o que estiver la. Cola:
+
+```
+varToastMsg
+```
+
+### 11d. cmpToast_1 → Tipo
+
+Apaga o que estiver la. Cola:
+
+```
+varToastTipo
+```
+
+### 11e. cmpToast_1 → CorCard
+
+Apaga o que estiver la. Cola:
+
+```
+Switch(
+    varToastTipo;
+    "OK"; ColorFade(Cor.Success; 90%);
+    "ERRO"; ColorFade(Cor.Delete; 90%);
+    Cor.PrimaryL90
+)
+```
+
+### 11f. cmpToast_1 → CorBorda
+
+Apaga o que estiver la. Cola:
+
+```
+Switch(
+    varToastTipo;
+    "OK"; ColorFade(Cor.Success; 90%);
+    "ERRO"; ColorFade(Cor.Delete; 90%);
+    Cor.PrimaryL90
+)
+```
+
+### 11g. cmpToast_1 → CorRail
+
+# Nao usa mais. Deixa como esta.
+
+### 11h. cmpToast_1 → CorIcoFundo
+
+Apaga o que estiver la. Cola:
+
+```
+Color.Transparent
+```
+
+### 11i. cmpToast_1 → CorIco
+
+Apaga o que estiver la. Cola:
+
+```
+Switch(
+    varToastTipo;
+    "OK"; ColorFade(Cor.Success; -0.3);
+    "ERRO"; Cor.Delete;
+    Cor.PrimaryD30
+)
+```
+
+### 11j. cmpToast_1 → CorTexto
+
+Apaga o que estiver la. Cola:
+
+```
+Switch(
+    varToastTipo;
+    "OK"; ColorFade(Cor.Success; -0.3);
+    "ERRO"; Cor.Delete;
+    Cor.PrimaryD30
+)
+```
+
+### 11k. cmpToast_1 → CorX
+
+Apaga o que estiver la. Cola:
+
+```
+Cor.NeutralL30
+```
+
+### 11l. cmpToast_1 → OnDismiss
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varToastOn; false)
+```
+
+# Telas: Tela_Home, Tela_Exportar, Tela_Campanhas, Tela_Conferência,
+# Tela_Inventarios, Tela_Cadastros, Tela_Usuarios, Tela_Alocações,
+# Tela_Subestacoes, Tela_ItensConsulta. Onde tiver menu, tem toast.
+
+---
+
+## Troca do Notify
+
+**So no app Desktop.** No mobile o `Notify` fica.
+
+No lugar de:
+
+```
+Notify("Planilha gerada"; NotificationType.Success)
+```
+
+Cola:
+
+```
+Set(varToastMsg; "Planilha gerada");;
+Set(varToastTipo; "OK");;
+Set(varToastOn; false);;
+Set(varToastOn; true)
+```
+
+| Notify antigo | varToastTipo |
+|---------------|--------------|
+| NotificationType.Success | `"OK"` |
+| NotificationType.Error | `"ERRO"` |
+| NotificationType.Warning | `"AVISO"` |
+| NotificationType.Information | `"AVISO"` |
+
+Popup de importar / excluir **nao muda** — continua overlay. Toast so substitui o banner nativo.
+
+---
+
+## O que nao fazer
+
+- Nao deixar Notify e toast no mesmo clique.
+- Nao montar cmpToast / varToast no app mobile.
+- Nao usar Cor.Warning / amarelo.
+- Nao colocar o toast dentro do cmpMenuV1 (componente Mundo Power).
+- Nao usar mask / fundo escurecido — toast nao trava clique.
+- Nao escrever Cor. dentro do componente. Cor so na instancia da tela.

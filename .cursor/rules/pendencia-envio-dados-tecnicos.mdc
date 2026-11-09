@@ -1,0 +1,69 @@
+---
+description: PRIORIDADE MÁXIMA — Enviar visita não grava dados técnicos no Inventario (investigado 22.10)
+alwaysApply: true
+---
+
+# Pendência MÁXIMA — envio sem dados técnicos no SharePoint
+
+Relato 22.10.2026 (Fenômeno). **Urgente. Não montar sem ok.**
+
+## Sintoma
+
+Finalizar SE + Enviar visita: SE fica `Finalizada`, fotos sobem, Desktop vê fotos. No **Desktop** (`Tela_ItensConsulta`) o item fica **Pendente** e sem dados técnicos. No **SharePoint** (lista Inventario) muitas SEs já estão `ADERENTE` + `ValidadoPor`.
+
+## O que NÃO é (só)
+
+O `Patch(Inventario)` do mobile **não está morto**. Evidência (INV-006): `Status = ADERENTE`, `ValidadoPor`, `QtdeContado` no SP. Fotos e SE Finalizada ok.
+
+## Desktop — por que vê Pendente / sem dados (causa principal do relato)
+
+`Tela_ItensConsulta` monta a lista a partir de **`colInventarioBase`** (cache local), **não** de `Refresh(Inventario)`.
+
+`btnAtualizarItens` faz:
+- `Refresh(Fotos)` + `Refresh(Subestacoes)` → fotos e SE atualizam
+- `Collect(... Filter(colInventarioBase ...))` → **não** recarrega Inventario do SP
+
+Chip **Pendente** = `Status` da coleção ≠ `ADERENTE` (fórmula `StatusConsulta`). Se o cache é de antes do envio → Pendente + Fabricante vazio, mesmo com SP certo.
+
+`colInventarioBase` é carregada no clique da campanha/SE (Filter Inventario uma vez). Sem novo Filter/Refresh depois do envio mobile, o Desktop fica defasado.
+
+## Causas identificadas (código ao vivo)
+
+### 1) Salvar grava `var*` dos textos, não o `Text` do input (principal — dados técnicos)
+
+`Tela_EditarItem` → `btnSalvarItem`:
+
+- `Fabricante: Coalesce(varFabricante; "")` (idem Modelo, NumSerie, CodOperacao, Observacoes, Ano via `varAno`)
+- **Não** usa `inpFabricante.Text` / `inpModelo.Text` / …
+
+Modern TextInput só dispara `OnChange` ao sair do campo. Digitar e tocar **Salvar** com o foco ainda no input → variável fica `Blank`/antiga → fila offline sobe vazio → Patch grava vazio.
+
+Contraste: FAIXA/LIVRE já faz `Coalesce(varValorA2; inpA2Faixa.Text; …)` no Salvar.
+
+### 2) `ValorA2`…`ValorA6` não entram no Patch do envio
+
+Salvar grava `ValorA2`…`A6` em `colCampoOffline`.  
+`btnEnviarVisitaExec` (CONFIRMACAO / sobra) **não** manda `ValorA*` para `Inventario`. Atributo LISTA (código A1–A6) vai; valor de FAIXA/LIVRE não.
+
+### 3) Bay no Patch CONFIRMACAO vem do SharePoint antigo
+
+`Bay: LookUp(Inventario; CodAsset = codBusca).Bay` — ignora o que estiver na fila offline. Edição de Bay na visita não sobe.
+
+### 4) Atributos LISTA no Salvar só leem `varA1`…`varA6`
+
+Sem `Coalesce(cmbA*.Selected.CodTabela; varA*)` (spec antiga tinha). Risco menor que (1), mas desalinhado do padrão FAIXA.
+
+## Onde olhar
+
+- Mobile → `Tela_EditarItem` → `btnSalvarItem` OnSelect  
+- Mobile → `Tela_Home` → `btnEnviarVisitaExec` OnSelect (bloco CONFIRMACAO)  
+- Spec: `docs/powerfx/Tela_EditarItem-formulas.txt` · `docs/powerfx/Tela_FotosSE-formulas.txt`
+
+## Direção de correção (só após ok)
+
+1. No Salvar: no início, `Set` das vars a partir dos `inp*.Text` **ou** `Coalesce(inpX.Text; varX; "")` em cada campo.  
+2. No Patch CONFIRMACAO/sobra: incluir `ValorA2`…`ValorA6` (se colunas existirem no conector).  
+3. Bay: usar `linhaAtual.Bay` (ou Coalesce com base).  
+4. Opcional: `Coalesce(cmbA*.Selected…; varA*)` no Salvar.
+
+Não montar sem ok do Fenômeno (`perguntar-antes`).

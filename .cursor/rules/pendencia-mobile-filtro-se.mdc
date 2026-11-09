@@ -1,0 +1,15 @@
+---
+description: RESOLVIDA 24.10.2026 — filtro Status galeria SE mobile
+alwaysApply: true
+---
+
+# Resolvida — filtro Status na galeria de SEs (Mobile)
+
+Relato 20.10.2026 · montado 24.10.2026.
+
+- **Causa:** chip/"Finalizadas" filtrava `FinalizadaCalc` (= presença em `colSEsFinalizadas` local). Depois do envio/`Baixar`, `Status` na SE já era `Finalizada`, mas a coleção local esvaziava → lista vazia. **Em campo** usava `QtdRevisadaCalc > 0 && !FinalizadaCalc` e puxava SE já finalizada no SP.
+- **Correção:** `Tela_SelecionarSE` → Items da galeria — filtro alinhado ao `Status` (+ `PendenteEnvioCalc`):
+  - **Finalizadas:** `Status = Finalizada` e sem pendência de envio
+  - **Em campo:** `Status = Em campo`, ou Finalizada + aguardando envio, ou progresso local sem Status Finalizada
+  - **Pendente:** sem progresso e Status nem Em campo nem Finalizada
+- Spec: `docs/powerfx/mobile-filtro-alocacao.txt`

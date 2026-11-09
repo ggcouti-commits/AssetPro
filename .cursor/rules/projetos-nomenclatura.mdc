@@ -1,0 +1,20 @@
+---
+description: No front, campanha se chama Projeto. Lista SharePoint continua Campanhas.
+alwaysApply: true
+---
+
+# Nomenclatura — Projeto (front) ≠ Campanhas (lista)
+
+Decisão 2026-09-10 (Fenômeno).
+
+- **Tela, menu, botão, chip, Notify, mockup:** **Projeto**.
+- **SharePoint / Power Fx / Automate:** lista **`Campanhas`**, coleção **`colCampanhas`**, tela **`Tela_Campanhas`**, fluxo **`flxImportarCampanha`**. **Não** renomear lista, tela nem variáveis.
+
+| Front | Back |
+|-------|------|
+| Projetos (menu) | `Key = "campanhas"` → `Navigate(Tela_Campanhas)` |
+| Nome do projeto | `Campanhas.NomeInventario` |
+| Período | `Campanhas.Periodo` (texto) |
+| Concessionária | `Campanhas.Concessionaria` + `CodConcessionaria` |
+
+Importar: um arquivo = um **projeto** (um item em `Campanhas`).

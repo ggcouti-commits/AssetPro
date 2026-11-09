@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — card Exportar · Baixar planilha</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD;
+    --okbg:#C6E5C5; --oktx:#2D752C; --okfill:#40A73F;
+    --fieldbg:#D6E8FF; --fieldtx:#1B4C86;
+    --pendbg:#EEF0F3; --pendtx:#6B7683;
+    --danger:#F1416C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    color:var(--text); padding:22px 22px 36px;
+  }
+  body.shot{padding:0; background:#E8ECF0}
+  body.shot .kicker, body.shot h1, body.shot .lead{display:none}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:28px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1080px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+
+  .wrap{width:1280px; display:flex; flex-direction:column; gap:18px}
+  .pair{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .col .cap{
+    font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary);
+    text-transform:uppercase; margin-bottom:8px;
+  }
+
+  .row{
+    border:1px solid var(--border); border-radius:11px; padding:14px 16px;
+    display:flex; align-items:center; gap:12px; background:#FBFCFD;
+    position:relative;
+  }
+  .row.ready{border-color:#79C179; background:#F7FBF7}
+  .rn{flex:1; min-width:0}
+  .rname{font-size:15px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:12px; color:var(--label); margin-top:3px}
+  .chip{
+    display:inline-flex; align-items:center; height:22px; padding:0 10px;
+    border-radius:999px; font-size:10.5px; font-weight:700; white-space:nowrap;
+    background:var(--pendbg); color:var(--pendtx);
+  }
+  .qty{text-align:right; min-width:72px}
+  .qnum{font-size:20px; font-weight:700; color:var(--oktx); line-height:1}
+  .qlbl{font-size:10px; font-weight:600; color:var(--label); margin-top:2px}
+  .eacts{display:flex; flex-direction:column; gap:6px; flex:0 0 104px}
+  .ebtn{
+    height:36px; padding:0 12px; border-radius:8px; font-size:12.5px; font-weight:700;
+    border:1px solid var(--navy); background:var(--navy); color:#fff; white-space:nowrap;
+    display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .ebtn.kill{
+    background:#fff; color:var(--danger); border-color:#F7B3C4;
+  }
+  .ebtn.baixar{
+    background:var(--okfill); border-color:#2D752C; color:#fff;
+    box-shadow:0 0 0 3px rgba(64,167,63,.22);
+  }
+
+  .call{
+    position:absolute; right:-8px; top:6px;
+    transform:translateX(100%);
+    background:#123B6E; color:#fff; font-size:11.5px; font-weight:700;
+    padding:7px 10px; border-radius:8px; white-space:nowrap;
+  }
+  .call:before{
+    content:""; position:absolute; left:-6px; top:12px;
+    border:6px solid transparent; border-right-color:#123B6E; border-left:0;
+  }
+
+  .note{
+    font-size:12.5px; color:#3d444e; line-height:1.5;
+    background:#fff; border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px;
+  }
+  .note b{color:var(--title)}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TELA_EXPORTAR · CARD</div>
+  <h1>Baixar fica na coluna da direita, no lugar da Planilha.</h1>
+  <p class="lead">Mesmo stack do <b>Planilha</b> / <b>Excluir</b>. Depois do fluxo, a Planilha some e entra o verde <b>Baixar</b>. O segundo clique é nesse botão — o browser deixa descer o xlsx.</p>
+
+  <div class="wrap">
+    <div class="pair">
+      <div class="col">
+        <div class="cap">1 · Antes do fluxo</div>
+        <div class="row">
+          <div class="rn">
+            <div class="rname">CPFL Paulista Set 2026</div>
+            <div class="rmeta">setembro 2026 · 20 instalações</div>
+          </div>
+          <span class="chip">Pendente</span>
+          <div class="qty"><div class="qnum">1</div><div class="qlbl">finalizadas</div></div>
+          <div class="eacts">
+            <div class="ebtn">Planilha</div>
+            <div class="ebtn kill">Excluir</div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="cap">2 · Depois do fluxo (toast verde)</div>
+        <div class="row ready">
+          <div class="rn">
+            <div class="rname">CPFL Paulista Set 2026</div>
+            <div class="rmeta">setembro 2026 · 20 instalações</div>
+          </div>
+          <span class="chip">Pendente</span>
+          <div class="qty"><div class="qnum">1</div><div class="qlbl">finalizadas</div></div>
+          <div class="eacts">
+            <div class="ebtn baixar">Baixar</div>
+            <div class="ebtn kill">Excluir</div>
+          </div>
+          <div class="call">btnBaixarPlanilha</div>
+        </div>
+      </div>
+    </div>
+    <div class="note">
+      <b>Studio:</b> o botão entra no template da galeria, coluna da direita, <b>mesmo X/Width</b> do <code>btnExportarCamp</code>.
+      <b>Visible</b> = este card é o que gerou (<code>ThisItem.CodInventario = varExportCod</code> e <code>!IsBlank(varExportLink)</code>).
+      Planilha some nesse card enquanto o Baixar estiver visível.
+    </div>
+  </div>
+</body>
+</html>

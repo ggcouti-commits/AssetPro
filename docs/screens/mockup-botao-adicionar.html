@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tela_ItensVisita — botão Adicionar item (sobra física)</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy2:#1B4C86; --track:#0E2E55; --green:#3BAA48;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA; --title:#1B3E6F;
+    --label:#6B7683; --strip:#EBF4FF; --okbg:#DFF3E3; --oktx:#2E7D32;
+    --warnbg:#FDF0DC; --warntx:#8A5300; --warn:#F9C000; --primary:#348FFD;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    background:#FAFBFC; color:#1a1a1a; padding:24px 28px;
+  }
+  h1{font-size:19px; font-weight:650; color:#1a1a1a; margin-bottom:4px}
+  .sub{font-size:12.5px; color:#5c6470; margin-bottom:20px; max-width:760px; line-height:1.5}
+  .row{display:flex; gap:28px; align-items:flex-start}
+  .col{width:352px}
+  .tag{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+  .tagname{font-size:12px; font-weight:700; letter-spacing:.3px; color:#1a1a1a}
+  .rec{font-size:11px; font-weight:600; color:var(--primary)}
+  .cap{font-size:11.5px; color:#5c6470; line-height:1.55; margin-top:10px}
+
+  .phone{width:352px; border:1px solid var(--border); border-radius:16px; overflow:hidden; background:var(--page); position:relative}
+  .hd{background:var(--navy); padding:11px 13px; display:flex; align-items:center; gap:10px}
+  .hd svg{flex:0 0 auto}
+  .hdt{color:#fff; font-size:14.5px; font-weight:700}
+  .hd2{background:var(--navy2); padding:6px 13px; color:#fff; font-size:10.5px}
+  .pg{background:var(--track); padding:8px 13px}
+  .pgt{display:flex; justify-content:space-between; color:#fff; font-size:10px; font-weight:700}
+  .bar{height:7px; background:rgba(255,255,255,.18); border-radius:4px; margin-top:5px}
+  .bar > i{display:block; width:60%; height:100%; background:var(--green); border-radius:4px}
+  .sec{padding:9px 13px 6px; font-size:10px; font-weight:700; color:var(--label); letter-spacing:.7px; display:flex; align-items:center; gap:7px}
+  .list{padding:0 11px 12px; display:flex; flex-direction:column; gap:9px}
+
+  .item{display:flex; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden}
+  .stripe{width:5px; flex:0 0 auto}
+  .body{flex:1; min-width:0; padding:10px 11px; display:flex; flex-direction:column; gap:8px}
+  .t{font-size:11.5px; font-weight:700; color:var(--title); line-height:1.35}
+  .qtd{display:flex; align-items:stretch; gap:12px; background:var(--strip); border-radius:8px; padding:5px 10px}
+  .qk{font-size:8.5px; font-weight:700; color:var(--label); letter-spacing:.4px}
+  .qv{font-size:12px; font-weight:700; color:var(--title)}
+  .vsep{width:1px; background:var(--border)}
+  .amber{color:var(--warntx)}
+  .foot{display:flex; justify-content:space-between; align-items:center}
+  .pill{font-size:10px; font-weight:700; padding:4px 10px; border-radius:999px; white-space:nowrap}
+  .ok{background:var(--okbg); color:var(--oktx)}
+  .sob{background:var(--warnbg); color:var(--warntx)}
+  .icons{display:flex; gap:6px}
+  .ib{width:34px; height:28px; border:1px solid var(--border); border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center}
+  .push{margin-left:auto; display:flex; align-items:center}
+
+  /* Variante A — pílula flutuante */
+  .fab{
+    position:absolute; right:14px; bottom:14px;
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    height:46px; padding:0 20px; border-radius:999px;
+    background:var(--navy); color:#fff; font-size:13px; font-weight:700;
+  }
+  /* Variante B — barra fixa no rodapé */
+  .dock{
+    position:absolute; left:0; right:0; bottom:0;
+    background:var(--card); border-top:1px solid var(--border); padding:10px 12px;
+  }
+  .dockbtn{
+    height:44px; border-radius:10px; border:1px solid var(--navy);
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    color:var(--navy); font-size:13px; font-weight:700; background:#fff;
+  }
+  .fade{opacity:.35}
+</style>
+</head>
+<body>
+  <h1>Tela_ItensVisita — onde entra o botão de adicionar sobra física</h1>
+  <p class="sub">Mesmo card da opção B nas duas telas. A diferença é só a posição do botão: flutuando sobre a lista ou ancorado num rodapé fixo. A seção SOBRAS FÍSICAS aparece abaixo dos itens da base, com faixa âmbar e sem comparação base × contado.</p>
+
+  <div class="row">
+
+    <!-- ================= VARIANTE A ================= -->
+    <div class="col">
+      <div class="tag"><span class="tagname">A — PÍLULA FLUTUANTE</span><span class="rec">recomendada</span></div>
+      <div class="phone">
+        <div class="hd">
+          <svg width="20" height="20" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+          <div class="hdt">SE-005 - Sub. Est. Litoral</div>
+        </div>
+        <div class="hd2">Neoenergia Pernambuco Ago 2026 - Agosto 2026</div>
+        <div class="pg"><div class="pgt"><span>3 de 5 itens revisados</span><span>60%</span></div><div class="bar"><i></i></div></div>
+
+        <div class="sec">ITENS DA BASE</div>
+        <div class="list">
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">570.01 - TRANSFORMADOR DE FORÇA TRIPOLAR 5,0/6,25MVA 34,5/13,8KV</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">1 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv">1 UN</div></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">160.15 - CHAVE INTERRUPTORA SOB CARGA TRIPOLAR 13,8KV 400A AUTO</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">3 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv amber">5 UN</div></div>
+                <div class="push"><span class="pill sob">+2</span></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec">SOBRAS FÍSICAS</div>
+        <div class="list" style="padding-bottom:74px">
+          <div class="item">
+            <div class="stripe" style="background:var(--warn)"></div>
+            <div class="body">
+              <div class="t">295.04 - MEDIDOR INTELIGENTE MULTIFUNÇÃO 220V FIBRA TRIPOLAR 5A</div>
+              <div class="qtd">
+                <div><div class="qk">QUANTIDADE</div><div class="qv">2 UN</div></div>
+                <div class="push"><span class="pill sob">SOBRA FÍSICA</span></div>
+              </div>
+              <div class="foot">
+                <div class="icons">
+                  <div class="ib"><svg width="16" height="16" viewBox="0 0 512 512" fill="none" stroke="#B3261E" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M112 112l20 320c1 18.5 14.4 32 32 32h184c17.7 0 30.9-13.5 32-32l20-320"/><line x1="80" y1="112" x2="432" y2="112"/><path d="M192 112V72a24 24 0 0124-24h80a24 24 0 0124 24v40"/><line x1="256" y1="176" x2="256" y2="400"/></svg></div>
+                </div>
+                <div class="icons">
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fab">
+          <svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round"><line x1="256" y1="112" x2="256" y2="400"/><line x1="400" y1="256" x2="112" y2="256"/></svg>
+          Adicionar item
+        </div>
+      </div>
+      <p class="cap">Flutua sobre a lista, sempre no mesmo lugar, e não consome altura da galeria. O custo é cobrir o canto do último card enquanto o técnico rola — por isso o padding extra no fim da lista.</p>
+    </div>
+
+    <!-- ================= VARIANTE B ================= -->
+    <div class="col">
+      <div class="tag"><span class="tagname">B — RODAPÉ FIXO</span></div>
+      <div class="phone">
+        <div class="hd">
+          <svg width="20" height="20" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+          <div class="hdt">SE-005 - Sub. Est. Litoral</div>
+        </div>
+        <div class="hd2">Neoenergia Pernambuco Ago 2026 - Agosto 2026</div>
+        <div class="pg"><div class="pgt"><span>3 de 5 itens revisados</span><span>60%</span></div><div class="bar"><i></i></div></div>
+
+        <div class="sec">ITENS DA BASE</div>
+        <div class="list">
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">570.01 - TRANSFORMADOR DE FORÇA TRIPOLAR 5,0/6,25MVA 34,5/13,8KV</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">1 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv">1 UN</div></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">160.15 - CHAVE INTERRUPTORA SOB CARGA TRIPOLAR 13,8KV 400A AUTO</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">3 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv amber">5 UN</div></div>
+                <div class="push"><span class="pill sob">+2</span></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec">SOBRAS FÍSICAS</div>
+        <div class="list" style="padding-bottom:78px">
+          <div class="item">
+            <div class="stripe" style="background:var(--warn)"></div>
+            <div class="body">
+              <div class="t">295.04 - MEDIDOR INTELIGENTE MULTIFUNÇÃO 220V FIBRA TRIPOLAR 5A</div>
+              <div class="qtd">
+                <div><div class="qk">QUANTIDADE</div><div class="qv">2 UN</div></div>
+                <div class="push"><span class="pill sob">SOBRA FÍSICA</span></div>
+              </div>
+              <div class="foot">
+                <div class="icons">
+                  <div class="ib"><svg width="16" height="16" viewBox="0 0 512 512" fill="none" stroke="#B3261E" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M112 112l20 320c1 18.5 14.4 32 32 32h184c17.7 0 30.9-13.5 32-32l20-320"/><line x1="80" y1="112" x2="432" y2="112"/><path d="M192 112V72a24 24 0 0124-24h80a24 24 0 0124 24v40"/><line x1="256" y1="176" x2="256" y2="400"/></svg></div>
+                </div>
+                <div class="icons">
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dock">
+          <div class="dockbtn">
+            <svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#123B6E" stroke-width="44" stroke-linecap="round"><line x1="256" y1="112" x2="256" y2="400"/><line x1="400" y1="256" x2="112" y2="256"/></svg>
+            Adicionar item
+          </div>
+        </div>
+      </div>
+      <p class="cap">Nunca cobre conteúdo e o alvo de toque é enorme, bom para luva. Em troca come uns 64 px de altura permanente da lista, que é justo o espaço mais escasso na tela.</p>
+    </div>
+
+  </div>
+</body>
+</html>

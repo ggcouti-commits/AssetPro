@@ -1,0 +1,31 @@
+# Secrets / local env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+credentials.json
+**/secrets/
+
+# Power Apps / solution exports (tenant URLs, connection IDs)
+exports/
+!exports/.gitkeep
+
+# Personal Claude export dumps
+docs/claude-exports/
+
+# Client / sample Excel bases (keep generators only)
+docs/bases/*.xlsx
+docs/bases/*.xls
+docs/bases/*.xlsm
+
+# OS / editor
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+*.log
+
+# Local scratch
+.canvas/

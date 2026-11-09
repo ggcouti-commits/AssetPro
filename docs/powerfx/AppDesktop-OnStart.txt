@@ -1,0 +1,192 @@
+# App Desktop — OnStart
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+#
+# Mesmo OnStart do celular, sem SaveData / LoadData.
+# Onde o mobile fazia schema + LoadData, o Desktop faz ClearCollect da lista.
+# Fila offline (colCampoOffline, colFotosCampo, colSEsFinalizadas, colUltimaSinc)
+# nao entra — nao tem cache nem Baixar dados.
+#
+# Ordem: mestres → SE → inventario → campanhas com Qtd* em cima das colecoes
+# (no mobile o AddColumns conta a lista porque a colecao ainda estava vazia).
+
+## App.StartScreen
+
+Tela_Campanhas
+
+# Desktop e so escritorio. Campo autentica no Mobile (Tela_Login).
+
+# Home e so arquivo (importar / exportar). O dia a dia abre em Campanhas.
+
+## App.OnStart
+
+Set(varDark; false);;
+Set(Cor; CoresLight);;
+Set(TCor; TextCoresLight);;
+
+Set(gblFiltroStatus; "Todos");;
+Set(gblFiltroStatusSE; "Todas");;
+Set(gblAbaItensConsulta; "BASE");;
+Set(gblAbaDetalheItem; "INFO");;
+Set(gblItemConsultaSelecionado; Blank());;
+Set(varModoConsulta; false);;
+Set(gblConectado; Connection.Connected);;
+
+# Desktop e so escritorio (PC do escritorio, nao o tablet).
+# Perfil de campo sai da Tela_Login no Mobile (lista Inventariantes).
+# Nao usar LookUp(Inventariantes; User().Email) — conta M365 e unica.
+Set(varPerfil; "ESCRITORIO");;
+
+Set(
+    gblUsuario;
+    {
+        Nome: User().FullName;
+        Email: User().Email;
+        Perfil: "ESCRITORIO"
+    }
+);;
+
+ClearCollect(colTUC; TabelaTUC);;
+ClearCollect(colAtributos; TabelaAtributos);;
+ClearCollect(colLookup; TabelasUnificadas);;
+
+ClearCollect(
+    colUnidadeMedida;
+    {Unidade: "UN"; Rotulo: "UN - Unidade"};
+    {Unidade: "PC"; Rotulo: "PC - Peça"};
+    {Unidade: "M"; Rotulo: "M - Metro"};
+    {Unidade: "M2"; Rotulo: "M² - Metro quadrado"};
+    {Unidade: "KG"; Rotulo: "KG - Quilograma"}
+);;
+
+# Catalogos MCPSE — docs/powerfx/catalogos-mcpse.txt (planilha 11.09 TI/CM/LI)
+# Cole o bloco completo de catalogos-mcpse.txt (CM + arranjo + LI + colTipoInstalacao).
+
+ClearCollect(colConcessionarias; Filter(Concessionarias; Ativo = "Sim"));;
+
+Set(varImportarAberto; false);;
+Set(varExportandoFotos; false);;
+Set(varImportOK; false);;
+Set(varSucessoAberto; false);;
+Set(varOpArquivo; "");;
+Set(varLockCod; "");;
+Set(varBarraCard; false);;
+Set(varUltimaOp; "");;
+Set(varExcluirTotal; 0);;
+Set(varExcluirTotalSEs; 0);;
+Set(varConfirmExcluirCamp; false);;
+Set(varExcluindoCamp; false);;
+Set(varCampExcluir; Blank());;
+Set(varModoConc; "EXISTENTE");;
+Set(varToastOn; false);;
+Set(varToastMsg; "");;
+Set(varToastTipo; "OK");;
+ClearCollect(
+    colMeses;
+    {Valor: 1; Texto: "Janeiro"};
+    {Valor: 2; Texto: "Fevereiro"};
+    {Valor: 3; Texto: "Março"};
+    {Valor: 4; Texto: "Abril"};
+    {Valor: 5; Texto: "Maio"};
+    {Valor: 6; Texto: "Junho"};
+    {Valor: 7; Texto: "Julho"};
+    {Valor: 8; Texto: "Agosto"};
+    {Valor: 9; Texto: "Setembro"};
+    {Valor: 10; Texto: "Outubro"};
+    {Valor: 11; Texto: "Novembro"};
+    {Valor: 12; Texto: "Dezembro"}
+);;
+ClearCollect(
+    colAnos;
+    {Valor: Year(Today()) - 1};
+    {Valor: Year(Today())};
+    {Valor: Year(Today()) + 1}
+);;
+
+# Desktop: colSubestacoes so de campanhas ATIVAS (Ativo = "Sim").
+# Inventario NAO carrega no OnStart (3700+ itens = estouro de delegacao 2000).
+# colInventarioBase = ClearCollect no clique da SE (CodInventario + CodSE).
+# QtdItens da campanha fica 0 ate ter outra fonte. QtdSEs continua nas SEs.
+
+Clear(colSubestacoes);;
+ForAll(
+    Filter('Campanhas '; Ativo = "Sim") As camp;
+    Collect(
+        colSubestacoes;
+        Filter(Subestacoes; CodInventario = camp.CodInventario)
+    )
+);;
+
+Clear(colInventarioBase);;
+Collect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Set(varItemFoto; Last(colInventarioBase));;
+Remove(colInventarioBase; Last(colInventarioBase));;
+Set(varItemFoto; Blank());;
+
+ClearCollect(
+    colCampanhas;
+    AddColumns(
+        Filter('Campanhas '; Ativo = "Sim");
+        QtdSEs;
+        With(
+            {cod: ThisRecord.CodInventario};
+            CountRows(Filter(colSubestacoes; CodInventario = cod))
+        );
+        QtdItens;
+        0
+    )
+);;
+
+Set(gblInventarioSelecionado; Blank());;
+Set(gblSEselecionada; Blank());;
+Set(gblTipoBemSelecionado; Blank());;
+Set(gblVersaoApp; "1.0.0");;
+Set(gblUltimaSincronizacao; Now());;

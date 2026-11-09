@@ -1,0 +1,743 @@
+# App → OnStart (Mobile) — 100% offline no arranque
+# 08.11.2026 · locale PT-BR (; / ;;)
+#
+# Studio: App → OnStart → APAGA TUDO → cola o bloco abaixo (do Set(varDark) até o fim).
+
+```
+//Definindo padrão de cores inicial
+Set(varDark; false);;
+Set(Cor; CoresLight);;
+Set(TCor; TextCoresLight);;
+
+Set(varCarregando; true);;
+Set(varForcarOnline; false);;
+
+Set(gblFiltroStatus; "Todos");;
+Set(gblFiltroStatusSE; "Todas");;
+
+If(
+    (
+        Host.OSType = "Windows" ||
+        Host.OSType = "macOS"
+    ) &&
+    Param("redirected") <> "true";
+
+    Launch(
+        "https://apps.powerapps.com/play/e/default-33d8824a-8d92-4bf1-94d9-291bd6bef9b2/a/6c71641f-8779-4c45-ba43-e3d56d2ff67a?tenantId=33d8824a-8d92-4bf1-94d9-291bd6bef9b2&hint=9cdd3c85-9090-4b2b-9cf9-36762707e0bf&sourcetime=1792454101561&source=portal";
+        {
+            hidenavbar: "true";
+            redirected: "true"
+        };
+        LaunchTarget.Replace
+    )
+);;
+
+// Coleção do Centro Modular
+
+ClearCollect(
+    colCentroModular;
+    {Codigo: 0; Sigla: "MIG"; Resumo: "0 - MIG"; Nome: "Infraestrutura geral"};
+    {Codigo: 1; Sigla: "EQP"; Resumo: "1 EQP"; Nome: "Equipamentos"};
+    {Codigo: 2; Sigla: "EL"; Resumo: "2 - EL"; Nome: "Entrada de linha"};
+    {Codigo: 3; Sigla: "IB"; Resumo: "3 - IB"; Nome: "Interligação de barra"};
+    {Codigo: 4; Sigla: "CT"; Resumo: "4 - CT"; Nome: "Conexão de trafo"};
+    {Codigo: 5; Sigla: "CCP"; Resumo: "5 - CCP"; Nome: "Conexão de banco"};
+    {Codigo: 6; Sigla: "CRL"; Resumo: "6 - CRL"; Nome: "Conexão de reator de linha"};
+    {Codigo: 7; Sigla: "CRB"; Resumo: "7 - CRB"; Nome: "Conexão de reator de barra"};
+    {Codigo: 8; Sigla: "CC"; Resumo: "8 - CC"; Nome: "Conexão de compensador"};
+    {Codigo: 9; Sigla: "CCA"; Resumo: "9 - CCA"; Nome: "Conexão de circuito/alimentador"}
+);;
+
+ClearCollect(
+    colArranjoFisico;
+    {Codigo: 1; Sigla: "BS"; Nome: "Barra simples"};
+    {Codigo: 2; Sigla: "BD"; Nome: "Barra dupla"};
+    {Codigo: 3; Sigla: "BDDD"; Nome: "Barra dupla e disjuntor duplo"};
+    {Codigo: 4; Sigla: "BPT"; Nome: "Barra principal e de transferência"};
+    {Codigo: 5; Sigla: "DJM"; Nome: "Disjuntor e meio"}
+);;
+
+ClearCollect(
+    colLocalInstalacao;
+    {Codigo: 0; Sigla: "RD"; Resumo: "0-RD"; Nome: "Distribuição"};
+    {Codigo: 1; Sigla: "DIT-RPC"; Resumo: "1-DIT-RPC"; Nome: "DIT — RBSE / interesse restrito"};
+    {Codigo: 2; Sigla: "RBSE"; Resumo: "2-RBSE"; Nome: "Rede Básica — sistema existente"};
+    {Codigo: 3; Sigla: "RBNI"; Resumo: "3-RBNI"; Nome: "Rede Básica — novas instalações"};
+    {Codigo: 4; Sigla: "DIT - RCDM"; Resumo: "4-DIT - RCDM"; Nome: "DIT — RBNI"}
+);;
+
+ClearCollect(
+    colGasSegmento;
+    {Valor: "AUTOMOTIVO"};
+    {Valor: "COMERCIAL"};
+    {Valor: "GERAÇÃO"};
+    {Valor: "INDUSTRIAL"};
+    {Valor: "INFRAESTRUTURA"};
+    {Valor: "RESIDENCIAL"}
+);;
+ClearCollect(
+    colGasDiametro;
+    {Valor: "1 1/2-POL"};
+    {Valor: "1/2-POL"};
+    {Valor: "10-POL"};
+    {Valor: "11-POL"};
+    {Valor: "110-MM"};
+    {Valor: "12-POL"};
+    {Valor: "13-POL"};
+    {Valor: "14-POL"};
+    {Valor: "150-MM"};
+    {Valor: "16-POL"};
+    {Valor: "18-POL"};
+    {Valor: "180-MM"};
+    {Valor: "2-POL"};
+    {Valor: "20-MM"};
+    {Valor: "20-POL"};
+    {Valor: "200-MM"};
+    {Valor: "22-POL"};
+    {Valor: "3-POL"};
+    {Valor: "3/4-POL"};
+    {Valor: "300-MM"};
+    {Valor: "32-MM"};
+    {Valor: "4-POL"};
+    {Valor: "400-MM"};
+    {Valor: "5-POL"};
+    {Valor: "6-POL"};
+    {Valor: "600-MM"};
+    {Valor: "63-MM"};
+    {Valor: "7-POL"};
+    {Valor: "8-POL"};
+    {Valor: "9-POL"};
+    {Valor: "90-MM"}
+);;
+ClearCollect(
+    colGasClassePressao;
+    {Valor: "100"};
+    {Valor: "1000"};
+    {Valor: "150"};
+    {Valor: "300"};
+    {Valor: "400"};
+    {Valor: "600"}
+);;
+ClearCollect(
+    colGasTramo;
+    {Valor: "DUPLO"};
+    {Valor: "SIMPLES"};
+    {Valor: "TRIPLO"}
+);;
+ClearCollect(
+    colGasUM;
+    {Valor: "CJ"};
+    {Valor: "M"};
+    {Valor: "M²"};
+    {Valor: "UN"}
+);;
+ClearCollect(
+    colGasElegivel;
+    {Valor: "NÃO"};
+    {Valor: "SIM"}
+);;
+ClearCollect(
+    colGasReserva;
+    {Valor: "NÃO"};
+    {Valor: "SIM"}
+);;
+ClearCollect(
+    colGasDescResumida;
+    {Valor: "ABRIGO"};
+    {Valor: "ANTENA"};
+    {Valor: "ATUADOR PNEUMATICO"};
+    {Valor: "BANCO DE BATERIAS"};
+    {Valor: "BARREIRA"};
+    {Valor: "BOMBA"};
+    {Valor: "BOMBA DOSADORA"};
+    {Valor: "CERCAS"};
+    {Valor: "CLP"};
+    {Valor: "COBERTURA"};
+    {Valor: "COMPUTADOR"};
+    {Valor: "CONTROLADOR"};
+    {Valor: "CONVERSOR"};
+    {Valor: "CPU"};
+    {Valor: "CROMATÓGRAFO"};
+    {Valor: "DATA LOGGER"};
+    {Valor: "DOSADOR"};
+    {Valor: "EDIFICAÇÃO"};
+    {Valor: "ESTABILIZADOR"};
+    {Valor: "ESTACIONAMENTO"};
+    {Valor: "FILTRO (CESTO OU CARTUCHO)"};
+    {Valor: "FONTE DE ALIMENTAÇÃO"};
+    {Valor: "GALPÃO"};
+    {Valor: "GATEWAY"};
+    {Valor: "GUARITA"};
+    {Valor: "HUB"};
+    {Valor: "INDICADOR DE PRESSÃO DIFERENCIAL"};
+    {Valor: "INDICADOR DE TEMPERATURA"};
+    {Valor: "MANÔMETRO"};
+    {Valor: "MEDIDOR DE VAZÃO ROTATIVO"};
+    {Valor: "MEDIDOR DE VAZÃO TURBINA"};
+    {Valor: "MEDIDOR DE VAZÃO ULTRASSÔNICO"};
+    {Valor: "MODEM"};
+    {Valor: "MONITOR"};
+    {Valor: "MOTOR"};
+    {Valor: "MURO"};
+    {Valor: "NO BREAK"};
+    {Valor: "PAINEL"};
+    {Valor: "PAINEL DE ODORIZAÇÃO"};
+    {Valor: "PAINEL DO SISTEMA DE ODORIZAÇÃO"};
+    {Valor: "PAINEL FOTOVOLTAICO"};
+    {Valor: "PATIO"};
+    {Valor: "PILOTO"};
+    {Valor: "PLACA SOLAR"};
+    {Valor: "PTZ"};
+    {Valor: "RESERVATÓRIO"};
+    {Valor: "RETIFICADOR"};
+    {Valor: "ROTEADOR"};
+    {Valor: "RUAS E/OU ESTRADAS"};
+    {Valor: "SENSOR"};
+    {Valor: "SERVIDOR"};
+    {Valor: "SISTEMA DE PROTEÇÃO CONTRA INCÊNDIO"};
+    {Valor: "SOFTWARE"};
+    {Valor: "SWITCH"};
+    {Valor: "TANQUE DE EXPANSÃO"};
+    {Valor: "TANQUE DE ODORANTE"};
+    {Valor: "TERRENO"};
+    {Valor: "TRANSFORMADOR"};
+    {Valor: "TRANSMISSOR DE FLUXO"};
+    {Valor: "TRANSMISSOR DE PRESSÃO"};
+    {Valor: "TRANSMISSOR DE PRESSÃO DIFERENCIAL"};
+    {Valor: "TRANSMISSOR DE TEMPERATURA"};
+    {Valor: "TRANSMISSOR E INDICADOR DE NÍVEL"};
+    {Valor: "TRANSMISSOR E INDICADOR DE PRESSÃO"};
+    {Valor: "TRANSMISSOR E INDICADOR DE PRESSÃO DIFERENCIAL"};
+    {Valor: "TRANSMISSOR E INDICADOR DE TEMPERATURA"};
+    {Valor: "TRANSMISSOR INDICADOR DE FLUXO"};
+    {Valor: "UNIDADE DE AQUISIÇÃO DE DADOS"};
+    {Valor: "UNIDADE DE TERMINAL REMOTO UTR"};
+    {Valor: "VÁLVULA DE ALÍVIO"};
+    {Valor: "VÁLVULA DE BLOQUEIO"};
+    {Valor: "VÁLVULA DE PURGA"};
+    {Valor: "VÁLVULA DE RETENÇÃO"};
+    {Valor: "VÁLVULA DE SHUT-OFF"};
+    {Valor: "VÁLVULA LOW"};
+    {Valor: "VÁLVULA REGULADORA"};
+    {Valor: "VÁLVULA REGULADORA C/ SHUT-OFF"};
+    {Valor: "VASO DE PRESSÃO"};
+    {Valor: "VASO SEPARADOR"};
+    {Valor: "VEÍCULO"};
+    {Valor: "VEROMITER"}
+);;
+ClearCollect(
+    colGasMunicipio;
+    {Codigo: "00"; Nome: "JEQUIÉ"; Resumo: "00 - JEQUIÉ"};
+    {Codigo: "01"; Nome: "POLO CAMAÇARI"; Resumo: "01 - POLO CAMAÇARI"};
+    {Codigo: "02"; Nome: "CANDEIAS"; Resumo: "02 - CANDEIAS"};
+    {Codigo: "03"; Nome: "SIMÕES FILHO"; Resumo: "03 - SIMÕES FILHO"};
+    {Codigo: "04"; Nome: "CATU"; Resumo: "04 - CATU"};
+    {Codigo: "05"; Nome: "ALAGOINHAS"; Resumo: "05 - ALAGOINHAS"};
+    {Codigo: "06"; Nome: "SANTO AMARO"; Resumo: "06 - SANTO AMARO"};
+    {Codigo: "07"; Nome: "SALVADOR"; Resumo: "07 - SALVADOR"};
+    {Codigo: "08"; Nome: "POLO PLASTIC"; Resumo: "08 - POLO PLASTIC"};
+    {Codigo: "09"; Nome: "DIAS DÁVILA"; Resumo: "09 - DIAS DÁVILA"};
+    {Codigo: "10"; Nome: "FEIRA DE SANTANA"; Resumo: "10 - FEIRA DE SANTANA"};
+    {Codigo: "11"; Nome: "SÃO SEBASTIÃO"; Resumo: "11 - SÃO SEBASTIÃO"};
+    {Codigo: "12"; Nome: "SÃO FRANCISCO DO CONDE"; Resumo: "12 - SÃO FRANCISCO DO CONDE"};
+    {Codigo: "13"; Nome: "POJUCA"; Resumo: "13 - POJUCA"};
+    {Codigo: "14"; Nome: "CAMAÇARI"; Resumo: "14 - CAMAÇARI"};
+    {Codigo: "15"; Nome: "ENTRE RIOS"; Resumo: "15 - ENTRE RIOS"};
+    {Codigo: "16"; Nome: "ESPLANADA"; Resumo: "16 - ESPLANADA"};
+    {Codigo: "18"; Nome: "LAURO DE FREITAS"; Resumo: "18 - LAURO DE FREITAS"};
+    {Codigo: "19"; Nome: "AMÉLIA RODRIGUES"; Resumo: "19 - AMÉLIA RODRIGUES"};
+    {Codigo: "20"; Nome: "ITAPARICA"; Resumo: "20 - ITAPARICA"};
+    {Codigo: "21"; Nome: "NAZARÉ"; Resumo: "21 - NAZARÉ"};
+    {Codigo: "22"; Nome: "HUMILDES"; Resumo: "22 - HUMILDES"};
+    {Codigo: "23"; Nome: "CACHOREIRA"; Resumo: "23 - CACHOREIRA"};
+    {Codigo: "24"; Nome: "MURITIBA"; Resumo: "24 - MURITIBA"};
+    {Codigo: "25"; Nome: "CAMAMU"; Resumo: "25 - CAMAMU"};
+    {Codigo: "26"; Nome: "UBAITABA"; Resumo: "26 - UBAITABA"};
+    {Codigo: "27"; Nome: "AURELINO LEAL"; Resumo: "27 - AURELINO LEAL"};
+    {Codigo: "28"; Nome: "ITABUNA"; Resumo: "28 - ITABUNA"};
+    {Codigo: "29"; Nome: "ILHÉUS"; Resumo: "29 - ILHÉUS"};
+    {Codigo: "30"; Nome: "MUCURI"; Resumo: "30 - MUCURI"};
+    {Codigo: "31"; Nome: "TEIXEIRA DE FREITAS"; Resumo: "31 - TEIXEIRA DE FREITAS"};
+    {Codigo: "32"; Nome: "SANTO ANTONIO DE JESUS"; Resumo: "32 - SANTO ANTONIO DE JESUS"};
+    {Codigo: "33"; Nome: "EUNÁPOLIS"; Resumo: "33 - EUNÁPOLIS"};
+    {Codigo: "38"; Nome: "VITORIA DA CONQUISTA"; Resumo: "38 - VITORIA DA CONQUISTA"};
+    {Codigo: "39"; Nome: "BRUMADO"; Resumo: "39 - BRUMADO"};
+    {Codigo: "42"; Nome: "PORTO SEGURO"; Resumo: "42 - PORTO SEGURO"};
+    {Codigo: "45"; Nome: "IPIAU"; Resumo: "45 - IPIAU"};
+    {Codigo: "46"; Nome: "MATA DE SÃO JOÃO"; Resumo: "46 - MATA DE SÃO JOÃO"};
+    {Codigo: "48"; Nome: "MARACÁS"; Resumo: "48 - MARACÁS"};
+    {Codigo: "77"; Nome: "CONCEICAO DO JACUIPE"; Resumo: "77 - CONCEICAO DO JACUIPE"}
+);;
+ClearCollect(
+    colGasUC;
+    {Codigo: "01"; Descricao: "ESTACAO DE TRANSF DE CUSTODIA"; Tipo: "Individual"; Resumo: "01 - ESTACAO DE TRANSF DE CUSTODIA"};
+    {Codigo: "02"; Descricao: "ESTACAO DE REDUCAO DE PRESSAO"; Tipo: "Individual"; Resumo: "02 - ESTACAO DE REDUCAO DE PRESSAO"};
+    {Codigo: "03"; Descricao: "MEDIDOR DE BAIXO VOLUME"; Tipo: "Em Massa"; Resumo: "03 - MEDIDOR DE BAIXO VOLUME"};
+    {Codigo: "04"; Descricao: "CONJUNTO DE REGULAGEM E MEDICAO"; Tipo: "Individual"; Resumo: "04 - CONJUNTO DE REGULAGEM E MEDICAO"};
+    {Codigo: "05"; Descricao: "ESTACAO DE REDUCAO DE PRESSAO E MEDICAO"; Tipo: "Individual"; Resumo: "05 - ESTACAO DE REDUCAO DE PRESSAO E MEDICAO"};
+    {Codigo: "06"; Descricao: "CONJUNTO DE MEDICAO"; Tipo: "Individual"; Resumo: "06 - CONJUNTO DE MEDICAO"};
+    {Codigo: "07"; Descricao: "SISTEMA DE ODORIZACAO"; Tipo: "Individual"; Resumo: "07 - SISTEMA DE ODORIZACAO"};
+    {Codigo: "08"; Descricao: "REDE DE DISTRIBUICAO"; Tipo: "Em Massa"; Resumo: "08 - REDE DE DISTRIBUICAO"};
+    {Codigo: "09"; Descricao: "RAMAL DE SERVICO"; Tipo: "Em Massa"; Resumo: "09 - RAMAL DE SERVICO"};
+    {Codigo: "10"; Descricao: "SISTEMA DE PROTECAO CONTRA INCENDIO"; Tipo: "Em Massa"; Resumo: "10 - SISTEMA DE PROTECAO CONTRA INCENDIO"};
+    {Codigo: "11"; Descricao: "SISTEMA DE SUPERVISAO E CONTROLE"; Tipo: "Individual"; Resumo: "11 - SISTEMA DE SUPERVISAO E CONTROLE"};
+    {Codigo: "15"; Descricao: "EDIFICACOES"; Tipo: "Individual"; Resumo: "15 - EDIFICACOES"};
+    {Codigo: "16"; Descricao: "MOVEIS E UTENSILIOS"; Tipo: "Individual"; Resumo: "16 - MOVEIS E UTENSILIOS"};
+    {Codigo: "17"; Descricao: "EQUIPAMENTOS EM GERAL"; Tipo: "Em Massa"; Resumo: "17 - EQUIPAMENTOS EM GERAL"};
+    {Codigo: "19"; Descricao: "SCPI"; Tipo: "Individual"; Resumo: "19 - SCPI"};
+    {Codigo: "20"; Descricao: "TERRENOS"; Tipo: "Individual"; Resumo: "20 - TERRENOS"};
+    {Codigo: "21"; Descricao: "URBANIZACAO E BENFEITORIA"; Tipo: "Individual"; Resumo: "21 - URBANIZACAO E BENFEITORIA"};
+    {Codigo: "22"; Descricao: "VEICULOS"; Tipo: "Individual"; Resumo: "22 - VEICULOS"};
+    {Codigo: "23"; Descricao: "EQUIP. DE LABORATORIO"; Tipo: "Individual"; Resumo: "23 - EQUIP. DE LABORATORIO"};
+    {Codigo: "24"; Descricao: "EQUIP. DE PROC. DE DADOS"; Tipo: "Em Massa"; Resumo: "24 - EQUIP. DE PROC. DE DADOS"};
+    {Codigo: "25"; Descricao: "SOFTWARES"; Tipo: "Individual"; Resumo: "25 - SOFTWARES"}
+);;
+
+ClearCollect(
+    colTipoInstalacao;
+    {Codigo: 10; Sigla: "HID"; Resumo: "10-HID"; Nome: "Hidroelétrica"};
+    {Codigo: 11; Sigla: "TER"; Resumo: "11-TER"; Nome: "Térmica a combustão — óleo/gás/diesel"};
+    {Codigo: 12; Sigla: "TER"; Resumo: "12-TER"; Nome: "Térmica a vapor — carvão"};
+    {Codigo: 13; Sigla: "TER"; Resumo: "13-TER"; Nome: "Térmica a vapor — gás"};
+    {Codigo: 14; Sigla: "TER"; Resumo: "14-TER"; Nome: "Térmica a vapor — diesel/querosene/óleo"};
+    {Codigo: 15; Sigla: "TER"; Resumo: "15-TER"; Nome: "Térmica a vapor — biomassa"};
+    {Codigo: 16; Sigla: "TER"; Resumo: "16-TER"; Nome: "Térmica a vapor — nuclear"};
+    {Codigo: 17; Sigla: "SOL"; Resumo: "17-SOL"; Nome: "Solar"};
+    {Codigo: 18; Sigla: "EOL"; Resumo: "18-EOL"; Nome: "Eólica"};
+    {Codigo: 19; Sigla: "OUT"; Resumo: "19-OUT"; Nome: "Outras"};
+    {Codigo: 20; Sigla: "DIT"; Resumo: "20-DIT"; Nome: "SE < 230 kV (DIT)"};
+    {Codigo: 21; Sigla: "DIT"; Resumo: "21-DIT"; Nome: "SE ≥ 230 kV e < 345 kV"};
+    {Codigo: 22; Sigla: "DIT"; Resumo: "22-DIT"; Nome: "SE ≥ 345 kV e < 500 kV"};
+    {Codigo: 23; Sigla: "DIT"; Resumo: "23-DIT"; Nome: "SE ≥ 500 kV"};
+    {Codigo: 24; Sigla: "DIT"; Resumo: "24-DIT"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 25; Sigla: "DIT"; Resumo: "25-DIT"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 26; Sigla: "DIT"; Resumo: "26-DIT"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 27; Sigla: "DIT"; Resumo: "27-DIT"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 28; Sigla: "DIT"; Resumo: "28-DIT"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 29; Sigla: "DIT"; Resumo: "29-DIT"; Nome: "Transmissão de interesse restrito (SE ou linha)"};
+    {Codigo: 30; Sigla: "SDU"; Resumo: "30-SDU"; Nome: "SE urbana ≤ 13,8 kV"};
+    {Codigo: 31; Sigla: "SDU"; Resumo: "31-SDU"; Nome: "SE urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 32; Sigla: "SDU"; Resumo: "32-SDU"; Nome: "SE urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 33; Sigla: "SDU"; Resumo: "33-SDU"; Nome: "SE urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 34; Sigla: "SDU"; Resumo: "34-SDU"; Nome: "SE urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 35; Sigla: "LAU"; Resumo: "35-LAU"; Nome: "Linha de distribuição urbana ≤ 13,8 kV"};
+    {Codigo: 36; Sigla: "LAU"; Resumo: "36-LAU"; Nome: "Linha de distribuição urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 37; Sigla: "LAU"; Resumo: "37-LAU"; Nome: "Linha de distribuição urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 38; Sigla: "LAU"; Resumo: "38-LAU"; Nome: "Linha de distribuição urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 39; Sigla: "LAU"; Resumo: "39-LAU"; Nome: "Linha de distribuição urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 40; Sigla: "RAU"; Resumo: "40-RAU"; Nome: "Rede aérea urbana"};
+    {Codigo: 41; Sigla: "RAR"; Resumo: "41-RAR"; Nome: "Rede aérea rural"};
+    {Codigo: 42; Sigla: "RSU"; Resumo: "42-RSU"; Nome: "Rede subterrânea urbana"};
+    {Codigo: 43; Sigla: "RSR"; Resumo: "43-RSR"; Nome: "Rede subterrânea rural"};
+    {Codigo: 44; Sigla: "RSA"; Resumo: "44-RSA"; Nome: "Rede submersa"};
+    {Codigo: 50; Sigla: "SDR"; Resumo: "50-SDR"; Nome: "SE rural ≤ 13,8 kV"};
+    {Codigo: 51; Sigla: "SDR"; Resumo: "51-SDR"; Nome: "SE rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 52; Sigla: "SDR"; Resumo: "52-SDR"; Nome: "SE rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 53; Sigla: "SDR"; Resumo: "53-SDR"; Nome: "SE rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 54; Sigla: "SDR"; Resumo: "54-SDR"; Nome: "SE rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 55; Sigla: "LDR"; Resumo: "55-LDR"; Nome: "Linha de distribuição rural ≤ 13,8 kV"};
+    {Codigo: 56; Sigla: "LDR"; Resumo: "56-LDR"; Nome: "Linha de distribuição rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 57; Sigla: "LDR"; Resumo: "57-LDR"; Nome: "Linha de distribuição rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 58; Sigla: "LDR"; Resumo: "58-LDR"; Nome: "Linha de distribuição rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 59; Sigla: "LDR"; Resumo: "59-LDR"; Nome: "Linha de distribuição rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 60; Sigla: "LSS"; Resumo: "60-LSS"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 61; Sigla: "LSS"; Resumo: "61-LSS"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 62; Sigla: "LSS"; Resumo: "62-LSS"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 63; Sigla: "LSS"; Resumo: "63-LSS"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 64; Sigla: "LSS"; Resumo: "64-LSS"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 65; Sigla: "LSS"; Resumo: "65-LSS"; Nome: "Linha de distribuição ≤ 13,8 kV"};
+    {Codigo: 66; Sigla: "LSS"; Resumo: "66-LSS"; Nome: "Linha de distribuição > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 67; Sigla: "LSS"; Resumo: "67-LSS"; Nome: "Linha de distribuição > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 68; Sigla: "LSS"; Resumo: "68-LSS"; Nome: "Linha de distribuição > 69 kV e ≤ 138 kV"};
+    {Codigo: 69; Sigla: "LSS"; Resumo: "69-LSS"; Nome: "Linha de distribuição > 138 kV e ≤ 230 kV"};
+    {Codigo: 70; Sigla: "TER"; Resumo: "70-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. central"};
+    {Codigo: 71; Sigla: "EQP"; Resumo: "71-EQP"; Nome: "Equipamento geral — adm. central"};
+    {Codigo: 72; Sigla: "EQP"; Resumo: "72-EQP"; Nome: "Sistema de comunicação — adm. central"};
+    {Codigo: 80; Sigla: "TER"; Resumo: "80-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. específica"};
+    {Codigo: 81; Sigla: "EQP"; Resumo: "81-EQP"; Nome: "Equipamento geral — adm. específica"};
+    {Codigo: 82; Sigla: "EQP"; Resumo: "82-EQP"; Nome: "Sistema de comunicação — adm. específica"};
+    {Codigo: 90; Sigla: "TER"; Resumo: "90-TER"; Nome: "Terrenos/benfeitorias fora de outras ODI"};
+    {Codigo: 91; Sigla: "TEL"; Resumo: "91-TEL"; Nome: "Equipamento geral fora de ODI específicas"};
+    {Codigo: 92; Sigla: "TEL"; Resumo: "92-TEL"; Nome: "Telecom, telecontrole, proteção e supervisão"};
+    {Codigo: 93; Sigla: "SMU"; Resumo: "93-SMU"; Nome: "Sistema de medição urbana (fora de usina/SE)"};
+    {Codigo: 94; Sigla: "AUX"; Resumo: "94-AUX"; Nome: "Serviços auxiliares gerais"};
+    {Codigo: 95; Sigla: "OUT"; Resumo: "95-OUT"; Nome: "Apoio operacional (usina e SE)"};
+    {Codigo: 96; Sigla: "SMR"; Resumo: "96-SMR"; Nome: "Sistema de medição rural (fora de usina/SE)"};
+    {Codigo: 97; Sigla: "OUT"; Resumo: "97-OUT"; Nome: "Sistema de despacho de carga"};
+    {Codigo: 98; Sigla: "RES"; Resumo: "98-RES"; Nome: "Reserva imobilizada"};
+    {Codigo: 99; Sigla: "INT"; Resumo: "99-INT"; Nome: "Intangível"}
+);;
+
+// ── 1. SEM PROBE DE REDE ────────────────────────────────────────────────
+Set(gblConectado; false);;
+
+// ── 2. SESSÃO DO SLOT — só cache ─────────────────────────────────────────
+Set(
+    gblUsuario;
+    {
+        Login: Blank();
+        Perfil: Blank();
+        Nome: Blank();
+        UsadoPor: Blank();
+        CodUsuario: Blank();
+        SessaoVersao: Blank();
+        Email: Blank()
+    }
+);;
+Set(varPerfil; Blank());;
+Clear(colSessao);;
+IfError(LoadData(colSessao; "cache_Sessao"; true); Blank());;
+Set(
+    varSessaoOk;
+    CountRows(colSessao) > 0 && !IsBlank(First(colSessao).Login)
+);;
+If(
+    varSessaoOk;
+    With(
+        {s: First(colSessao)};
+        Set(gblUsuario; s);;
+        Set(varPerfil; s.Perfil)
+    );
+    CountRows(colSessao) > 0;
+    With(
+        {_: true};
+        Clear(colSessao);;
+        IfError(ClearData("cache_Sessao"); Blank());;
+        Set(gblUsuario; Blank());;
+        Set(varPerfil; Blank())
+    )
+);;
+
+// Inventariantes (login offline) — schema + cache
+ClearCollect(
+    colInventariantes;
+    {
+        Login: "";
+        Senha: "";
+        Perfil: "";
+        Nome: "";
+        UsadoPor: "";
+        CodUsuario: "";
+        SessaoVersao: 0;
+        Ativo: ""
+    }
+);;
+Clear(colInventariantes);;
+IfError(LoadData(colInventariantes; "cache_Inventariantes"; true); Blank());;
+
+// Alocacoes — só LoadData (nunca ClearData no OnStart)
+Clear(colAlocacoes);;
+IfError(LoadData(colAlocacoes; "cache_Alocacoes"; true); Blank());;
+
+ClearCollect(
+    colUnidadeMedida;
+    {Unidade: "UN"; Rotulo: "UN - Unidade"};
+    {Unidade: "PC"; Rotulo: "PC - Peça"};
+    {Unidade: "M"; Rotulo: "M - Metro"};
+    {Unidade: "M2"; Rotulo: "M² - Metro quadrado"};
+    {Unidade: "KG"; Rotulo: "KG - Quilograma"}
+);;
+
+// ── 3. TABELAS MESTRES — só cache ────────────────────────────────────────
+Clear(colTUC);;
+IfError(LoadData(colTUC; "cache_TUC"; true); Blank());;
+Clear(colAtributosBruto);;
+IfError(LoadData(colAtributosBruto; "cache_Atributos"; true); Blank());;
+Clear(colLookup);;
+IfError(LoadData(colLookup; "cache_Lookup"; true); Blank());;
+Clear(colTabelasCatalogo);;
+IfError(LoadData(colTabelasCatalogo; "cache_TabelasCatalogo"; true); Blank());;
+
+ClearCollect(
+    colTabelasFaixa;
+    Distinct(
+        Filter(colLookup; LimiteSuperior > 0);
+        TabelaOrigem
+    )
+);;
+
+ClearCollect(
+    colCatSimples;
+    ForAll(
+        colTabelasCatalogo As c;
+        {
+            TabelaOrigem: Trim(c.TabelaOrigem);
+            TipoEntrada: Upper(Trim(Coalesce(Text(c.TipoEntrada); "LISTA")));
+            Unidade: Coalesce(c.Unidade; "");
+            UnidadeAlt: Coalesce(c.UnidadeAlt; "");
+            FatorConv: Coalesce(Value(c.FatorConv); 1);
+            CasasDecimais: Coalesce(Value(c.CasasDecimais); 2)
+        }
+    )
+);;
+
+Clear(colAtributos);;
+ForAll(
+    colAtributosBruto As reg;
+    Collect(
+        colAtributos;
+        {
+            CodTUC: reg.CodTUC;
+            NomenclaturaAtributo: reg.NomenclaturaAtributo;
+            DescricaoAtributo: reg.DescricaoAtributo;
+            ChaveTabela: Trim(reg.ChaveTabela);
+            TabelaOrigem: Trim(reg.ChaveTabela);
+            TipoEntrada: "LISTA";
+            Unidade: "";
+            CasasDecimais: 2
+        }
+    )
+);;
+
+Clear(colConcessionarias);;
+IfError(LoadData(colConcessionarias; "cache_Concessionarias"; true); Blank());;
+
+Clear(colCampanhas);;
+IfError(LoadData(colCampanhas; "cache_Campanhas"; true); Blank());;
+
+// ── 6. DADOS OPERACIONAIS — schema + cache ───────────────────────────────
+ClearCollect(
+    colSubestacoes;
+    {
+        ID: 0;
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        SubODI: "";
+        Regional: "";
+        Municipio: "";
+        UF: "";
+        TI: 0;
+        CM: 0;
+        Status: "";
+        Segmento: "";
+        Tramo: "";
+        CoordX: "";
+        CoordY: "";
+        ClasseTensao: "";
+        ArranjoFisico: 0;
+        LocalInstalacao: 0;
+        PendenteCriacao: false
+    }
+);;
+Clear(colSubestacoes);;
+IfError(LoadData(colSubestacoes; "cache_Subestacoes"; true); Blank());;
+
+ClearCollect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Título: "";
+        IdUC: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QtdeCampo: 0;
+        QtdeContado: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: "";
+        CoordX: "";
+        CoordY: "";
+        Diametro: "";
+        ClassePressao: "";
+        Tag: "";
+        DescricaoComplementar: ""
+    }
+);;
+Set(varItemFoto; First(colInventarioBase));;
+Clear(colInventarioBase);;
+IfError(LoadData(colInventarioBase; "cache_InventarioBase"; true); Blank());;
+
+ClearCollect(colTabelaFinal; {ID: 0; CodAsset: ""; CodInventario: ""});;
+Clear(colTabelaFinal);;
+IfError(LoadData(colTabelaFinal; "cache_TabelaFinal"; true); Blank());;
+
+// ── 7. FILA OFFLINE ──────────────────────────────────────────────────────
+ClearCollect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "";
+        CodTemp: "";
+        SobraTipo: "";
+        Sincronizada: false;
+        IdInventario: 0;
+        ID: 0;
+        Title: "";
+        IdUC: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA2: "";
+        ValorA3: "";
+        ValorA4: "";
+        ValorA5: "";
+        ValorA6: "";
+        DescricaoBem: "";
+        Quantidade: 0;
+        QtdeCampo: 0;
+        QtdeContado: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: "";
+        CoordX: "";
+        CoordY: "";
+        Diametro: "";
+        ClassePressao: "";
+        Tag: "";
+        DescricaoComplementar: ""
+    }
+);;
+Set(varRegistroAtual; First(colCampoOffline));;
+Clear(colCampoOffline);;
+IfError(LoadData(colCampoOffline; "cache_CampoOffline"; true); Blank());;
+
+ClearCollect(colDesmPartes; {N: 0; Qtd: 0});;
+Clear(colDesmPartes);;
+
+ClearCollect(
+    colFotosCampo;
+    {
+        CodSE: "";
+        CodInventario: "";
+        IdFoto: "";
+        CodAsset: "";
+        CodTemp: "";
+        TipoFoto: "";
+        Foto: SampleImage;
+        DataCaptura: Now();
+        Sincronizada: false
+    }
+);;
+Clear(colFotosCampo);;
+IfError(LoadData(colFotosCampo; "cache_FotosCampo"; true); Blank());;
+
+ClearCollect(
+    colSEsFinalizadas;
+    {
+        CodSE: "";
+        CodInventario: "";
+        DataFinalizacao: Now()
+    }
+);;
+Clear(colSEsFinalizadas);;
+IfError(LoadData(colSEsFinalizadas; "cache_SEsFinalizadas"; true); Blank());;
+
+ClearCollect(colUltimaSinc; {DataHora: Now()});;
+Clear(colUltimaSinc);;
+IfError(LoadData(colUltimaSinc; "cache_UltimaSinc"; true); Blank());;
+Set(
+    gblUltimaSincronizacao;
+    If(
+        CountRows(colUltimaSinc) > 0;
+        First(colUltimaSinc).DataHora;
+        Blank()
+    )
+);;
+
+ClearCollect(
+    colInventarioAtivo;
+    {
+        CodInventario: "";
+        NomeInventario: "";
+        Periodo: "";
+        Setor: "";
+        Ativo: ""
+    }
+);;
+Clear(colInventarioAtivo);;
+IfError(LoadData(colInventarioAtivo; "cache_InventarioAtivo"; true); Blank());;
+If(
+    CountRows(colInventarioAtivo) > 0;
+    Set(gblInventarioSelecionado; First(colInventarioAtivo));
+    Set(gblInventarioSelecionado; Blank())
+);;
+
+Set(gblFiltroStatus; "Todos");;
+Set(gblSEselecionada; Blank());;
+Set(gblTipoBemSelecionado; Blank());;
+Set(gblVersaoApp; "1.0.0");;
+
+ClearCollect(
+    colAtributosCampo;
+    {
+        IdRegistro: "";
+        CodInventario: "";
+        CodAsset: "";
+        CodAtributo: "";
+        Valor: "";
+        Ordem: 0
+    }
+);;
+Clear(colAtributosCampo);;
+IfError(LoadData(colAtributosCampo; "cache_AtributosCampo"; true); Blank());;
+
+Set(varItemFoto; Blank());;
+Set(varRegistroAtual; Blank());;
+Set(varPopAvisoBaixar; false);;
+
+Set(varCarregando; false)
+```

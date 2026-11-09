@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mobile — Selecionar rede</title>
+<style>
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,Arial,sans-serif;
+    background:#E8ECF0;
+    padding:28px;
+    color:#1a1a1a;
+  }
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:#348FFD; margin-bottom:6px}
+  h1{font-size:22px; font-weight:650; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:420px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  .phone{
+    width:390px; height:844px;
+    background:#F4F6F8;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 18px 40px rgba(18,59,110,.16);
+    display:flex;
+    flex-direction:column;
+  }
+  .hd{background:#1B4C86; color:#fff; padding:18px 16px 16px}
+  .back{font-size:22px; line-height:1; margin-bottom:8px}
+  .hdt{font-size:22px; font-weight:700; letter-spacing:-.2px}
+  .hds{font-size:13px; margin-top:4px; opacity:.92; display:flex; align-items:center; gap:6px}
+  .body{padding:14px 14px 18px; display:flex; flex-direction:column; gap:12px}
+  .search{display:flex; gap:8px}
+  .box{
+    flex:1; background:#fff; border:1px solid #E1E5EA; border-radius:8px;
+    height:42px; display:flex; align-items:center; padding:0 12px;
+    color:#9AA3AD; font-size:15px;
+  }
+  .filt{
+    width:42px; background:#fff; border:1px solid #E1E5EA; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .chips{display:flex; gap:8px}
+  .chip{
+    border:1px solid #E1E5EA; background:#fff; color:#3d444e;
+    border-radius:20px; padding:7px 12px; font-size:13px; font-weight:600;
+  }
+  .chip.on{background:#5B9DEF; color:#fff; border-color:#5B9DEF}
+  .card{
+    background:#fff; border-radius:12px; padding:14px 14px 12px;
+    box-shadow:0 1px 2px rgba(16,24,40,.06);
+  }
+  .top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .name{font-size:16px; font-weight:700; color:#1B3E6F}
+  .code{font-size:13px; color:#6B7683; margin-top:2px}
+  .pill{
+    background:#F3F4F6; color:#6B7280; border-radius:16px;
+    font-size:12px; font-weight:600; padding:5px 10px; white-space:nowrap;
+  }
+  .meta{font-size:13px; color:#6B7683; margin-top:12px}
+  .bar{height:3px; background:#E6E8EC; border-radius:2px; margin-top:8px}
+  .pin{font-size:13px; color:#6B7683; margin-top:10px; display:flex; align-items:center; gap:6px}
+</style>
+</head>
+<body>
+  <div class="kicker">MOBILE · AINDA NÃO ESTÁ NO TABLET</div>
+  <h1>Selecionar rede</h1>
+  <p class="lead">O toque em <b>Rede</b>, na home do projeto, abre esta lista. Entram só as redes desta campanha. <b>Visitas deste inventário</b> continua só com subestação.</p>
+  <div class="phone" id="phone">
+    <div class="hd">
+      <div class="back">←</div>
+      <div class="hdt">Selecionar rede</div>
+      <div class="hds">⚡ CPFL Nov 2026 · Novembro 2026</div>
+    </div>
+    <div class="body">
+      <div class="search">
+        <div class="box">Enter text</div>
+        <div class="filt">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5C6670" stroke-width="2">
+            <path d="M4 6h16M7 12h10M10 18h4"/>
+          </svg>
+        </div>
+      </div>
+      <div class="chips">
+        <div class="chip on">Todas</div>
+        <div class="chip">Pendente</div>
+        <div class="chip">Em campo</div>
+        <div class="chip">Finalizadas</div>
+      </div>
+      <div class="card">
+        <div class="top">
+          <div>
+            <div class="name">Rede 01</div>
+            <div class="code">REDE-01</div>
+          </div>
+          <div class="pill">Pendente</div>
+        </div>
+        <div class="meta">Ainda não iniciada, total de 0 itens</div>
+        <div class="bar"></div>
+        <div class="pin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A93A0" stroke-width="2"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg>—</div>
+      </div>
+      <div class="card">
+        <div class="top">
+          <div>
+            <div class="name">Rede 02</div>
+            <div class="code">REDE-02</div>
+          </div>
+          <div class="pill">Pendente</div>
+        </div>
+        <div class="meta">Ainda não iniciada, total de 0 itens</div>
+        <div class="bar"></div>
+        <div class="pin"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8A93A0" stroke-width="2"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg>—</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

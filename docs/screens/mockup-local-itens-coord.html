@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Coletar coordenada no popup Local</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:760px;background:#fff}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif}
+  .row{width:760px;height:700px;display:flex;gap:28px;padding:16px 18px}
+  .phone{width:340px;height:668px;border:1px solid #E6E8EC;border-radius:18px;overflow:hidden;background:#F7F8FA;position:relative}
+  .hd{background:#163E78;color:#fff;padding:14px 12px 10px;display:flex;gap:8px;align-items:flex-start}
+  .hd-mid{flex:1;min-width:0}
+  .hdt{font-size:14.5px;font-weight:700}
+  .hds{margin-top:5px;font-size:10.5px;line-height:1.35;color:#E7F0FA;display:flex;gap:5px}
+  .cam{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;position:relative;flex:0 0 auto}
+  .badge{position:absolute;top:-6px;right:-6px;background:#3EAE4A;color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+  .pair{margin:10px 12px 0;display:flex;gap:8px;align-items:center}
+  .coord{flex:1;height:40px;background:#F3F7FC;border:1px solid #D5E2F2;border-radius:12px;display:flex;align-items:center;padding:0 10px;gap:8px;font-size:13px;color:#163E78}
+  .coord b{font-weight:700}
+  .coord .sp{width:1px;height:18px;background:#D5E2F2}
+  .mp{width:40px;height:40px;flex:0 0 40px;border-radius:10px;border:1px solid #153965;background:#fff;display:flex;align-items:center;justify-content:center}
+  .pg{background:#1A4A86;margin-top:10px;padding:8px 14px 9px;color:#fff}
+  .pgt{display:flex;justify-content:space-between;font-size:12px;font-weight:700}
+  .bar{height:6px;background:rgba(255,255,255,.22);border-radius:4px;margin-top:6px}
+  .bar i{display:block;width:8%;height:100%;background:#3EAE4A;border-radius:4px}
+  .search{margin:10px 12px 0;height:40px;border-radius:20px;background:#fff;border:1px solid #E6E8EC;color:#A0A8B2;font-size:14px;display:flex;align-items:center;padding:0 16px}
+  .chips{display:flex;gap:6px;align-items:center;padding:10px 12px 0}
+  .chip{height:32px;padding:0 12px;border-radius:999px;background:#fff;border:1px solid #E4E7EB;color:#5E6974;font-size:12px;font-weight:700;display:flex;align-items:center}
+  .chip.on{background:#163E78;color:#fff;border-color:#163E78}
+  .add{margin-left:auto;height:32px;padding:0 12px;border-radius:999px;background:#EEF1F4;color:#8E97A1;font-size:13px;font-weight:700;display:flex;align-items:center}
+  .list{padding:10px 12px 0}
+  .card{background:#fff;border:1px solid #E6E8EC;border-radius:14px;border-left:5px solid #3EAE4A;padding:10px}
+  .t{font-size:12.5px;font-weight:750;color:#163E78;line-height:1.25}
+  .dim{position:absolute;inset:0;background:rgba(16,32,56,.46)}
+  .pop{position:absolute;left:16px;right:16px;top:118px;background:#fff;border-radius:16px;padding:14px;box-shadow:0 12px 30px rgba(0,0,0,.2)}
+  .pop h3{font-size:16px;color:#163E78}
+  .pop .sub{font-size:11px;color:#6B7683;margin:2px 0 10px}
+  .fld{margin-bottom:7px}
+  .fld label{display:block;font-size:10px;font-weight:700;color:#6B7683;margin-bottom:3px}
+  .dd{height:34px;border:1px solid #E4E7EB;border-radius:10px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:13px}
+  .dd.empty{background:#FFF6E4;border-color:#E8C98A;color:#B86E0A}
+  .xy{display:flex;gap:8px;margin:2px 0 8px}
+  .xy div{flex:1;height:34px;border:1px solid #E4E7EB;border-radius:10px;background:#F7F8FA;display:flex;align-items:center;padding:0 8px;font-size:12px;color:#6B7683}
+  .xy b{color:#163E78;margin-left:4px}
+  .grab{
+    height:40px; border-radius:10px; border:1px solid #153965; background:#fff; color:#153965;
+    font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .save{margin-top:8px;height:40px;border-radius:10px;background:#163E78;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="phone">
+    <div class="hd">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="margin-top:4px"><path d="M15 5L8 12l7 7"/></svg>
+      <div class="hd-mid">
+        <div class="hdt">7SEAS001 - SE Asa Sul 138 kV</div>
+        <div class="hds"><svg width="10" height="14" viewBox="0 0 24 24" fill="none" stroke="#E7F0FA" stroke-width="2"><path d="M13 2L4 14h7l-1 8 10-14h-7z"/></svg>Companhia Estadual de Distribuição de Energia Elétrica Janeiro 2027</div>
+      </div>
+      <div class="cam"><span class="badge">2</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+    </div>
+    <div class="pair">
+      <div class="coord">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#163E78" stroke-width="2"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        X <b>-46,36</b><span class="sp"></span>Y <b>-23,96</b>
+      </div>
+      <div class="mp"><svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#153965" stroke-width="32" stroke-linejoin="round"><path d="M80 208V432h352V208"/><path d="M48 208L256 64l208 144"/><path d="M208 432V304h96v128"/></svg></div>
+    </div>
+    <div class="pg"><div class="pgt"><span>2 de 24 itens revisados</span><span>8%</span></div><div class="bar"><i></i></div></div>
+    <div class="search">Insira o texto</div>
+    <div class="chips">
+      <div class="chip on">BASE (24)</div>
+      <div class="chip">FALTA (22)</div>
+      <div class="chip">SOBRAS (0)</div>
+      <div class="add">+ Item</div>
+    </div>
+    <div class="list"><div class="card"><div class="t">20000029 · 155.01 - TRANSFORMADOR DE CONEXÃO</div></div></div>
+  </div>
+
+  <div class="phone">
+    <div class="hd">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="margin-top:4px"><path d="M15 5L8 12l7 7"/></svg>
+      <div class="hd-mid"><div class="hdt">7SEAS001 - SE Asa Sul 138 kV</div><div class="hds">Companhia Estadual de Distribuição de Energia Elétrica</div></div>
+      <div class="cam"><span class="badge">2</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg></div>
+    </div>
+    <div class="pair">
+      <div class="coord">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#163E78" stroke-width="2"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        X <b>—</b><span class="sp"></span>Y <b>—</b>
+      </div>
+      <div class="mp" style="border-color:#C47B12"><svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#C47B12" stroke-width="32" stroke-linejoin="round"><path d="M80 208V432h352V208"/><path d="M48 208L256 64l208 144"/><path d="M208 432V304h96v128"/></svg></div>
+    </div>
+    <div class="pg"><div class="pgt"><span>2 de 24 itens revisados</span><span>8%</span></div><div class="bar"><i></i></div></div>
+    <div class="dim"></div>
+    <div class="pop">
+      <h3>Local</h3>
+      <div class="sub">7SEAS001 · vale para todos os itens</div>
+      <div class="fld"><label>TI</label><div class="dd empty">Escolher ▾</div></div>
+      <div class="fld"><label>Local de instalação</label><div class="dd">0 — RD ▾</div></div>
+      <div class="fld"><label>Arranjo físico</label><div class="dd">1 — BS ▾</div></div>
+      <div class="fld"><label>Coordenada</label></div>
+      <div class="xy"><div>X <b>—</b></div><div>Y <b>—</b></div></div>
+      <div class="grab">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#153965" stroke-width="2"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg>
+        Coletar coordenada
+      </div>
+      <div class="save">Salvar</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

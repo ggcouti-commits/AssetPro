@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Confirmar finalizar / reabrir SE</title>
+<style>
+  :root{--navy:#123B6E;--track:#0E2E55;--page:#F1F3F5;--card:#fff;--border:#E1E5EA;--title:#1B3E6F;--label:#6B7683;--warn:#C47A00;--danger:#B3261E}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:#FAFBFC;padding:16px;color:#1a1a1a}
+  h1{font-size:18px;font-weight:650;margin-bottom:4px}
+  .sub{font-size:13px;color:#5c6470;margin-bottom:16px;max-width:920px;line-height:1.5}
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .col{width:280px}
+  .tag{font-size:11px;font-weight:700;margin-bottom:6px}
+  .cap{font-size:12px;color:#5c6470;margin-top:8px;line-height:1.5}
+  .phone{width:280px;height:560px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--page);position:relative}
+  .hd{background:var(--navy);color:#fff;padding:10px 12px;font-weight:700;font-size:13px}
+  .pg{background:var(--track);color:#fff;padding:6px 12px;font-size:10px;font-weight:700}
+  .tabs{padding:8px 10px;display:flex;gap:6px}
+  .chip{height:24px;padding:0 10px;border-radius:999px;font-size:10px;font-weight:700;display:flex;align-items:center}
+  .on{background:var(--navy);color:#fff}
+  .off{background:#fff;border:1px solid var(--border);color:var(--label)}
+  .card{margin:0 10px;background:#fff;border:1px solid var(--border);border-radius:10px;padding:8px;font-size:10px;font-weight:700;color:var(--title)}
+  .dock{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:10px}
+  .btn{height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .navy{background:var(--navy);color:#fff}
+  .warn{background:#FDF0DC;color:var(--warn);border:1.5px solid #E8B84A}
+  .mask{position:absolute;inset:0;background:rgba(18,59,110,.45);display:flex;align-items:flex-end}
+  .pop{background:#fff;border-radius:16px 16px 0 0;padding:18px 16px 16px;width:100%}
+  .pt{font-size:16px;font-weight:700;color:var(--title);margin-bottom:8px}
+  .pd{font-size:13px;color:#5c6470;line-height:1.45;margin-bottom:16px}
+  .rowbtn{display:flex;gap:8px}
+  .rowbtn .btn{flex:1}
+  .ghost{background:#fff;border:1px solid var(--border);color:var(--title)}
+</style>
+</head>
+<body>
+<h1>Finalizar e Reabrir — mesmo lugar no rodapé</h1>
+<p class="sub"><b>btnFinalizarSE</b> some quando Status = Finalizada. No lugar entra <b>btnReabrirSE</b> (só enquanto ainda não enviou). Cada um abre o próprio popup.</p>
+<div class="row">
+  <div class="col">
+    <div class="tag">1. EM CAMPO — FINALIZAR</div>
+    <div class="phone">
+      <div class="hd">SE-005 - Sub. Est. Litoral</div>
+      <div class="pg">5 de 8 itens revisados</div>
+      <div class="tabs"><div class="chip on">BASE (8)</div><div class="chip off">SOBRAS (1)</div></div>
+      <div class="card">570.1 - TRANSFORMADOR DE FORÇA…</div>
+      <div class="dock"><div class="btn navy">Finalizar subestação</div></div>
+    </div>
+    <p class="cap">Visible: Status ≠ Finalizada. OnSelect só abre o popup.</p>
+  </div>
+  <div class="col">
+    <div class="tag">2. POPUP FINALIZAR</div>
+    <div class="phone">
+      <div class="hd">SE-005 - Sub. Est. Litoral</div>
+      <div class="pg">5 de 8 itens revisados</div>
+      <div class="tabs"><div class="chip on">BASE (8)</div><div class="chip off">SOBRAS (1)</div></div>
+      <div class="card">570.1 - TRANSFORMADOR DE FORÇA…</div>
+      <div class="dock"><div class="btn navy">Finalizar subestação</div></div>
+      <div class="mask"><div class="pop">
+        <div class="pt">Finalizar subestação?</div>
+        <div class="pd">SE-005 entra na fila de envio. Você ainda pode reabrir antes de enviar a visita.</div>
+        <div class="rowbtn"><div class="btn ghost">Cancelar</div><div class="btn navy">Finalizar</div></div>
+      </div></div>
+    </div>
+    <p class="cap">cConfirmaFinalizarSE. Confirmar grava Status Finalizada e volta à lista.</p>
+  </div>
+  <div class="col">
+    <div class="tag">3. AGUARD. ENVIO — REABRIR</div>
+    <div class="phone">
+      <div class="hd">SE-005 - Sub. Est. Litoral</div>
+      <div class="pg">5 de 8 itens revisados</div>
+      <div class="tabs"><div class="chip on">BASE (8)</div><div class="chip off">SOBRAS (1)</div></div>
+      <div class="card">570.1 - TRANSFORMADOR DE FORÇA…</div>
+      <div class="dock"><div class="btn warn">Reabrir subestação</div></div>
+    </div>
+    <p class="cap">Visible: Status = Finalizada e ainda tem item !Sincronizada. Depois do Enviar, os dois somem.</p>
+  </div>
+  <div class="col">
+    <div class="tag">4. POPUP REABRIR</div>
+    <div class="phone">
+      <div class="hd">SE-005 - Sub. Est. Litoral</div>
+      <div class="pg">5 de 8 itens revisados</div>
+      <div class="tabs"><div class="chip on">BASE (8)</div><div class="chip off">SOBRAS (1)</div></div>
+      <div class="card">570.1 - TRANSFORMADOR DE FORÇA…</div>
+      <div class="dock"><div class="btn warn">Reabrir subestação</div></div>
+      <div class="mask"><div class="pop">
+        <div class="pt">Reabrir subestação?</div>
+        <div class="pd">SE-005 sai da fila de envio e volta para Em campo. Finalize de novo quando terminar.</div>
+        <div class="rowbtn"><div class="btn ghost">Cancelar</div><div class="btn warn" style="background:#C47A00;color:#fff;border:0">Reabrir</div></div>
+      </div></div>
+    </div>
+    <p class="cap">cConfirmaReabrirSE. Confirmar grava Status Em campo e permanece na tela.</p>
+  </div>
+</div>
+</body>
+</html>

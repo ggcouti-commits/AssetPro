@@ -1,0 +1,208 @@
+# Tela_Home (Mobile) — Baixar dados via JSON (Automate)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+#
+# Aviso na tela: Notify nativo (nao cmpToast — isso e so Desktop).
+#
+# Nao ClearCollect(Inventario) e nao ForAll SE a SE.
+# Fluxo: docs/automate/flxBaixarCampanha.md
+# ParseJSON + ForAll monta a colecao na memoria (foge dos 2000).
+#
+# OnStart NAO conta Inventario. QtdItens = 0 ate o download.
+# Tela_ItensVisita NAO consulta Inventario no OnVisible.
+
+## App.OnStart — bloco colCampanhas (troca o QtdItens)
+
+ClearCollect(
+    colCampanhas;
+    AddColumns(
+        Filter('Campanhas '; Ativo = "Sim");
+        QtdSEs;
+        With(
+            {cod: ThisRecord.CodInventario};
+            CountRows(Filter(Subestacoes; CodInventario = cod))
+        );
+        QtdItens;
+        0
+    )
+);;
+SaveData(colCampanhas; "cache_Campanhas")
+
+## Tela_Home → btnBaixarDados → OnSelect (Baixar dados)
+
+# Overlay transparente em cima do tile "Baixar dados". No YAML antigo era Button3.
+# Studio: Power Automate → adicionar flxBaixarCampanha (Atualizar depois de publicar).
+# Saidas do Run vem minusculas: jsonitens / jsonses / qtditens / qtdses / erro.
+
+Set(varCarregando; true);;
+If(
+    Connection.Connected;
+    ClearCollect(colTUC; TabelaTUC);;
+    SaveData(colTUC; "cache_TUC");;
+    ClearCollect(colAtributos; TabelaAtributos);;
+    SaveData(colAtributos; "cache_Atributos");;
+    ClearCollect(colLookup; TabelasUnificadas);;
+    SaveData(colLookup; "cache_Lookup");;
+    ClearCollect(colConcessionarias; Filter(Concessionarias; Ativo = "Sim"));;
+    SaveData(colConcessionarias; "cache_Concessionarias");;
+    ClearCollect(
+        colCampanhas;
+        AddColumns(
+            Filter('Campanhas '; Ativo = "Sim");
+            QtdSEs;
+            With(
+                {cod: ThisRecord.CodInventario};
+                CountRows(Filter(Subestacoes; CodInventario = cod))
+            );
+            QtdItens;
+            0
+        )
+    );;
+    Set(varCodCampanha; gblInventarioSelecionado.CodInventario);;
+    With(
+        {saida: flxBaixarCampanha.Run(varCodCampanha)};
+        If(
+            !IsBlank(saida.erro) && saida.erro <> "-";
+            Notify(saida.erro; NotificationType.Error);
+            ClearCollect(
+                colSubestacoes;
+                ForAll(
+                    Table(ParseJSON(saida.jsonses)) As lin;
+                    {
+                        ID: Value(Coalesce(Text(lin.Value.ID); "0"));
+                        CodInventario: Coalesce(Text(lin.Value.CodInventario); "");
+                        CodSE: Coalesce(Text(lin.Value.CodSE); "");
+                        NomeSE: Coalesce(Text(lin.Value.NomeSE); "");
+                        SubODI: Coalesce(Text(lin.Value.SubODI); "");
+                        Regional: Coalesce(Text(lin.Value.Regional); "");
+                        Municipio: Coalesce(Text(lin.Value.Municipio); "");
+                        UF: Coalesce(Text(lin.Value.UF); "");
+                        TI: Value(Coalesce(Text(lin.Value.TI); "0"));
+                        CM: Value(Coalesce(Text(lin.Value.CM); "0"));
+                        ClasseTensao: Coalesce(Text(lin.Value.ClasseTensao); "");
+                        ArranjoFisico: Value(Coalesce(Text(lin.Value.ArranjoFisico); "0"));
+                        LocalInstalacao: Value(Coalesce(Text(lin.Value.LocalInstalacao); "0"));
+                        Status: Coalesce(Text(lin.Value.Status); "")
+                    }
+                )
+            );;
+            ClearCollect(
+                colInventarioBase;
+                ForAll(
+                    Table(ParseJSON(saida.jsonitens)) As lin;
+                    {
+                        ID: Value(Coalesce(Text(lin.Value.ID); "0"));
+                        CodInventario: Coalesce(Text(lin.Value.CodInventario); "");
+                        CodSE: Coalesce(Text(lin.Value.CodSE); "");
+                        NomeSE: Coalesce(Text(lin.Value.NomeSE); "");
+                        CodTUC: Value(Coalesce(Text(lin.Value.CodTUC); "0"));
+                        AtributoA1: Value(Coalesce(Text(lin.Value.AtributoA1); "0"));
+                        AtributoA2: Value(Coalesce(Text(lin.Value.AtributoA2); "0"));
+                        AtributoA3: Value(Coalesce(Text(lin.Value.AtributoA3); "0"));
+                        AtributoA4: Value(Coalesce(Text(lin.Value.AtributoA4); "0"));
+                        AtributoA5: Value(Coalesce(Text(lin.Value.AtributoA5); "0"));
+                        AtributoA6: Value(Coalesce(Text(lin.Value.AtributoA6); "0"));
+                        DescricaoBem: Coalesce(Text(lin.Value.DescricaoBem); "");
+                        Quantidade: Value(Coalesce(Text(lin.Value.Quantidade); "0"));
+                        Unidade: Coalesce(Text(lin.Value.Unidade); "");
+                        Origem: Coalesce(Text(lin.Value.Origem); "");
+                        Status: Coalesce(Text(lin.Value.Status); "");
+                        Sobra: Coalesce(Text(lin.Value.Sobra); "");
+                        ValidadoPor: Coalesce(Text(lin.Value.ValidadoPor); "");
+                        CodAsset: Coalesce(Text(lin.Value.CodAsset); "");
+                        Fabricante: Coalesce(Text(lin.Value.Fabricante); "");
+                        Modelo: Coalesce(Text(lin.Value.Modelo); "");
+                        NumSerie: Coalesce(Text(lin.Value.NumSerie); "");
+                        CodOperacao: Coalesce(Text(lin.Value.CodOperacao); "");
+                        Ano: Value(Coalesce(Text(lin.Value.Ano); "0"));
+                        CM: Value(Coalesce(Text(lin.Value.CM); "0"));
+                        Observacoes: Coalesce(Text(lin.Value.Observacoes); "");
+                        Imobilizado: Coalesce(Text(lin.Value.Imobilizado); "");
+                        Elegivel: Coalesce(Text(lin.Value.Elegivel); "");
+                        Reserva: Coalesce(Text(lin.Value.Reserva); "");
+                        Bay: Coalesce(Text(lin.Value.Bay); "");
+                        Projeto: Coalesce(Text(lin.Value.Projeto); "");
+                        IdItem: Value(Coalesce(Text(lin.Value.IdItem); "0"));
+                        DescricaoTUC: Coalesce(Text(lin.Value.DescricaoTUC); "");
+                        IdUC: Coalesce(Text(lin.Value.IdUC); "");
+                        TI: Value(Coalesce(Text(lin.Value.TI); "0"));
+                        LocalInstalacao: Value(Coalesce(Text(lin.Value.LocalInstalacao); "0"));
+                        ArranjoFisico: Value(Coalesce(Text(lin.Value.ArranjoFisico); "0"));
+                        QuantidadeCampo: Value(Coalesce(Text(lin.Value.QuantidadeCampo); "0"));
+                        Title: Coalesce(Text(lin.Value.Title); "")
+                    }
+                )
+            );;
+            If(
+                varPerfil <> "ESCRITORIO";
+                ClearCollect(
+                    colSubestacoes;
+                    Filter(
+                        colSubestacoes;
+                        CodSE in Filter(
+                            colAlocacoes;
+                            Login = gblUsuario.Login
+                            && Ativo = "Sim"
+                            && CodInventario = varCodCampanha
+                        ).CodSE
+                    )
+                );;
+                ClearCollect(
+                    colInventarioBase;
+                    Filter(
+                        colInventarioBase;
+                        CodSE in Filter(
+                            colAlocacoes;
+                            Login = gblUsuario.Login
+                            && Ativo = "Sim"
+                            && CodInventario = varCodCampanha
+                        ).CodSE
+                    )
+                )
+            );;
+            Patch(
+                colCampanhas;
+                LookUp(colCampanhas; CodInventario = varCodCampanha);
+                {QtdItens: Value(Coalesce(saida.qtditens; "0"))}
+            );;
+            IfError(SaveData(colCampanhas; "cache_Campanhas"); Blank());;
+            IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+            IfError(SaveData(colInventarioBase; "cache_InventarioBase"); Blank());;
+            ClearCollect(colUltimaSinc; {DataHora: Now()});;
+            IfError(SaveData(colUltimaSinc; "cache_UltimaSinc"); Blank());;
+            Set(gblUltimaSincronizacao; Now());;
+            Notify("Dados atualizados com sucesso!"; NotificationType.Success)
+        )
+    );
+    Notify("Sem conexão. Conecte-se para baixar os dados."; NotificationType.Error)
+);;
+Set(varCarregando; false)
+
+## Tela_ItensVisita → OnVisible
+
+Set(varCarregando; true);;
+Set(varMostraCaptura; false);;
+Set(varCodSE; gblSEselecionada.CodSE);;
+Set(varCarregando; false)
+
+## Tela_SelecionarSE → Gallery4 → Button6 → OnSelect
+
+Set(varCarregando; true);;
+Set(
+    gblSEselecionada;
+    {
+        ID: ThisItem.ID;
+        CodInventario: ThisItem.CodInventario;
+        CodSE: ThisItem.CodSE;
+        NomeSE: ThisItem.NomeSE;
+        SubODI: ThisItem.SubODI;
+        Regional: ThisItem.Regional;
+        Municipio: ThisItem.Municipio;
+        UF: ThisItem.UF;
+        TI: ThisItem.TI;
+        CM: ThisItem.CM
+    }
+);;
+Set(varCodSE; ThisItem.CodSE);;
+Set(gblTipoBemSelecionado; Blank());;
+Navigate(Tela_ItensVisita; ScreenTransition.Fade);;
+Set(varCarregando; false)

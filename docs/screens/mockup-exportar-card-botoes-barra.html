@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tela_Exportar — botões da planilha e cCardProg</title>
+<style>
+  :root{
+    --navy:#153965; --navy2:#1B4C86;
+    --page:#EBEAEA; --card:#fff; --border:#C2C1C1;
+    --title:#153965; --label:#706F6E; --text:#323130;
+    --primary:#348FFD; --primaryD30:#2464B1; --primaryL90:#EBF4FF;
+    --success:#40A73F; --successD30:#2D752C; --successL70:#C6E5C5; --successL90:#ECF6EC;
+    --neutralL90:#EBEAEA; --neutralL95:#F5F5F5; --delete:#F1416C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#d5d8dc}
+  body{font-family:"Segoe UI",Arial,sans-serif; color:var(--text); padding:18px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.1px; color:var(--primary); margin-bottom:6px}
+  h1{font-size:20px; font-weight:700; margin-bottom:4px}
+  .lead{font-size:13px; color:#3d444e; line-height:1.45; max-width:1040px; margin-bottom:14px}
+  .lead b{color:#1a1a1a}
+  .app{
+    width:1180px; display:flex; border-radius:12px; overflow:hidden;
+    border:1px solid #b7b6b6; background:var(--page);
+  }
+  .sb{width:196px; flex:0 0 196px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:16px 12px 12px}
+  .brand{font-size:15px; font-weight:700; letter-spacing:-.2px; padding:4px 8px 18px}
+  .brand span{color:#7eb6ff}
+  .ni{height:38px; border-radius:8px; display:flex; align-items:center; gap:10px; padding:0 10px; font-size:13px; font-weight:600; color:#d6e4f5}
+  .ni.on{background:var(--navy2); color:#fff}
+  .nav{display:flex; flex-direction:column; gap:4px; flex:1}
+  .theme{height:30px; border-radius:15px; background:rgba(255,255,255,.12); display:flex; padding:3px}
+  .theme span{flex:1; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#c9dcf2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8aa8c9; text-align:center; margin-top:6px}
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{height:58px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 18px}
+  .toptitle{font-size:18px; font-weight:700; color:var(--title)}
+  .topsub{font-size:11.5px; color:var(--label); margin-top:1px}
+  .topr{text-align:right; font-size:12px; color:var(--title); font-weight:600}
+  .topr small{display:block; font-size:10px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px}
+  .kpis{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .kpi{background:#fff; border:1px solid var(--border); border-radius:12px; padding:12px 14px}
+  .kpil{font-size:10px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .kpiv{font-size:26px; font-weight:700; line-height:1.05; margin-top:2px}
+  .kpi.in .kpiv{color:var(--primaryD30)}
+  .kpi.out .kpiv{color:var(--successD30)}
+  .kpisub{font-size:12px; color:var(--label); margin-top:2px}
+  .split{display:grid; grid-template-columns:280px 1fr; gap:12px}
+  .panel{background:#fff; border:1px solid var(--border); border-radius:12px; padding:14px}
+  .ph{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px}
+  .pt{font-size:15px; font-weight:700; color:var(--title)}
+  .ps{font-size:11.5px; color:var(--label)}
+  .drop{height:220px; border:1.5px dashed #b7c4d4; border-radius:12px; background:#f7fafd; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:16px}
+  .plus{width:44px; height:44px; border-radius:10px; background:var(--primaryL90); color:var(--primaryD30); font-size:26px; font-weight:600; display:flex; align-items:center; justify-content:center}
+  .dropt{font-size:15px; font-weight:700; color:var(--title)}
+  .drops{font-size:12px; color:var(--label); line-height:1.4}
+  .btnnew{height:36px; padding:0 16px; border-radius:8px; background:var(--navy); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center}
+  .rows{display:flex; flex-direction:column; gap:10px}
+  .card{
+    background:var(--neutralL95); border:1px solid var(--border); border-radius:15px;
+    display:flex; flex-direction:column; overflow:hidden; position:relative;
+  }
+  .mid{display:grid; grid-template-columns:1fr auto auto 150px; gap:14px; align-items:start; padding:12px 14px 12px 16px; min-height:108px}
+  .name{font-size:15px; font-weight:700; color:var(--primaryD30)}
+  .meta{font-size:13px; color:var(--label); font-weight:600; margin-top:2px}
+  .lbl{font-size:11px; font-weight:700; margin-top:6px; min-height:14px}
+  .lbl.wait{color:var(--primaryD30)}
+  .lbl.ok{color:var(--successD30)}
+  .chip{height:26px; padding:0 12px; border-radius:100px; font-size:12px; font-weight:700; display:inline-flex; align-items:center; white-space:nowrap}
+  .c-run{background:var(--primaryL90); color:var(--primaryD30)}
+  .c-imp{background:var(--primaryL90); color:var(--primaryD30)}
+  .c-del{background:#FDE8EE; color:#C2254A}
+  .qty{text-align:center; min-width:72px}
+  .qty b{display:block; font-size:22px; line-height:1; color:var(--successD30)}
+  .qty span{font-size:11px; font-weight:600; color:var(--label)}
+  .qty.zero b{color:var(--label)}
+  .acts{display:flex; flex-direction:column; gap:6px; align-items:stretch}
+  .excluir{height:22px; text-align:right; font-size:12px; font-weight:700; color:var(--delete)}
+  .excluir.off{opacity:.35}
+  .btn{height:36px; border-radius:10px; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center}
+  .btn.go{background:var(--navy); color:#fff}
+  .btn.upd{background:var(--navy); color:#fff}
+  .btn.down{background:var(--successD30); color:#fff}
+  .btn.off{background:#fff; color:#ADADAC; border:1px solid var(--border)}
+  .prog{height:58px; padding:4px 18px 10px; display:flex; flex-direction:column; justify-content:center; gap:6px}
+  .ptxt{font-size:13px; color:var(--label)}
+  .ptxt b{color:var(--primaryD30)}
+  .prog.del .ptxt b{color:var(--delete)}
+  .track{height:16px; border-radius:100px; background:#C2C1C1; overflow:hidden}
+  .track i{display:block; height:100%; border-radius:100px; background:var(--success)}
+  .prog.del .track i{background:var(--delete)}
+</style>
+</head>
+<body>
+  <div class="kicker">TELA_EXPORTAR · CARD DA GALERIA</div>
+  <h1>Botões e rótulo ficam acima do cCardProg</h1>
+  <p class="lead">A barra ocupa a faixa de baixo, na largura do card. <b>Planilha</b>, <b>Gerando</b>, <b>Atualizar</b> e <b>Baixar</b> ficam na coluna da direita, nessa faixa de cima. O rótulo fica sob o período, à esquerda. <b>Excluir</b> continua no canto.</p>
+
+  <div class="app" id="cards">
+    <aside class="sb">
+      <div class="brand">asset<span>experts</span></div>
+      <nav class="nav">
+        <div class="ni">Home</div>
+        <div class="ni on">Importar / Exportar</div>
+        <div class="ni">Conferência</div>
+        <div class="ni">Inventários</div>
+        <div class="ni">Usuários</div>
+      </nav>
+      <div class="theme"><span class="on">Light</span><span>Dark</span></div>
+      <div class="ver">v1.0</div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div>
+          <div class="toptitle">Importar / Exportar</div>
+          <div class="topsub">Importar planilha e exportar SEs finalizadas</div>
+        </div>
+        <div class="topr"><small>Última importação</small>Neoenergia Brasil Out 2026 · 08/10/2026</div>
+      </header>
+      <div class="body">
+        <div class="kpis">
+          <div class="kpi in"><div class="kpil">Entrada</div><div class="kpiv">1</div><div class="kpisub">campanhas no sistema</div></div>
+          <div class="kpi out"><div class="kpil">Saída pronta</div><div class="kpiv">2</div><div class="kpisub">SEs Finalizada · podem baixar agora</div></div>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <div class="ph"><div class="pt">Importar</div><div class="ps">Cria projeto + SEs + itens</div></div>
+            <div class="drop">
+              <div class="plus">+</div>
+              <div class="dropt">Novo projeto</div>
+              <div class="drops">Nome, período, concessionária e a planilha.</div>
+              <div class="btnnew">Novo projeto</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="pt">Exportar</div><div class="ps">Só SEs finalizadas deste projeto</div></div>
+            <div class="rows">
+
+              <div class="card">
+                <div class="mid">
+                  <div>
+                    <div class="name">Neoenergia Brasil Out 2026</div>
+                    <div class="meta">outubro 2026 · 4 instalações</div>
+                    <div class="lbl"></div>
+                  </div>
+                  <span class="chip c-imp">Importando</span>
+                  <div class="qty zero"><b>0</b><span>finalizadas</span></div>
+                  <div class="acts">
+                    <div class="excluir off">Excluir</div>
+                    <div class="btn off">Planilha</div>
+                  </div>
+                </div>
+                <div class="prog">
+                  <div class="ptxt">12 de 48 itens · <b>25%</b></div>
+                  <div class="track"><i style="width:25%"></i></div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="mid">
+                  <div>
+                    <div class="name">Neoenergia Brasília</div>
+                    <div class="meta">setembro 2026 · 18 instalações</div>
+                    <div class="lbl wait">Gerando planilha</div>
+                  </div>
+                  <span class="chip c-run">Em andamento</span>
+                  <div class="qty"><b>18</b><span>finalizadas</span></div>
+                  <div class="acts">
+                    <div class="excluir">Excluir</div>
+                    <div class="btn go">Gerando</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="mid">
+                  <div>
+                    <div class="name">Coelba</div>
+                    <div class="meta">junho 2026 · 15 instalações</div>
+                    <div class="lbl ok">Planilha pronta</div>
+                  </div>
+                  <span class="chip c-run">Em andamento</span>
+                  <div class="qty"><b>15</b><span>finalizadas</span></div>
+                  <div class="acts">
+                    <div class="excluir">Excluir</div>
+                    <div class="btn upd">Atualizar</div>
+                    <div class="btn down">Baixar</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="mid">
+                  <div>
+                    <div class="name">Enel São Paulo</div>
+                    <div class="meta">agosto 2026 · 6 instalações</div>
+                    <div class="lbl"></div>
+                  </div>
+                  <span class="chip c-del">Excluindo</span>
+                  <div class="qty"><b>2</b><span>finalizadas</span></div>
+                  <div class="acts">
+                    <div class="excluir off">Excluir</div>
+                    <div class="btn off">Planilha</div>
+                  </div>
+                </div>
+                <div class="prog del">
+                  <div class="ptxt">8 itens restantes · <b>60%</b></div>
+                  <div class="track"><i style="width:60%"></i></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

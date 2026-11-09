@@ -1,0 +1,16 @@
+# REDIRECIONADO — 2026-09-07
+#
+# A tela de arquivo no Studio e Tela_Exportar (menu Importar / Exportar).
+# Tela_Home e a galeria de campanhas. Nao existe Tela_Campanhas.
+#
+# Spec: docs/powerfx/Tela_Exportar-formulas.txt
+# Pastas / dois botoes: docs/exportacao-fotos-pastas.md
+# Mockup: docs/screens/mockup-home-importar-exportar.html
+# PNG tela: docs/screens/tela-exportar.png · tela-exportar-container.png
+# Mockup pastas: docs/screens/mockup-pastas-fotos.html
+# Importar (container): docs/screens/mockup-importar-projeto.html
+# PNG: docs/screens/exportar-planilha-fotos.png
+#      (botao Fotos no mockup = stand-by; app = so Planilha)
+#      docs/screens/pastas-fotos-apos-importar.png
+#      docs/screens/pastas-fotos-apos-visita.png
+#      docs/screens/importar-projeto-existente.png · importar-projeto-nova.png

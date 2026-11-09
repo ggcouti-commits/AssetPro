@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>App Inventariantes — galeria de projetos</title>
+<style>
+  :root{
+    --navy:#123B6E; --green:#40A73F; --green-tx:#2D752C; --green-bg:#ECF6EC;
+    --page:#EBEAEA; --title:#153965;
+    --label:#706F6E; --text:#323130; --primary:#348FFD; --primary-bg:#EBF4FF; --primary-tx:#2464B1;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px 22px 36px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  h1{font-size:22px; font-weight:650; margin-bottom:6px; color:#1a1a1a}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:980px; margin-bottom:18px}
+  .lead b{color:#1a1a1a}
+
+  .app{width:1280px; height:720px; display:flex; flex-direction:column; border:1px solid #D5D8DC; border-radius:12px; overflow:hidden; background:var(--page); box-shadow:0 8px 28px rgba(18,59,110,.08)}
+
+  .topbar{height:56px; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 20px; flex:0 0 56px}
+  .brand{display:flex; align-items:center; gap:10px}
+  .logo{width:30px; height:30px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700; line-height:1.15}
+  .brandsub{font-size:10px; color:#9EC4F0}
+  .top-right{display:flex; align-items:center; gap:12px}
+  .user{display:flex; align-items:center; gap:8px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.2}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .pill-slot{height:26px; padding:0 10px; border-radius:999px; background:rgba(255,255,255,.14); color:#E8F0FA; font-size:11px; font-weight:700; display:flex; align-items:center}
+  .btn-sair{height:32px; padding:0 12px; border-radius:8px; border:1px solid rgba(255,255,255,.28); background:transparent; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px}
+
+  .main{flex:1; min-height:0; display:flex; flex-direction:column}
+  .hdr{height:64px; background:#fff; border-bottom:1px solid #E1E5EA; display:flex; align-items:center; justify-content:space-between; padding:0 22px}
+  .tt{font-size:18px; font-weight:700; color:var(--title)}
+  .ts{font-size:12px; color:var(--label); margin-top:2px}
+  .hint-top{font-size:11.5px; color:var(--label); max-width:340px; text-align:right; line-height:1.35}
+
+  .body{padding:16px 22px 18px; display:flex; flex-direction:column; gap:12px; flex:1; min-height:0}
+  .search{height:38px; border:1px solid #E1E5EA; border-radius:10px; background:#fff; display:flex; align-items:center; padding:0 12px; gap:8px; color:#9AA3AE; font-size:13px}
+  .filts{display:flex; gap:6px}
+  .filt{height:26px; padding:0 11px; border-radius:999px; font-size:11px; font-weight:700; border:1px solid #E1E5EA; background:#fff; color:var(--label); display:flex; align-items:center}
+  .filt.on{background:var(--navy); border-color:var(--navy); color:#fff}
+
+  .g2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .cc{background:#fff; border:1px solid #E1E5EA; border-radius:12px; padding:14px 15px 13px; cursor:pointer}
+  .cc:hover{border-color:#7AADD8; box-shadow:0 2px 10px rgba(52,143,253,.12)}
+  .cch{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .ccn{font-size:15px; font-weight:700; color:var(--title)}
+  .ccm{font-size:12px; color:var(--label); margin-top:3px}
+  .chip{height:22px; padding:0 9px; border-radius:999px; font-size:10.5px; font-weight:700; display:inline-flex; align-items:center; flex:0 0 auto}
+  .c-run{background:var(--primary-bg); color:var(--primary-tx)}
+  .c-ok{background:var(--green-bg); color:var(--green-tx)}
+  .bar{height:6px; background:#E6EAEE; border-radius:3px; margin-top:11px}
+  .bar i{display:block; height:100%; background:var(--green); border-radius:3px}
+  .bf{display:flex; justify-content:space-between; font-size:11.5px; color:var(--label); margin-top:6px}
+  .bf b{color:var(--title)}
+  .mini{display:flex; gap:16px; margin-top:10px; padding-top:10px; border-top:1px solid #EDF0F3; font-size:11px; color:var(--label)}
+  .mini b{display:block; font-size:14px; color:var(--title); margin-bottom:1px}
+</style>
+</head>
+<body>
+  <div class="kicker">APP INVENTARIANTES · TELA INICIAL</div>
+  <h1>Galeria de projetos (após login)</h1>
+  <p class="lead">Fluxo único — <b>sem menu lateral</b>. Topbar com marca, slot e Sair. Inventariante só vê o designado; escritório vê tudo.</p>
+
+  <div class="app" id="galeria">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/></svg></div>
+        <div>
+          <div class="brandname">Infralytics</div>
+          <div class="brandsub">Inventariantes</div>
+        </div>
+      </div>
+      <div class="top-right">
+        <div class="pill-slot">Inventariante01</div>
+        <div class="user"><div class="av">RA</div><div class="uname"><b>Ricardo Alves</b>inventariante</div></div>
+        <div class="btn-sair"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Sair</div>
+      </div>
+    </header>
+    <section class="main">
+      <div class="hdr">
+        <div>
+          <div class="tt">Inventários</div>
+          <div class="ts">Projetos designados a você</div>
+        </div>
+        <div class="hint-top">Só o que está em Alocacoes deste slot.<br>Conta escritório vê todos os projetos.</div>
+      </div>
+      <div class="body">
+        <div class="search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA3AE" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg>
+          Buscar projeto
+        </div>
+        <div class="filts">
+          <div class="filt on">Todos (2)</div>
+          <div class="filt">Em andamento (1)</div>
+          <div class="filt">Concluído (1)</div>
+        </div>
+        <div class="g2">
+          <div class="cc">
+            <div class="cch">
+              <div>
+                <div class="ccn">Neoenergia Pernambuco</div>
+                <div class="ccm">Agosto 2026 · Elétrica · 4 instalações suas</div>
+              </div>
+              <span class="chip c-run">Em andamento</span>
+            </div>
+            <div class="bar"><i style="width:50%"></i></div>
+            <div class="bf"><span><b>2</b> de 4 revisadas por você</span><span>50%</span></div>
+            <div class="mini">
+              <div><b>1</b>em campo</div>
+              <div><b>1</b>finalizada</div>
+              <div><b>2</b>pendentes</div>
+            </div>
+          </div>
+          <div class="cc">
+            <div class="cch">
+              <div>
+                <div class="ccn">Neoenergia Coelba</div>
+                <div class="ccm">Junho 2026 · Elétrica · 3 instalações suas</div>
+              </div>
+              <span class="chip c-ok">Concluído</span>
+            </div>
+            <div class="bar"><i style="width:100%"></i></div>
+            <div class="bf"><span><b>3</b> de 3 revisadas por você</span><span>100%</span></div>
+            <div class="mini">
+              <div><b>0</b>em campo</div>
+              <div><b>3</b>finalizadas</div>
+              <div><b>0</b>pendentes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

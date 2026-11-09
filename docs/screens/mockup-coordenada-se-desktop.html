@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — coordenada e chip da subestação</title>
+<style>
+  :root{
+    --side:#0E2744; --side2:#14365C; --active:#2F6FE0;
+    --page:#F4F6F8; --card:#fff; --line:#E4E8EE;
+    --title:#16324F; --muted:#6B7683; --text:#243140;
+    --green:#3BAA48; --okbg:#E5F6E6; --oktx:#2E7D32;
+    --pendbg:#EEF0F3; --pendtx:#6B7683;
+    --strip:#EAF3FF; --stripbd:#C9DDF6;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:#E7EBEF; font-family:"Segoe UI",system-ui,Arial,sans-serif; color:var(--text); padding:16px; width:1248px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1px; color:var(--active); margin-bottom:4px}
+  h1{font-size:18px; font-weight:650; margin-bottom:4px; color:#1a1a1a}
+  .lead{font-size:13px; color:#3d444e; line-height:1.45; margin-bottom:12px; max-width:1100px}
+  .lead b{color:#1a1a1a}
+  .app{width:1216px; height:640px; display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--page)}
+  .sb{width:196px; background:var(--side); color:#fff; display:flex; flex-direction:column; padding:14px 10px 12px}
+  .brand{display:flex; align-items:center; gap:8px; padding:2px 8px 16px; font-weight:700; font-size:15px; letter-spacing:-.2px}
+  .mark{width:22px; height:22px; border-radius:6px; background:var(--active); display:flex; align-items:center; justify-content:center}
+  .ni{height:36px; border-radius:8px; display:flex; align-items:center; gap:8px; padding:0 10px; font-size:13px; font-weight:600; color:#D5E2F0; margin-bottom:2px}
+  .ni.on{background:var(--active); color:#fff}
+  .foot{margin-top:auto; padding:8px}
+  .theme{height:30px; border-radius:15px; background:rgba(255,255,255,.1); display:flex; padding:3px}
+  .theme span{flex:1; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9D7E6}
+  .theme .on{background:var(--active); color:#fff}
+  .ver{text-align:center; font-size:10px; color:#8AA0B8; margin-top:6px}
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{height:64px; background:#fff; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; padding:0 16px}
+  .topt{display:flex; align-items:center; gap:10px}
+  .back{width:28px; height:28px; display:flex; align-items:center; justify-content:center}
+  .toptitle{font-size:16px; font-weight:700; color:var(--title); display:flex; align-items:center; gap:8px}
+  .topsub{font-size:12px; color:var(--muted); margin-top:2px}
+  .chip{display:inline-flex; align-items:center; height:22px; padding:0 10px; border-radius:999px; font-size:11px; font-weight:700}
+  .chip.ok{background:var(--okbg); color:var(--oktx)}
+  .chip.wait{background:var(--pendbg); color:var(--pendtx)}
+  .fotosbtn{height:32px; padding:0 12px; border:1px solid #D5DEE8; border-radius:8px; background:#fff; display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:650; color:var(--title)}
+  .body{padding:12px 14px; display:flex; flex-direction:column; gap:10px; min-height:0; flex:1}
+  .ctx{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; align-items:center; gap:16px}
+  .ctx h2{font-size:14px; color:var(--title)}
+  .ctx p{font-size:12px; color:var(--muted); margin-top:2px}
+  .barwrap{width:210px}
+  .bar{height:8px; background:#E6EAEE; border-radius:4px; overflow:hidden}
+  .bar i{display:block; height:100%; width:60%; background:var(--green)}
+  .barfoot{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:4px}
+  .coord{margin-left:auto; display:flex; align-items:center; gap:10px; background:var(--strip); border:1px solid var(--stripbd); border-radius:10px; padding:6px 8px 6px 12px}
+  .ck{font-size:10px; font-weight:700; color:var(--muted); letter-spacing:.3px}
+  .cv{font-size:13px; font-weight:700; color:var(--title); font-variant-numeric:tabular-nums}
+  .csep{width:1px; height:26px; background:#D3E0F0}
+  .copy{height:30px; padding:0 10px; border:0; border-radius:8px; background:var(--title); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; gap:5px}
+  .tec{font-size:12px; color:var(--muted); text-align:right; min-width:132px}
+  .tec b{display:block; color:var(--title); font-size:13px; margin-top:1px}
+  .tools{display:flex; align-items:center; gap:8px}
+  .search{flex:1; height:36px; border:1px solid var(--line); border-radius:10px; background:#fff; display:flex; align-items:center; gap:8px; padding:0 12px; color:#9AA3AE; font-size:13px}
+  .tab{height:30px; padding:0 14px; border-radius:999px; border:1px solid var(--line); background:#fff; font-size:12px; font-weight:700; color:var(--muted); display:flex; align-items:center}
+  .tab.on{background:var(--side); color:#fff; border-color:var(--side)}
+  .table{background:#fff; border:1px solid var(--line); border-radius:12px; overflow:hidden}
+  table{width:100%; border-collapse:collapse}
+  th{text-align:left; font-size:11px; letter-spacing:.4px; color:#8A93A0; font-weight:700; padding:10px 12px; border-bottom:1px solid var(--line)}
+  td{font-size:13px; padding:11px 12px; border-bottom:1px solid #F0F2F5; color:var(--text); vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  .code{font-weight:650; color:var(--title)}
+  .muted{color:var(--muted)}
+  .fotos{display:flex; align-items:center; gap:4px; color:var(--title); font-weight:650}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · ITENS DA SUBESTAÇÃO</div>
+  <h1>Chip de status e coordenada com copiar</h1>
+  <p class="lead">O status sai do texto do subtítulo e vira chip ao lado do nome. A coordenada fica na faixa branca, com o botão <b>Copiar</b>. Não há estado vazio: a subestação já chegou com foto.</p>
+  <div class="app">
+    <aside class="sb">
+      <div class="brand">
+        <div class="mark"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9z"/></svg></div>
+        assetexperts
+      </div>
+      <div class="ni on">Home</div>
+      <div class="ni">Importar / Exportar</div>
+      <div class="ni">Conferência</div>
+      <div class="ni">Inventários</div>
+      <div class="ni">Usuários</div>
+      <div class="foot">
+        <div class="theme"><span class="on">Light</span><span>Dark</span></div>
+        <div class="ver">1.0.0</div>
+      </div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div class="topt">
+          <div class="back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16324F" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg></div>
+          <div>
+            <div class="toptitle">7SEGU001 — SE U 138KV GUARA II CONSTR <span class="chip ok">Finalizada</span></div>
+            <div class="topsub">CEEE Out 2026 · — · 138 kV</div>
+          </div>
+        </div>
+        <div class="fotosbtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16324F" stroke-width="1.8"><path d="M4 8h3l2-2h6l2 2h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>
+          Fotos da SE (8)
+        </div>
+      </header>
+      <div class="body">
+        <div class="ctx">
+          <div>
+            <h2>Itens dessa instalação</h2>
+            <p>Clique em um item para ver detalhes e fotos</p>
+          </div>
+          <div class="barwrap">
+            <div class="bar"><i></i></div>
+            <div class="barfoot"><span>3 de 5 itens revisados</span><span>60%</span></div>
+          </div>
+          <div class="coord">
+            <svg width="14" height="14" viewBox="0 0 512 512" fill="none" stroke="#16324F" stroke-width="36"><path d="M256 48c-79.5 0-144 64.5-144 144 0 108 144 272 144 272s144-164 144-272c0-79.5-64.5-144-144-144z"/><circle cx="256" cy="192" r="48"/></svg>
+            <div><div class="ck">X</div><div class="cv">−51.230412</div></div>
+            <div class="csep"></div>
+            <div><div class="ck">Y</div><div class="cv">−30.034880</div></div>
+            <button class="copy" type="button">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M4 16V6a2 2 0 012-2h10"/></svg>
+              Copiar
+            </button>
+          </div>
+          <div class="tec">Técnico:<b>Ricardo Vassão</b></div>
+        </div>
+        <div class="tools">
+          <div class="search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA3AE" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg>
+            Buscar item, TUC ou código
+          </div>
+          <div class="tab on">BASE (5)</div>
+          <div class="tab">SOBRAS (0)</div>
+        </div>
+        <div class="table">
+          <table>
+            <thead>
+              <tr>
+                <th>IMOBILIZADO</th><th>TUC.A1</th><th>DESCRIÇÃO DO BEM</th><th>BASE</th><th>CAMPO</th><th>FOTOS</th><th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="code">100000000497-5</td><td>305.03</td><td>— GIS 17,5KV 2000/630A 25KA BS AL1</td><td>1,0 UN</td><td>1,0 UN</td><td><span class="fotos">3</span></td><td><span class="chip ok">Confirmado</span></td>
+              </tr>
+              <tr>
+                <td class="code">100000000497-3</td><td>210.03</td><td>— MHC 3P 145KV 2500A 40KA SF6 BS</td><td>1,0 UN</td><td>1,0 UN</td><td><span class="fotos">3</span></td><td><span class="chip ok">Confirmado</span></td>
+              </tr>
+              <tr>
+                <td class="code">100000000498-36</td><td>485.01</td><td>— RELE DIFERENCIAL LINHA C/ IEC61850</td><td>1,0 UN</td><td class="muted">—</td><td><span class="fotos">0</span></td><td><span class="chip wait">Pendente</span></td>
+              </tr>
+              <tr>
+                <td class="code">100000000498-1</td><td>570.01</td><td>— RELE REGULADOR TENSAO TRAFO FORCA</td><td>1,0 UN</td><td>1,0 UN</td><td><span class="fotos">4</span></td><td><span class="chip ok">Confirmado</span></td>
+              </tr>
+              <tr>
+                <td class="code">100000000497-2</td><td>375.01</td><td>— RETIFICADOR CARREG TIRIST 125VCC 75A 3F</td><td>1,0 UN</td><td class="muted">—</td><td><span class="fotos">0</span></td><td><span class="chip wait">Pendente</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

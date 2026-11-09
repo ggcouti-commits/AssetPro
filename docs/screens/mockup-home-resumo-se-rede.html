@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mobile — home com resumo SE / Rede</title>
+<style>
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif; background:#E8ECF0; padding:28px; color:#1a1a1a}
+  body.export{padding:0; background:#F4F6F8; margin:0}
+  body.export .meta{display:none}
+  body.export .phone{border-radius:0; border:none; box-shadow:none; width:390px; height:844px}
+  h1{font-size:20px; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; max-width:420px; line-height:1.5; margin-bottom:18px}
+  .cap{font-size:11px; font-weight:700; letter-spacing:1px; color:#348FFD; margin-bottom:8px}
+  .phone{
+    width:390px; height:780px; background:#F4F6F8;
+    border:1px solid #E1E5EA; border-radius:22px; overflow:hidden;
+    display:flex; flex-direction:column; box-shadow:0 8px 24px rgba(18,59,110,.12);
+  }
+  .hd{background:#123B6E; color:#fff; padding:18px 16px 14px}
+  .hdtop{display:flex; justify-content:space-between; align-items:flex-start; gap:12px}
+  .hdt{font-size:18px; font-weight:700; line-height:1.2}
+  .hds{font-size:12.5px; opacity:.9; margin-top:6px; display:flex; align-items:center; gap:6px}
+  .bolt{opacity:.85}
+  .swap-wrap{text-align:right; flex-shrink:0}
+  .swap{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:13px; font-weight:700;
+    background:rgba(10,30,60,.45); border-radius:10px; padding:8px 12px;
+  }
+  .dot{width:8px; height:8px; border-radius:50%; background:#40A73F; display:inline-block; margin-right:4px}
+  .off{font-size:12px; margin-top:6px; opacity:.95}
+  .body{padding:12px; display:flex; flex-direction:column; gap:12px; flex:1}
+  .banner{
+    background:#ECF6EC; border:1px solid #C6E5C5; border-radius:14px;
+    padding:12px 14px; display:flex; align-items:center; gap:12px;
+  }
+  .banner .ico{
+    width:36px; height:36px; border-radius:50%; background:#C6E5C5;
+    display:flex; align-items:center; justify-content:center; font-size:18px; color:#2D752C;
+  }
+  .bt{font-size:14px; font-weight:700; color:#2D752C}
+  .bs{font-size:12px; color:#2D752C; margin-top:2px; opacity:.9}
+  .pair{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .tile{
+    background:#fff; border:1px solid #E6EAEF; border-radius:16px;
+    padding:16px 14px; min-height:100px;
+  }
+  .tile .glyph{font-size:22px; color:#163E72; line-height:1}
+  .tile b{display:block; margin-top:10px; font-size:15px; color:#163E72}
+  .tile span{display:block; margin-top:4px; font-size:11.5px; color:#6B7683; line-height:1.3}
+  .tile span.ok{color:#2D752C; font-weight:600}
+  .sec{font-size:11px; font-weight:700; letter-spacing:.7px; color:#6B7683; margin-top:4px}
+  .resumo{
+    background:#fff; border:1px solid #E6EAEF; border-radius:16px;
+    padding:14px 16px; display:flex; flex-direction:column; gap:14px;
+  }
+  .row-prog{display:flex; flex-direction:column; gap:6px}
+  .row-top{display:flex; justify-content:space-between; align-items:baseline; gap:8px}
+  .lbl{font-size:14px; font-weight:700; color:#163E72}
+  .nums{font-size:13px; color:#3d444e}
+  .nums strong{color:#2D752C; font-weight:700}
+  .bar{
+    height:8px; border-radius:999px; background:#E8ECF0; overflow:hidden;
+  }
+  .bar > i{
+    display:block; height:100%; border-radius:999px; background:#40A73F;
+  }
+  .bar.se > i{width:16.7%} /* 1/6 */
+  .bar.rede > i{width:0%}
+  .hint{font-size:11.5px; color:#9AA3AD; margin-top:2px}
+</style>
+</head>
+<body>
+  <div class="meta">
+    <div class="cap">HOME MOBILE · SEM GALERIA</div>
+    <h1>Resumo no lugar das visitas</h1>
+    <p class="lead">Galeria some. Embaixo dos quatro botões: quantas SEs e redes existem neste inventário e quantas já foram finalizadas.</p>
+  </div>
+
+  <div class="phone" id="home">
+    <div class="hd">
+      <div class="hdtop">
+        <div>
+          <div class="hdt">Enel CE Out 2026</div>
+          <div class="hds"><span class="bolt">⚡</span> Outubro 2026 - Em andamento</div>
+        </div>
+        <div class="swap-wrap">
+          <div class="swap">⇄ Trocar</div>
+          <div class="off"><span class="dot"></span>Conectado</div>
+        </div>
+      </div>
+    </div>
+    <div class="body">
+      <div class="banner">
+        <div class="ico">☁</div>
+        <div>
+          <div class="bt">Dados atualizados</div>
+          <div class="bs">Última sincronização: 24/10/2026 às 13:58</div>
+        </div>
+      </div>
+
+      <div class="pair">
+        <div class="tile">
+          <div class="glyph">☁↓</div>
+          <b>Baixar dados</b>
+        </div>
+        <div class="tile">
+          <div class="glyph">☁↑</div>
+          <b>Enviar visita</b>
+          <span class="ok">Nenhuma SE pendente</span>
+        </div>
+      </div>
+      <div class="pair">
+        <div class="tile">
+          <div class="glyph">📍</div>
+          <b>Levantamento</b>
+          <span>Escolher SE e registrar itens</span>
+        </div>
+        <div class="tile">
+          <div class="glyph">🗄</div>
+          <b>Rede</b>
+          <span>Escolher rede e registrar itens</span>
+        </div>
+      </div>
+
+      <div class="sec">NESTE INVENTÁRIO</div>
+      <div class="resumo">
+        <div class="row-prog">
+          <div class="row-top">
+            <div class="lbl">Subestações</div>
+            <div class="nums"><strong>1</strong> de 6 finalizadas</div>
+          </div>
+          <div class="bar se"><i></i></div>
+        </div>
+        <div class="row-prog">
+          <div class="row-top">
+            <div class="lbl">Redes</div>
+            <div class="nums"><strong>0</strong> de 3 finalizadas</div>
+          </div>
+          <div class="bar rede"><i></i></div>
+        </div>
+        <div class="hint">Só as alocadas a você neste aparelho</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

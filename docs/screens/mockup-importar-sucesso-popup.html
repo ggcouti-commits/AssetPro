@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Popup de sucesso da importação</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --green:#3BAA48;
+    --okbg:#DFF3E3; --oktx:#2E7D32;
+    --fieldbg:#D6E8FF; --fieldtx:#1B4C86;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    color:var(--text); padding:22px 22px 30px;
+  }
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1080px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+
+  .app{
+    width:1280px; height:720px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page); position:relative;
+  }
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni.on{background:var(--navy3); color:#fff}
+  .dot{width:16px; height:16px; border-radius:5px; background:rgba(255,255,255,.28); flex:0 0 16px}
+  .ni.on .dot{background:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px; gap:2px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{
+    height:66px; background:#fff; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; padding:0 22px;
+  }
+  .toptitle{font-size:20px; font-weight:700; color:var(--title)}
+  .topsub{font-size:12px; color:var(--label); margin-top:2px}
+  .topright{text-align:right}
+  .trl{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .trv{font-size:12.5px; font-weight:600; color:var(--title); margin-top:2px}
+
+  .body{padding:16px 20px 18px; display:flex; flex-direction:column; gap:12px; flex:1; min-height:0}
+  .kpis{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .kpi{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px}
+  .kpil{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .kpiv{font-size:26px; font-weight:700; line-height:1.1; margin-top:4px}
+  .kpisub{font-size:12px; color:var(--label); margin-top:3px}
+  .kpi.in .kpiv{color:var(--fieldtx)}
+  .kpi.out .kpiv{color:var(--oktx)}
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0}
+  .panel{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column}
+  .ph{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px}
+  .pt{font-size:15px; font-weight:700; color:var(--title)}
+  .ps{font-size:12px; color:var(--label)}
+  .drop{
+    flex:1; border:1.5px dashed #B7C8DC; border-radius:12px; background:#F7FAFD;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:18px;
+  }
+  .dropt{font-size:15px; font-weight:700; color:var(--title)}
+  .drops{font-size:12.5px; color:var(--label); max-width:300px; line-height:1.45}
+  .rows{display:flex; flex-direction:column; gap:8px}
+  .row{border:1px solid var(--border); border-radius:11px; padding:12px 13px; display:flex; align-items:center; gap:12px; background:#FBFCFD}
+  .rn{flex:1; min-width:0}
+  .rname{font-size:14px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:11.5px; color:var(--label); margin-top:2px}
+  .chip{display:inline-flex; align-items:center; height:21px; padding:0 8px; border-radius:999px; font-size:10px; font-weight:700}
+  .c-run{background:var(--fieldbg); color:var(--fieldtx)}
+
+  /* overlay de sucesso */
+  .mask{
+    position:absolute; inset:0; background:rgba(18,59,110,.42);
+    display:flex; align-items:center; justify-content:center; padding:18px;
+  }
+  .dlg{
+    width:600px; background:#fff; border-radius:14px; border:1px solid var(--border);
+    box-shadow:0 18px 48px rgba(18,59,110,.22); overflow:hidden;
+  }
+  .okhd{display:flex; align-items:center; gap:14px; padding:22px 24px 16px}
+  .okico{
+    width:56px; height:56px; border-radius:16px; background:var(--okbg); flex:0 0 56px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .okt{font-size:19px; font-weight:700; color:var(--oktx)}
+  .oks{font-size:14px; color:#706F6E; margin-top:3px}
+  .oks b{color:#2464B1}
+  .nums{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 24px 14px}
+  .num{border:1px solid var(--border); border-radius:11px; background:#F7FAFD; padding:12px 14px}
+  .numv{font-size:24px; font-weight:700; color:var(--oktx); line-height:1.1}
+  .numl{font-size:11px; font-weight:700; letter-spacing:.3px; color:var(--label); text-transform:uppercase; margin-top:3px}
+  .selist{padding:0 24px 4px}
+  .sel{font-size:11px; font-weight:700; letter-spacing:.3px; color:var(--label); text-transform:uppercase; margin-bottom:6px}
+  .seitem{
+    display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--title);
+    padding:6px 0; border-bottom:1px solid #EDF0F3;
+  }
+  .seitem:last-child{border-bottom:0}
+  .secod{font-weight:700; min-width:78px}
+  .senome{flex:1; min-width:0; color:var(--text)}
+  .seqtd{font-size:11.5px; font-weight:700; color:var(--label)}
+  .pasta{
+    margin:12px 24px 0; border:1px solid #C5D4E6; border-radius:10px; background:#F4F8FC;
+    padding:10px 12px; font-size:12px; color:var(--fieldtx);
+  }
+  .pasta b{font-weight:700}
+  .aviso{padding:10px 24px 0; font-size:11.5px; color:var(--label); line-height:1.45}
+  .dlgft{display:flex; justify-content:flex-end; padding:16px 24px 18px}
+  .pri{
+    height:38px; padding:0 20px; border-radius:8px; font-size:13px; font-weight:700;
+    border:1px solid var(--navy); background:var(--navy); color:#fff; display:flex; align-items:center;
+  }
+
+  .legenda{
+    width:1280px; margin-top:14px; background:#fff; border:1px solid var(--border);
+    border-radius:12px; padding:14px 18px 16px;
+  }
+  .legt{font-size:13px; font-weight:700; color:var(--title); margin-bottom:8px}
+  table{border-collapse:collapse; width:100%}
+  th,td{text-align:left; font-size:12px; padding:6px 8px; border-bottom:1px solid #EDF0F3}
+  th{font-size:10.5px; text-transform:uppercase; letter-spacing:.3px; color:var(--label)}
+  code{font-family:Consolas,"Courier New",monospace; font-size:11.5px; color:var(--fieldtx)}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TELA_EXPORTAR · POPUP DE SUCESSO</div>
+  <h1>Importou: popup no lugar do Notify verde.</h1>
+  <p class="lead">Fim do <b>flxImportarCampanha</b>: o overlay de importar fecha e este abre. Mostra o <b>CodInventario</b> gerado (<b>INV-XXX</b>), as contagens que o fluxo respondeu, as SEs criadas e a pasta na biblioteca <b>Projetos</b>. Visível por <b>varImportOK</b>; dados em <b>varImportResumo</b>. Os itens em <b>Inventario</b> continuam entrando depois — o fluxo responde antes do loop.</p>
+
+  <div class="app" id="popup-sucesso">
+    <aside class="sb">
+      <div class="brand">
+        <div class="logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/></svg>
+        </div>
+        <div class="brandname">Infralytics</div>
+      </div>
+      <div class="user">
+        <div class="av">GC</div>
+        <div class="uname"><b>Gustavo Coutinho</b>escritório</div>
+      </div>
+      <nav class="nav">
+        <div class="ni on"><span class="dot"></span>Home</div>
+        <div class="ni"><span class="dot"></span>Projetos</div>
+        <div class="ni"><span class="dot"></span>Conferência</div>
+        <div class="ni"><span class="dot"></span>Cadastros</div>
+      </nav>
+      <div class="foot">
+        <div class="theme"><span class="on">Light</span><span>Dark</span></div>
+        <div class="ver">v.1.0.0</div>
+      </div>
+    </aside>
+
+    <section class="main">
+      <header class="top">
+        <div>
+          <div class="toptitle">Importar / Exportar</div>
+          <div class="topsub">Arquivo da base e saída das SEs finalizadas</div>
+        </div>
+        <div class="topright">
+          <div class="trl">Última importação</div>
+          <div class="trv">CPFL Paulista · 13/09/2026</div>
+        </div>
+      </header>
+      <div class="body">
+        <div class="kpis">
+          <div class="kpi in"><div class="kpil">Entrada</div><div class="kpiv">5</div><div class="kpisub">projetos no sistema</div></div>
+          <div class="kpi out"><div class="kpil">Saída pronta</div><div class="kpiv">18</div><div class="kpisub">SEs Finalizada · podem baixar agora</div></div>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <div class="ph"><div class="pt">Importar</div><div class="ps">Cria projeto + SEs + itens</div></div>
+            <div class="drop">
+              <div class="dropt">Novo projeto</div>
+              <div class="drops">Excel da base (SAP / GIS). Um projeto por arquivo.</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="pt">Exportar</div><div class="ps">Só SEs Finalizada deste projeto</div></div>
+            <div class="rows">
+              <div class="row">
+                <div class="rn"><div class="rname">CPFL Paulista Set 2026</div><div class="rmeta">Set 2026 · Elétrico · 5 instalações</div></div>
+                <span class="chip c-run">Em andamento</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="mask">
+      <div class="dlg">
+        <div class="okhd">
+          <div class="okico">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div>
+            <div class="okt">Projeto importado</div>
+            <div class="oks"><b>INV-002</b> · CPFL Paulista Set 2026</div>
+          </div>
+        </div>
+
+        <div class="nums">
+          <div class="num"><div class="numv">5</div><div class="numl">instalações</div></div>
+          <div class="num"><div class="numv">65</div><div class="numl">itens</div></div>
+        </div>
+
+        <div class="selist">
+          <div class="sel">Instalações criadas</div>
+          <div class="seitem"><span class="secod">7SEGU001</span><span class="senome">SE U 138KV GUARA II CONSTR</span><span class="seqtd">12</span></div>
+          <div class="seitem"><span class="secod">7SEVA001</span><span class="senome">SE U 69KV VALE DO AMANHECER</span><span class="seqtd">14</span></div>
+          <div class="seitem"><span class="secod">7SEBRA001</span><span class="senome">SE U 138KV BRASILIA LESTE</span><span class="seqtd">11</span></div>
+          <div class="seitem"><span class="secod">7SETAG001</span><span class="senome">SE U 34.5KV TAGUATINGA</span><span class="seqtd">13</span></div>
+          <div class="seitem"><span class="secod">7SESOB001</span><span class="senome">SE U 69KV SOBRADINHO</span><span class="seqtd">15</span></div>
+        </div>
+
+        <div class="pasta">Pasta criada: <b>CPFL Paulista Set 2026_INV-002</b></div>
+        <div class="aviso">Os itens continuam entrando em <b>Inventario</b> por alguns minutos. As instalações já aparecem em Projetos.</div>
+
+        <div class="dlgft">
+          <div class="pri">Fechar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legenda">
+    <div class="legt">Controles no Studio — Tela_Exportar</div>
+    <table>
+      <tr><th>Elemento do mockup</th><th>Controle</th><th>Propriedade principal</th></tr>
+      <tr><td>Fundo escurecido</td><td><code>cMaskSucesso</code></td><td><code>Visible = varImportOK</code> · <code>Fill = ColorFade(Cor.PrimaryD60; 40%)</code></td></tr>
+      <tr><td>Card branco</td><td><code>cSucessoCard</code></td><td><code>Fill = Cor.BackgroundStandard</code></td></tr>
+      <tr><td>Quadrado verde claro</td><td><code>cSucessoIcone</code></td><td><code>Fill = ColorFade(Cor.Success; 70%)</code></td></tr>
+      <tr><td>Check (SVG Ionicons)</td><td><code>imgSucessoCheck</code></td><td><code>Image</code> · <code>IconColor = TCor.SuccessD30</code></td></tr>
+      <tr><td>“Projeto importado”</td><td><code>lblSucessoTitulo</code></td><td><code>Color = ColorFade(Cor.Success; -0.3)</code></td></tr>
+      <tr><td>INV-002 · nome do projeto</td><td><code>htmSucessoResumo</code></td><td><code>HtmlText</code> · azul <code>TCor.PrimaryD30</code> + cinza <code>TCor.NeutralL30</code></td></tr>
+      <tr><td>5 instalações · 65 itens</td><td><code>lblSucessoQtdSEs</code> · <code>lblSucessoQtdItens</code></td><td><code>varImportResumo.QtdSEs</code> / <code>.QtdItens</code></td></tr>
+      <tr><td>Lista das SEs</td><td><code>htmSucessoSEs</code></td><td><code>HtmlText</code> · <code>Concat(FirstN(colSucessoSEs; 6); …)</code> · <code>AutoHeight</code></td></tr>
+      <tr><td>Caixa da pasta</td><td><code>cSucessoPasta</code></td><td><code>Fill = Cor.PrimaryL90</code> · <code>BorderColor = Cor.PrimaryL60</code></td></tr>
+      <tr><td>Texto "Pasta criada"</td><td><code>htmSucessoPasta</code></td><td><code>HtmlText</code> · <code>TCor.PrimaryD30</code> + negrito <code>TCor.PrimaryD60</code></td></tr>
+      <tr><td>Botão Fechar</td><td><code>btnSucessoOK</code></td><td><code>OnSelect = Set(varImportOK; false)</code></td></tr>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+# Nomes reais — Tela_ItensVisita (YAML Studio 2026-08-27)
+# Fonte: YAML colado pelo Fenômeno. NÃO usar Gallery6 / Image6_32 / Image6_34 do export antigo.
+
+Progresso (cContagemItens)
+  Text16          "N de M itens revisados"
+  Text17          percentual
+  Rectangle4      barra verde
+
+Galeria BASE (galItensBase)
+  Text18                 titulo: Imobilizado · TUC.A1 · descricao
+  btnEditarBase          lapis
+  btnConfirmarBase       CONFIRMAR — Visible = false (17.09)
+  btnNaoEncontradoBase   NAO ENCONTRADO — Visible = false (17.09)
+  btnFotosBase           camera
+  Button3_16             chip Confirmado / Nao encontrado (desfazer)
+  ContagemFotosBase      badge
+  inpBuscaItens          busca (raiz da tela, acima da galeria)
+
+Galeria SOBRAS (galItensSobras)
+  Text18_1               titulo
+  btnEditarSobras        lapis
+  btnFotosSobras         camera
+  btnDeleteSobras        lixeira
+  ContagemFotosSobras    badge
+
+Abas / topo
+  Button3_4              aba BASE
+  Button3_5              aba SOBRAS
+  btnFiltroFalta         aba Falta (18.09 — não inventariados)
+  btnAddItem             Adicionar item
+  btnFotosAmbiente       camera da SE
+  ContagemFotosAmbiente  badge ambiente
+
+Rodape (raiz da tela, FORA das galerias)
+  btnFinalizarSE         Finalizar subestação (some se Status = Finalizada)
+  btnReabrirSE           Reabrir — mesmo X/Y/Width do Finalizar
+                         Visible se Status = Finalizada (antes ou depois do Enviar)
+
+Overlay finalizar SE (cConfirmaFinalizarSE)
+  txtTituloFinalizarSE
+  txtDescFinalizarSE
+  btnCancelarFinalizarSE
+  btnConfirmarFinalizarSE
+  Visible: varConfirmaFinalizarSE
+
+Overlay reabrir SE (cConfirmaReabrirSE)
+  txtTituloReabrirSE
+  txtDescReabrirSE
+  btnCancelarReabrirSE
+  btnConfirmarReabrirSE
+  Visible: varConfirmaReabrirSE
+
+Overlay excluir sobra (cConfirmaExcluirSobra)
+  Image6_48                  X fechar — NAO e o Salvar da edicao
+  btnCancelarExcluirSobra    Cancelar
+  btnConfirmarExcluirSobra   Excluir
+  txtTituloExcluirSobra
+  txtDescExcluirSobra
+
+Salvar item (Tela_EditarItem)
+  Container40_1
+    Image6_47              Cancelar (esquerda)
+    Image verde "Salvar"   irmao direito — cola o OnSelect AQUI
+                           NAO e o Image6_48 da Tela_ItensVisita

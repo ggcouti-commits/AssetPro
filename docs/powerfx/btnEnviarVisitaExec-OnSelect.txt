@@ -1,0 +1,478 @@
+# Tela_Home → btnEnviarVisitaExec → OnSelect
+# Offline total 08.11.2026 — TI / LocalInstalacao / ArranjoFisico / Coord / gás no Patch da SE Finalizada
+# Locale PT-BR (; e ;;)
+# APAGA tudo do OnSelect e cola o bloco abaixo (sem o = do Studio se já tiver)
+
+If(
+    !Connection.Connected;
+    Notify("Sem conexão. Tente novamente quando estiver com sinal."; NotificationType.Error);
+    ForAll(
+        Filter(
+            colSubestacoes;
+            CodInventario = gblInventarioSelecionado.CodInventario
+            && (
+                Coalesce(PendenteCriacao; false) = true
+                || Coalesce(ID; 0) = 0
+            )
+        ) As locNovo;
+        With(
+            {
+                gravado: Patch(
+                    Subestacoes;
+                    Defaults(Subestacoes);
+                    {
+                        CodInventario: locNovo.CodInventario;
+                        CodSE: locNovo.CodSE;
+                        NomeSE: locNovo.NomeSE;
+                        Municipio: locNovo.Municipio;
+                        Segmento: locNovo.Segmento;
+                        Tramo: locNovo.Tramo;
+                        CoordX: locNovo.CoordX;
+                        CoordY: locNovo.CoordY;
+                        TI: Coalesce(locNovo.TI; 0);
+                        LocalInstalacao: Coalesce(locNovo.LocalInstalacao; 0);
+                        ArranjoFisico: Coalesce(locNovo.ArranjoFisico; 0);
+                        Status: Coalesce(locNovo.Status; "Pendente")
+                    }
+                );
+                alocado: If(
+                    IsBlank(
+                        LookUp(
+                            Alocacoes;
+                            Login = gblUsuario.Login
+                            && CodSE = locNovo.CodSE
+                            && CodInventario = locNovo.CodInventario
+                            && Ativo = "Sim"
+                        )
+                    );
+                    Patch(
+                        Alocacoes;
+                        Defaults(Alocacoes);
+                        {
+                            Title: gblUsuario.Login & "-" & locNovo.CodSE;
+                            Login: gblUsuario.Login;
+                            CodUsuario: Text(gblUsuario.CodUsuario);
+                            UsadoPor: Coalesce(gblUsuario.UsadoPor; gblUsuario.Nome; "");
+                            CodInventario: locNovo.CodInventario;
+                            NomeInventario: Coalesce(gblInventarioSelecionado.NomeInventario; "");
+                            CodSE: locNovo.CodSE;
+                            NomeSE: locNovo.NomeSE;
+                            Ativo: "Sim"
+                        }
+                    );
+                    Blank()
+                )
+            };
+            UpdateIf(
+                colSubestacoes;
+                CodSE = locNovo.CodSE
+                && CodInventario = locNovo.CodInventario;
+                {
+                    ID: gravado.ID;
+                    PendenteCriacao: false
+                }
+            );;
+            If(
+                IsBlank(
+                    LookUp(
+                        colAlocacoes;
+                        Login = gblUsuario.Login
+                        && CodSE = locNovo.CodSE
+                        && CodInventario = locNovo.CodInventario
+                        && Ativo = "Sim"
+                    )
+                );
+                Collect(
+                    colAlocacoes;
+                    {
+                        Login: Text(gblUsuario.Login);
+                        CodInventario: Text(locNovo.CodInventario);
+                        CodSE: Text(locNovo.CodSE);
+                        Ativo: "Sim"
+                    }
+                )
+            )
+        )
+    );;
+    IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+    IfError(SaveData(colAlocacoes; "cache_Alocacoes"); Blank());;
+    ForAll(
+        Filter(
+            colCampoOffline;
+            !Sincronizada
+            && CodInventario = gblInventarioSelecionado.CodInventario
+            && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+        );
+        If(
+            TipoRegistro = "CONFIRMACAO";
+            With(
+                {
+                    codBusca: CodAsset;
+                    linhaAtual: ThisRecord
+                };
+                Patch(
+                    Inventario;
+                    Coalesce(
+                        LookUp(Inventario; CodAsset = codBusca);
+                        Defaults(Inventario)
+                    );
+                    {
+                        CodAsset: Coalesce(
+                            LookUp(Inventario; CodAsset = codBusca).CodAsset;
+                            linhaAtual.CodAsset
+                        );
+                        CodInventario: Coalesce(
+                            LookUp(Inventario; CodAsset = codBusca).CodInventario;
+                            linhaAtual.CodInventario
+                        );
+                        CodSE: Coalesce(
+                            LookUp(Inventario; CodAsset = codBusca).CodSE;
+                            linhaAtual.CodSE
+                        );
+                        NomeSE: Coalesce(
+                            LookUp(Inventario; CodAsset = codBusca).NomeSE;
+                            linhaAtual.NomeSE
+                        );
+                        Imobilizado: If(
+                            linhaAtual.Origem = "DESMEMBRADO";
+                            linhaAtual.Imobilizado;
+                            Coalesce(
+                                LookUp(Inventario; CodAsset = codBusca).Imobilizado;
+                                ""
+                            )
+                        );
+                        Bay: If(
+                            linhaAtual.Origem = "DESMEMBRADO";
+                            "";
+                            LookUp(Inventario; CodAsset = codBusca).Bay
+                        );
+                        Status: "ADERENTE";
+                        Sobra: linhaAtual.SobraTipo;
+                        ValidadoPor: gblUsuario.Nome;
+                        CodTUC: linhaAtual.CodTUC;
+                        AtributoA1: linhaAtual.AtributoA1;
+                        AtributoA2: linhaAtual.AtributoA2;
+                        AtributoA3: linhaAtual.AtributoA3;
+                        AtributoA4: linhaAtual.AtributoA4;
+                        AtributoA5: linhaAtual.AtributoA5;
+                        AtributoA6: linhaAtual.AtributoA6;
+                        DescricaoBem: linhaAtual.DescricaoBem;
+                        DescricaoTUC: Coalesce(
+                            linhaAtual.DescricaoTUC;
+                            LookUp(colTUC; Value(CodigoTUC) = Value(linhaAtual.CodTUC); DescricaoTUC);
+                            ""
+                        );
+                        IdUC: Coalesce(linhaAtual.IdUC; "");
+                        QtdeContado: linhaAtual.Quantidade;
+                        Reserva: linhaAtual.Reserva;
+                        Fabricante: linhaAtual.Fabricante;
+                        Modelo: linhaAtual.Modelo;
+                        NumSerie: linhaAtual.NumSerie;
+                        CodOperacao: linhaAtual.CodOperacao;
+                        CM: linhaAtual.CM;
+                        Ano: linhaAtual.Ano;
+                        Unidade: linhaAtual.Unidade;
+                        Observacoes: linhaAtual.Observacoes;
+                        Diametro: linhaAtual.Diametro;
+                        ClassePressao: linhaAtual.ClassePressao;
+                        Tag: linhaAtual.Tag;
+                        DescricaoComplementar: linhaAtual.DescricaoComplementar;
+                        Elegivel: linhaAtual.Elegivel;
+                        CoordX: If(
+                            StartsWith(Coalesce(linhaAtual.CodSE; ""); "REDE-");
+                            Coalesce(
+                                linhaAtual.CoordX;
+                                LookUp(
+                                    colInventarioBase;
+                                    CodAsset = codBusca
+                                    && CodInventario = linhaAtual.CodInventario
+                                ).CoordX;
+                                ""
+                            );
+                            ""
+                        );
+                        CoordY: If(
+                            StartsWith(Coalesce(linhaAtual.CodSE; ""); "REDE-");
+                            Coalesce(
+                                linhaAtual.CoordY;
+                                LookUp(
+                                    colInventarioBase;
+                                    CodAsset = codBusca
+                                    && CodInventario = linhaAtual.CodInventario
+                                ).CoordY;
+                                ""
+                            );
+                            ""
+                        )
+                    }
+                );;
+                If(
+                    linhaAtual.Origem = "DESMEMBRADO";
+                    Patch(
+                        Inventario;
+                        LookUp(Inventario; CodAsset = codBusca);
+                        {
+                            Quantidade: Coalesce(
+                                LookUp(
+                                    colInventarioBase;
+                                    CodAsset = linhaAtual.CodAsset
+                                    && CodInventario = linhaAtual.CodInventario
+                                ).Quantidade;
+                                linhaAtual.Quantidade
+                            )
+                        }
+                    )
+                );;
+                UpdateIf(
+                    colCampoOffline;
+                    CodSE = linhaAtual.CodSE && CodAsset = linhaAtual.CodAsset;
+                    {Sincronizada: true}
+                )
+            );
+            If(
+                TipoRegistro = "NAO_ENCONTRADO";
+                With(
+                    {
+                        codBusca: CodAsset;
+                        linhaAtual: ThisRecord
+                    };
+                    Patch(
+                        Inventario;
+                        LookUp(Inventario; CodAsset = codBusca);
+                        {
+                            Status: "NÃO_ELEGIVEL";
+                            Sobra: "SOBRA_CONTABIL";
+                            ValidadoPor: gblUsuario.Nome;
+                            Observacoes: linhaAtual.Observacoes;
+                            QtdeContado: 0;
+                            Reserva: linhaAtual.Reserva
+                        }
+                    );;
+                    UpdateIf(
+                        colCampoOffline;
+                        CodSE = linhaAtual.CodSE && CodAsset = linhaAtual.CodAsset;
+                        {Sincronizada: true}
+                    )
+                );
+                With(
+                    {
+                        linhaAtual: ThisRecord;
+                        chaveSobra: If(
+                            !IsBlank(ThisRecord.CodAsset);
+                            ThisRecord.CodAsset;
+                            "SOBRA-" & Text(ThisRecord.CodTemp)
+                        )
+                    };
+                    With(
+                        {
+                            gravado: Patch(
+                                Inventario;
+                                If(
+                                    Coalesce(linhaAtual.IdInventario; 0) > 0;
+                                    LookUp(Inventario; ID = linhaAtual.IdInventario);
+                                    Coalesce(
+                                        LookUp(
+                                            Inventario;
+                                            CodAsset = chaveSobra
+                                            && CodInventario = linhaAtual.CodInventario
+                                        );
+                                        Defaults(Inventario)
+                                    )
+                                );
+                                {
+                                    CodInventario: linhaAtual.CodInventario;
+                                    CodSE: linhaAtual.CodSE;
+                                    NomeSE: linhaAtual.NomeSE;
+                                    CodAsset: chaveSobra;
+                                    CodTUC: linhaAtual.CodTUC;
+                                    AtributoA1: linhaAtual.AtributoA1;
+                                    AtributoA2: linhaAtual.AtributoA2;
+                                    AtributoA3: linhaAtual.AtributoA3;
+                                    AtributoA4: linhaAtual.AtributoA4;
+                                    AtributoA5: linhaAtual.AtributoA5;
+                                    AtributoA6: linhaAtual.AtributoA6;
+                                    DescricaoBem: linhaAtual.DescricaoBem;
+                                    DescricaoTUC: Coalesce(
+                                        linhaAtual.DescricaoTUC;
+                                        LookUp(colTUC; Value(CodigoTUC) = Value(linhaAtual.CodTUC); DescricaoTUC);
+                                        ""
+                                    );
+                                    IdUC: Coalesce(linhaAtual.IdUC; "");
+                                    Quantidade: linhaAtual.Quantidade;
+                                    QtdeContado: linhaAtual.Quantidade;
+                                    Reserva: linhaAtual.Reserva;
+                                    Fabricante: linhaAtual.Fabricante;
+                                    Modelo: linhaAtual.Modelo;
+                                    NumSerie: linhaAtual.NumSerie;
+                                    CodOperacao: linhaAtual.CodOperacao;
+                                    CM: linhaAtual.CM;
+                                    Ano: linhaAtual.Ano;
+                                    Unidade: linhaAtual.Unidade;
+                                    Origem: "CAMPO";
+                                    Status: "ADERENTE";
+                                    Sobra: linhaAtual.SobraTipo;
+                                    ValidadoPor: gblUsuario.Nome;
+                                    Observacoes: linhaAtual.Observacoes;
+                                    Diametro: linhaAtual.Diametro;
+                                    ClassePressao: linhaAtual.ClassePressao;
+                                    Tag: linhaAtual.Tag;
+                                    DescricaoComplementar: linhaAtual.DescricaoComplementar;
+                                    Elegivel: linhaAtual.Elegivel;
+                                    CoordX: If(
+                                        StartsWith(Coalesce(linhaAtual.CodSE; ""); "REDE-");
+                                        Coalesce(
+                                            linhaAtual.CoordX;
+                                            If(varCoordItemCod = chaveSobra; varCoordItemX; "");
+                                            ""
+                                        );
+                                        ""
+                                    );
+                                    CoordY: If(
+                                        StartsWith(Coalesce(linhaAtual.CodSE; ""); "REDE-");
+                                        Coalesce(
+                                            linhaAtual.CoordY;
+                                            If(varCoordItemCod = chaveSobra; varCoordItemY; "");
+                                            ""
+                                        );
+                                        ""
+                                    )
+                                }
+                            )
+                        };
+                        UpdateIf(
+                            colCampoOffline;
+                            CodSE = linhaAtual.CodSE
+                            && !Sincronizada
+                            && If(
+                                !IsBlank(linhaAtual.CodAsset);
+                                CodAsset = linhaAtual.CodAsset;
+                                !IsBlank(linhaAtual.CodTemp)
+                                && CodTemp = linhaAtual.CodTemp
+                            );
+                            {
+                                Sincronizada: true;
+                                IdInventario: gravado.ID;
+                                CodAsset: chaveSobra
+                            }
+                        )
+                    )
+                )
+            )
+        )
+    );;
+    ForAll(
+        Filter(
+            colFotosCampo;
+            !Sincronizada
+            && CodInventario = gblInventarioSelecionado.CodInventario
+            && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+        );
+        With(
+            {
+                fotoAtual: ThisRecord;
+                fotoJson: JSON(ThisRecord.Foto; JSONFormat.IncludeBinaryData)
+            };
+            If(
+                !IsBlank(
+                    Patch(
+                        Fotos;
+                        Defaults(Fotos);
+                        {
+                            Título: Coalesce(fotoAtual.TipoFoto; "ITEM") & " | " & Text(fotoAtual.IdFoto);
+                            TipoFoto: Coalesce(fotoAtual.TipoFoto; "ITEM");
+                            CodInventario: fotoAtual.CodInventario;
+                            CodSE: fotoAtual.CodSE;
+                            CodAsset: If(
+                                Coalesce(fotoAtual.TipoFoto; "ITEM") = "AMBIENTE";
+                                "";
+                                Coalesce(
+                                    fotoAtual.CodAsset;
+                                    If(
+                                        !IsBlank(fotoAtual.CodTemp);
+                                        "SOBRA-" & Text(fotoAtual.CodTemp);
+                                        ""
+                                    )
+                                )
+                            );
+                            CodTemp: Coalesce(fotoAtual.CodTemp; "");
+                            DataCaptura: fotoAtual.DataCaptura;
+                            TiradaPor: gblUsuario.Nome;
+                            FotoCampo: {
+                                FileName: Text(fotoAtual.IdFoto) & ".jpg";
+                                Value: fotoAtual.Foto;
+                                Full: fotoJson;
+                                Large: fotoJson;
+                                Medium: fotoJson;
+                                Small: fotoJson
+                            }
+                        }
+                    )
+                );
+                UpdateIf(
+                    colFotosCampo;
+                    IdFoto = fotoAtual.IdFoto;
+                    {Sincronizada: true}
+                )
+            )
+        )
+    );;
+    SaveData(colCampoOffline; "cache_CampoOffline");;
+    IfError(SaveData(colFotosCampo; "cache_FotosCampo"); Blank());;
+    ForAll(
+        Filter(
+            colSubestacoes;
+            CodInventario = gblInventarioSelecionado.CodInventario
+            && Status = "Finalizada"
+        ) As seFin;
+        IfError(
+            Patch(
+                Subestacoes;
+                If(
+                    Coalesce(seFin.ID; 0) > 0;
+                    LookUp(Subestacoes; ID = seFin.ID);
+                    LookUp(
+                        Subestacoes;
+                        CodSE = seFin.CodSE
+                        && CodInventario = seFin.CodInventario
+                    )
+                );
+                {
+                    Status: "Finalizada";
+                    CoordX: seFin.CoordX;
+                    CoordY: seFin.CoordY;
+                    TI: Coalesce(seFin.TI; 0);
+                    LocalInstalacao: Coalesce(seFin.LocalInstalacao; 0);
+                    ArranjoFisico: Coalesce(seFin.ArranjoFisico; 0);
+                    NomeSE: seFin.NomeSE;
+                    Municipio: seFin.Municipio;
+                    Segmento: seFin.Segmento;
+                    Tramo: seFin.Tramo
+                }
+            );
+            Blank()
+        )
+    );;
+    IfError(
+        flxPastaFotosVisita.Run(gblInventarioSelecionado.CodInventario);
+        Blank()
+    );;
+    With(
+        {
+            cod: gblInventarioSelecionado.CodInventario
+        };
+        Patch(
+            'Campanhas ';
+            LookUp('Campanhas '; CodInventario = cod);
+            {Status: "Em andamento"}
+        );;
+        UpdateIf(
+            colCampanhas;
+            CodInventario = cod;
+            {Status: "Em andamento"}
+        );;
+        IfError(SaveData(colCampanhas; "cache_Campanhas"); Blank())
+    );;
+    Notify("Alterações enviadas com sucesso!"; NotificationType.Success)
+);;
+
+Set(varCarregando; false)

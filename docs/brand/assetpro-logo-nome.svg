@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 240" role="img" aria-label="Asset Pro">
+  <g transform="translate(32,20)">
+    <g transform="scale(0.390625)">
+      <polygon fill="#123B6E" points="256,48 429.2,148 429.2,364 256,464 82.8,364 82.8,148"/>
+      <g fill="none" stroke="#FFFFFF" stroke-width="14" stroke-linecap="round">
+        <line x1="256" y1="256" x2="256" y2="352"/>
+        <line x1="256" y1="256" x2="172.9" y2="208"/>
+        <line x1="256" y1="256" x2="339.1" y2="208"/>
+      </g>
+      <g fill="#FFFFFF">
+        <circle cx="256" cy="256" r="18"/>
+        <circle cx="256" cy="352" r="18"/>
+        <circle cx="172.9" cy="208" r="18"/>
+        <circle cx="339.1" cy="208" r="18"/>
+      </g>
+    </g>
+    <text x="228" y="132" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="78" font-weight="700" letter-spacing="-1.2">
+      <tspan fill="#123B6E">Asset </tspan>
+      <tspan fill="#348FFD">Pro</tspan>
+    </text>
+  </g>
+</svg>

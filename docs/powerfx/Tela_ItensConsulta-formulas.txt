@@ -1,0 +1,1163 @@
+# Tela_ItensConsulta — itens da SE (consulta desktop)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Mockup fase 1: docs/screens/itens-consulta-fase1-lista.png (lista)
+# Mockup fase 2: docs/screens/itens-consulta-fase2-info.png (Informações)
+# Mockup fase 3: docs/screens/itens-consulta-fase3-fotos.png (Fotos)
+# HTML: mockup-itens-consulta-fase1-lista.html · fase2-info · fase3-fotos
+#
+# Trilha: Tela_Campanhas → Tela_Subestacoes → Tela_ItensConsulta
+# Coleta de dados fica em Tela_Inventarios (menu) — NAO e esta tela.
+#
+# Contexto: gblInventarioSelecionado · gblSEselecionada
+# Dados: colInventarioBase (OnStart, campanhas ativas) — NAO precisa colInventarioCampanha.
+# Tela_ItensConsulta.OnVisible monta colItensSEConsulta + colFotosSEConsulta (so esta SE).
+# Aba: gblAbaItensConsulta ("BASE" | "SOBRAS") — OnStart = "BASE"
+# Aba detalhe (painel lateral): gblAbaDetalheItem ("INFO" | "FOTOS") — default "INFO" ao selecionar item
+# Painel: cPainelDetalhe — Visible = !IsBlank(gblItemConsultaSelecionado)
+# Mockups oficiais (2026-09-07): fase1 lista · fase2 Informações · fase3 Fotos
+
+## Tela_Subestacoes — galSubestacoesHome.OnSelect
+
+Set(varCarregando; true);;
+Set(
+    gblSEselecionada;
+    {
+        ID: ThisItem.ID;
+        CodInventario: ThisItem.CodInventario;
+        CodSE: ThisItem.CodSE;
+        NomeSE: ThisItem.NomeSE;
+        SubODI: ThisItem.SubODI;
+        Regional: ThisItem.Regional;
+        Municipio: ThisItem.Municipio;
+        UF: ThisItem.UF;
+        TI: ThisItem.TI;
+        CM: ThisItem.CM;
+        ClasseTensao: ThisItem.ClasseTensao;
+        Status: ThisItem.Status
+    }
+);;
+Navigate(Tela_ItensConsulta; ScreenTransition.None);;
+Set(varCarregando; false)
+
+## Tela_ItensConsulta.OnVisible
+
+Set(varCarregando; true);;
+Set(gblAbaItensConsulta; "BASE");;
+Set(gblAbaDetalheItem; "INFO");;
+Set(gblFotoConsultaAmpliada; Blank());;
+Set(gblIdxFotoConsulta; 0);;
+Set(varFotosSE; false);;
+Collect(
+    colItensSEConsulta;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Set(gblItemConsultaSelecionado; Last(colItensSEConsulta));;
+Clear(colItensSEConsulta);;
+Set(gblItemConsultaSelecionado; Blank());;
+Collect(
+    colItensSEConsulta;
+    ForAll(
+        Filter(
+            colInventarioBase;
+            CodInventario = gblInventarioSelecionado.CodInventario
+            && CodSE = gblSEselecionada.CodSE
+        ) As src;
+        Patch(
+            src;
+            {
+                CM: src.CM;
+                CodAsset: src.CodAsset
+            }
+        )
+    )
+);;
+Collect(colFotosSEConsulta; {CodTemp: ""; CodAsset: ""; Title: ""; TipoFoto: ""});;
+Clear(colFotosSEConsulta);;
+Collect(
+    colFotosSEConsulta;
+    ForAll(
+        Filter(
+            Fotos;
+            CodInventario = gblInventarioSelecionado.CodInventario
+            && CodSE = gblSEselecionada.CodSE
+        ) As f;
+        Patch(
+            f;
+            {
+                CodTemp: f.CodTemp;
+                CodAsset: f.CodAsset;
+                Title: f.Title;
+                TipoFoto: f.TipoFoto
+            }
+        )
+    )
+);;
+Set(varCarregando; false)
+
+# cLoading.Visible = varCarregando
+
+## Voltar — btnVoltar.OnSelect
+
+Navigate(Tela_Subestacoes; ScreenTransition.None)
+
+## Cabecalho
+
+### lblTituloSE.Text
+
+gblSEselecionada.CodSE & " — " & gblSEselecionada.NomeSE
+
+### lblSubtituloSE.Text
+
+gblInventarioSelecionado.NomeInventario
+    & " · "
+    & Coalesce(gblSEselecionada.Municipio; "—")
+    & " · "
+    & If(
+        IsBlank(Coalesce(gblSEselecionada.ClasseTensao; ""));
+        "—";
+        If(
+            EndsWith(Lower(Trim(gblSEselecionada.ClasseTensao)); "kv");
+            gblSEselecionada.ClasseTensao;
+            gblSEselecionada.ClasseTensao & " kV"
+        )
+    )
+    & " · "
+    & Coalesce(gblSEselecionada.Status; "—")
+
+### lblCtxMeta.Text
+
+"Técnico: "
+    & Coalesce(
+        First(
+            Filter(
+                colItensSEConsulta;
+                !IsBlank(Coalesce(ValidadoPor; ""))
+            )
+        ).ValidadoPor;
+        "—"
+    )
+
+## Progresso — lblProgresso.Text
+
+With(
+    {
+        base: Filter(
+            colItensSEConsulta;
+            Coalesce(Origem; "") <> "CAMPO"
+            && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+            && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+        )
+    };
+    CountRows(Filter(base; !IsBlank(Coalesce(ValidadoPor; ""))))
+        & " de "
+        & CountRows(base)
+        & " itens revisados"
+)
+
+### lblProgressoPct.Text
+
+With(
+    {
+        base: Filter(
+            colItensSEConsulta;
+            Coalesce(Origem; "") <> "CAMPO"
+            && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+            && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+        );
+        rev: CountRows(Filter(base; !IsBlank(Coalesce(ValidadoPor; ""))))
+    };
+    Text(
+        Round(100 * rev / Max(CountRows(base); 1); 0)
+    ) & "%"
+)
+
+### recBarFill.Width
+
+With(
+    {
+        base: CountRows(
+            Filter(
+                colItensSEConsulta;
+                Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+            )
+        );
+        rev: CountRows(
+            Filter(
+                colItensSEConsulta;
+                Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+                && !IsBlank(Coalesce(ValidadoPor; ""))
+            )
+        )
+    };
+    recBarTrack.Width * rev / Max(base; 1)
+)
+
+### recBarFill.Fill
+
+Cor.Success
+
+### recBarTrack.Fill
+
+Cor.NeutralL90
+
+## Abas BASE / SOBRAS
+
+### btnAbaBase.OnSelect
+
+Set(gblAbaItensConsulta; "BASE");;
+Set(gblItemConsultaSelecionado; Blank())
+
+### btnAbaSobras.OnSelect
+
+Set(gblAbaItensConsulta; "SOBRAS");;
+Set(gblItemConsultaSelecionado; Blank())
+
+### btnAbaBase.Fill
+
+If(gblAbaItensConsulta = "BASE"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnAbaBase.Color
+
+If(gblAbaItensConsulta = "BASE"; Cor.TextInverted; Cor.NeutralL30)
+
+### btnAbaSobras.Fill
+
+If(gblAbaItensConsulta = "SOBRAS"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnAbaSobras.Color
+
+If(gblAbaItensConsulta = "SOBRAS"; Cor.TextInverted; Cor.NeutralL30)
+
+### btnAbaBase.Text
+
+"BASE ("
+    & CountRows(
+        Filter(
+            colItensSEConsulta;
+            Coalesce(Origem; "") <> "CAMPO"
+            && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+            && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+        )
+    )
+    & ")"
+
+### btnAbaSobras.Text
+
+"SOBRAS ("
+    & CountRows(
+        Filter(
+            colItensSEConsulta;
+            Coalesce(Origem; "") = "CAMPO"
+            || Coalesce(Sobra; "") = "SOBRA_FISICA"
+            || StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+        )
+    )
+    & ")"
+
+## Galeria — galItensConsulta.Items
+
+SortByColumns(
+    Filter(
+        AddColumns(
+            Filter(
+                colItensSEConsulta;
+                (
+                    IsBlank(InputBuscaItem.Text)
+                    || InputBuscaItem.Text in Coalesce(DescricaoBem; "")
+                    || InputBuscaItem.Text in Text(Coalesce(CodTUC; ""))
+                    || InputBuscaItem.Text in Text(Coalesce(CodAsset; ""))
+                    || InputBuscaItem.Text in Coalesce(Imobilizado; "")
+                    || InputBuscaItem.Text in Coalesce(IdUC; "")
+                )
+            ) As itemConsulta;
+            StatusConsulta;
+            Switch(
+                true;
+                Coalesce(itemConsulta.Sobra; "") = "SOBRA_FISICA"; "Sobra física";
+                Coalesce(itemConsulta.Sobra; "") = "SOBRA_CONTABIL"; "Sobra contábil";
+                Coalesce(itemConsulta.Status; "") = "NÃO_ELEGIVEL"; "Sobra contábil";
+                Coalesce(itemConsulta.Status; "") = "ADERENTE"; "Confirmado";
+                "Pendente"
+            );
+            QtdFotosItem;
+            With(
+                {
+                    chave: Text(
+                        Coalesce(
+                            itemConsulta.CodAsset;
+                            LookUp(colInventarioBase; ID = itemConsulta.ID; CodAsset);
+                            ""
+                        )
+                    )
+                };
+                CountRows(
+                    Filter(
+                        colFotosSEConsulta;
+                        Coalesce(
+                            TipoFoto;
+                            If(StartsWith(Coalesce(Title; ""); "AMBIENTE"); "AMBIENTE"; "ITEM")
+                        ) <> "AMBIENTE"
+                        && !IsBlank(chave)
+                        && Text(Coalesce(CodAsset; "")) = chave
+                    )
+                )
+            )
+        );
+        Switch(
+            gblAbaItensConsulta;
+            "BASE";
+            Coalesce(Origem; "") <> "CAMPO"
+            && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+            && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-");
+            "SOBRAS";
+            Coalesce(Origem; "") = "CAMPO"
+            || Coalesce(Sobra; "") = "SOBRA_FISICA"
+            || StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-");
+            false
+        )
+    );
+    "IdItem";
+    SortOrder.Ascending
+)
+
+## Card da galeria — linha (Imobilizado, TUC.A1, Descrição, Qtd base, Qtd campo)
+
+# Ordem: Imobilizado, TUC.A1, Descricao, Qtd base, Qtd campo, fotos (mini), chip.
+# Inserir lblItemTuc e lblItemDesc se ainda nao existirem no template.
+
+### lblItemTitulo.Text
+
+Coalesce(Text(Imobilizado); "—")
+
+### lblItemTuc.Text
+
+Text(Coalesce(CodTUC; 0)) & "." & Text(Coalesce(AtributoA1; A1; 0); "00")
+
+### lblItemDesc.Text
+
+Coalesce(DescricaoBem; "—")
+
+### lblBase.Text
+
+"QTD BASE"
+
+### lblBaseQtd.Text
+
+Text(Coalesce(Quantidade; 0); "#,##0.0") & " " & Coalesce(Unidade; "UN")
+
+### lblContado.Text
+
+"QTD CAMPO"
+
+### lblContadoQtd.Text
+
+If(
+    IsBlank(Coalesce(ValidadoPor; ""));
+    "—";
+    Text(Coalesce(Quantidade; 0); "#,##0.0") & " " & Coalesce(Unidade; "UN")
+)
+
+### lblContadoQtd.Color
+
+If(
+    IsBlank(Coalesce(ValidadoPor; ""));
+    Cor.NeutralL30;
+    Cor.TextStandard
+)
+
+### btnStatusItem.Text
+
+ThisItem.StatusConsulta
+
+### btnStatusItem.Fill
+
+Switch(
+    Coalesce(ThisItem.StatusConsulta; ThisItem.Status);
+    "Confirmado"; ColorFade(Cor.Success; 70%);
+    "ADERENTE"; ColorFade(Cor.Success; 70%);
+    "Não encontrado"; ColorFade(Cor.Delete; 70%);
+    "NÃO_ELEGIVEL"; ColorFade(Cor.Delete; 70%);
+    "Sobra física"; ColorFade(Cor.Warning; 70%);
+    Cor.NeutralL90
+)
+
+### btnStatusItem.Color
+
+Switch(
+    Coalesce(ThisItem.StatusConsulta; ThisItem.Status);
+    "Confirmado"; ColorFade(Cor.Success; -0.3);
+    "ADERENTE"; ColorFade(Cor.Success; -0.3);
+    "Não encontrado"; ColorFade(Cor.Delete; -0.3);
+    "NÃO_ELEGIVEL"; ColorFade(Cor.Delete; -0.3);
+    "Sobra física"; ColorFade(Cor.Warning; -0.3);
+    Cor.NeutralL30
+)
+
+### lblFotosItem.Text
+
+"📷 " & Text(Coalesce(ThisItem.QtdFotosItem; 0))
+
+### lblFotosItem.Visible
+
+true
+
+### lblFotosItem.Size
+
+10
+
+### lblFotosItem.Color
+
+If(
+    Coalesce(ThisItem.QtdFotosItem; 0) > 0;
+    Cor.Primary;
+    Cor.NeutralL30
+)
+
+### lblFotosItem.FontWeight
+
+FontWeight.Semibold
+
+### galItensConsulta.OnSelect
+
+If(
+    !IsBlank(gblItemConsultaSelecionado)
+    && gblItemConsultaSelecionado.CodAsset = ThisItem.CodAsset
+    && gblItemConsultaSelecionado.ID = ThisItem.ID;
+    Set(gblItemConsultaSelecionado; Blank());
+    Set(
+        gblItemConsultaSelecionado;
+        Patch(
+            ThisItem;
+            {
+                CM: Coalesce(
+                    ThisItem.CM;
+                    LookUp(colInventarioBase; ID = ThisItem.ID; CM)
+                );
+                CodAsset: Coalesce(
+                    ThisItem.CodAsset;
+                    LookUp(colInventarioBase; ID = ThisItem.ID; CodAsset)
+                )
+            }
+        )
+    );;
+    Set(gblAbaDetalheItem; "INFO")
+)
+
+### galItensConsulta.Width
+
+If(
+    !IsBlank(gblItemConsultaSelecionado);
+    Parent.Width * 0.52;
+    Parent.Width
+)
+
+## Painel lateral — cPainelDetalhe
+
+### cPainelDetalhe.Visible
+
+!IsBlank(gblItemConsultaSelecionado)
+
+### cPainelDetalhe.Width
+
+If(
+    !IsBlank(gblItemConsultaSelecionado);
+    Parent.Width * 0.48;
+    0
+)
+
+### btnFecharPainel.OnSelect
+
+Set(gblItemConsultaSelecionado; Blank())
+
+## Abas do painel — Informações / Fotos
+
+### btnAbaDetInfo.OnSelect
+
+Set(gblAbaDetalheItem; "INFO")
+
+### btnAbaDetFotos.OnSelect
+
+Set(gblAbaDetalheItem; "FOTOS")
+
+### btnAbaDetInfo.Fill
+
+If(gblAbaDetalheItem = "INFO"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnAbaDetInfo.Color
+
+If(gblAbaDetalheItem = "INFO"; Cor.TextInverted; Cor.NeutralL30)
+
+### btnAbaDetFotos.Fill
+
+If(gblAbaDetalheItem = "FOTOS"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnAbaDetFotos.Color
+
+If(gblAbaDetalheItem = "FOTOS"; Cor.TextInverted; Cor.NeutralL30)
+
+### btnAbaDetFotos.Text
+
+"Fotos ("
+    & With(
+        {
+            chave: Text(
+                Coalesce(
+                    gblItemConsultaSelecionado.CodAsset;
+                    LookUp(colInventarioBase; ID = gblItemConsultaSelecionado.ID; CodAsset);
+                    ""
+                )
+            )
+        };
+        CountRows(
+            Filter(
+                colFotosSEConsulta;
+                Coalesce(
+                    TipoFoto;
+                    If(StartsWith(Coalesce(Title; ""); "AMBIENTE"); "AMBIENTE"; "ITEM")
+                ) <> "AMBIENTE"
+                && !IsBlank(chave)
+                && Text(Coalesce(CodAsset; "")) = chave
+            )
+        )
+    )
+    & ")"
+
+### cDetInfo.Visible
+
+gblAbaDetalheItem = "INFO"
+
+### cDetFotos.Visible
+
+gblAbaDetalheItem = "FOTOS"
+
+## Painel — cabecalho
+
+### lblDetTitulo.Text
+
+Text(Coalesce(gblItemConsultaSelecionado.CodTUC; 0)) & "."
+    & Text(Coalesce(gblItemConsultaSelecionado.AtributoA1; gblItemConsultaSelecionado.A1; 0); "00")
+    & " — "
+    & Coalesce(gblItemConsultaSelecionado.DescricaoBem; "—")
+
+### lblDetMeta.Text (Text22)
+
+If(
+    IsBlank(gblItemConsultaSelecionado);
+    "CodAsset — · Imobilizado —";
+    "CodAsset "
+        & Coalesce(Text(gblItemConsultaSelecionado.CodAsset); "—")
+        & " · Imobilizado "
+        & Coalesce(Text(gblItemConsultaSelecionado.Imobilizado); "—")
+)
+
+## Aba Informações — campos read-only (tudo do item)
+
+# Classificacao: Aderente | Sobra física | Sobra contábil / Não encontrado
+# A1–A6: so nomenclatura + codigo. Sem descricao do atributo.
+
+### btnDetClassif.Text
+
+Switch(
+    true;
+    Coalesce(gblItemConsultaSelecionado.Sobra; "") = "SOBRA_FISICA";
+        "Sobra física";
+    Coalesce(gblItemConsultaSelecionado.Status; "") = "NÃO_ELEGIVEL";
+        "Sobra contábil / Não encontrado";
+    Coalesce(gblItemConsultaSelecionado.Status; "") = "ADERENTE";
+        "Aderente";
+    "Pendente"
+)
+
+### btnDetClassif.Fill
+
+Switch(
+    btnDetClassif.Text;
+    "Aderente"; ColorFade(Cor.Success; 70%);
+    "Sobra física"; ColorFade(Cor.Warning; 70%);
+    "Sobra contábil / Não encontrado"; ColorFade(Cor.Delete; 70%);
+    Cor.NeutralL90
+)
+
+### btnDetClassif.Color
+
+Switch(
+    btnDetClassif.Text;
+    "Aderente"; ColorFade(Cor.Success; -0.3);
+    "Sobra física"; ColorFade(Cor.Warning; -0.3);
+    "Sobra contábil / Não encontrado"; ColorFade(Cor.Delete; -0.3);
+    Cor.NeutralL30
+)
+
+### btnDetClassif.DisplayMode
+
+DisplayMode.View
+
+### lblDetCM.Text
+
+Coalesce(Text(gblItemConsultaSelecionado.CM); "—")
+
+### lblDetTUC.Text
+
+Coalesce(Text(gblItemConsultaSelecionado.CodTUC); "—")
+
+### lblDetA1.Text
+
+Text(Coalesce(gblItemConsultaSelecionado.AtributoA1; gblItemConsultaSelecionado.A1; 0); "00")
+
+### lblDetA2.Text
+
+Text(Coalesce(gblItemConsultaSelecionado.AtributoA2; gblItemConsultaSelecionado.A2; 0); "00")
+
+### lblDetA3.Text
+
+Text(Coalesce(gblItemConsultaSelecionado.AtributoA3; gblItemConsultaSelecionado.A3; 0); "00")
+
+### lblDetA4.Text
+
+Text(Coalesce(gblItemConsultaSelecionado.AtributoA4; gblItemConsultaSelecionado.A4; 0); "00")
+
+### lblDetA5.Text
+
+Text(Coalesce(gblItemConsultaSelecionado.AtributoA5; gblItemConsultaSelecionado.A5; 0); "00")
+
+### lblDetA6.Text
+
+Text(Coalesce(gblItemConsultaSelecionado.AtributoA6; gblItemConsultaSelecionado.A6; 0); "00")
+
+### lblDetFabricante.Text
+
+Coalesce(gblItemConsultaSelecionado.Fabricante; "—")
+
+### lblDetModelo.Text
+
+Coalesce(gblItemConsultaSelecionado.Modelo; "—")
+
+### lblDetSerie.Text
+
+Coalesce(gblItemConsultaSelecionado.NumSerie; "—")
+
+### lblDetCodOp.Text
+
+Coalesce(gblItemConsultaSelecionado.CodOperacao; "—")
+
+### lblDetAno.Text
+
+Coalesce(Text(gblItemConsultaSelecionado.Ano); "—")
+
+### lblDetObs.Text
+
+Coalesce(gblItemConsultaSelecionado.Observacoes; "—")
+
+## Aba Fotos — galFotosItem.Items
+
+# Nao usar colFotosSEConsulta aqui: ClearCollect do Image do SP
+# guarda so o thumbnail. Gallery direta em Fotos puxa Full.
+
+With(
+    {
+        chave: Text(
+            Coalesce(
+                gblItemConsultaSelecionado.CodAsset;
+                LookUp(colInventarioBase; ID = gblItemConsultaSelecionado.ID; CodAsset);
+                ""
+            )
+        )
+    };
+    Filter(
+        Fotos;
+        CodInventario = gblInventarioSelecionado.CodInventario
+        && CodSE = gblSEselecionada.CodSE
+        && Coalesce(
+            TipoFoto;
+            If(StartsWith(Coalesce(Title; ""); "AMBIENTE"); "AMBIENTE"; "ITEM")
+        ) <> "AMBIENTE"
+        && !IsBlank(chave)
+        && Text(Coalesce(CodAsset; "")) = chave
+    )
+)
+
+### imgFotoItem.Image
+
+# FotoCampo sozinho = thumbnail. Full = arquivo original.
+
+Coalesce(
+    ThisItem.FotoCampo.Full;
+    ThisItem.FotoCampo.Value;
+    ThisItem.FotoCampo
+)
+
+### imgFotoItem.ImagePosition
+
+ImagePosition.Fit
+
+### galFotosItem.DisplayMode
+
+DisplayMode.Edit
+
+### imgFotoItem.DisplayMode
+
+DisplayMode.Edit
+
+### imgFotoItem.OnSelect
+
+Set(gblFotoConsultaAmpliada; ThisItem);;
+Set(
+    gblIdxFotoConsulta;
+    LookUp(
+        ForAll(
+            Sequence(CountRows(galFotosItem.AllItems)) As s;
+            {
+                Pos: s.Value;
+                IdLinha: Last(FirstN(galFotosItem.AllItems; s.Value)).ID
+            }
+        );
+        IdLinha = ThisItem.ID;
+        Pos
+    )
+)
+
+### lblFotoData.Text
+
+If(
+    IsBlank(ThisItem.DataCaptura);
+    "—";
+    Text(ThisItem.DataCaptura; "dd/mm/yyyy")
+)
+
+### lblSemFotos.Visible
+
+CountRows(galFotosItem.AllItems) = 0
+
+### lblSemFotos.Text
+
+"Nenhuma foto deste item."
+
+## Lightbox — cFotoAmpliada (filho DIRETO da tela, nao do painel)
+
+# Inserir por ultimo e mandar para frente (Reorder).
+# X=0 · Y=0 · Width=Parent.Width · Height=Parent.Height
+
+### cFotoAmpliada.Visible
+
+!IsBlank(gblFotoConsultaAmpliada)
+
+### cFotoAmpliada.Fill
+
+Cor.TransparentBlack
+
+### cFotoAmpliada.OnSelect
+
+Set(gblFotoConsultaAmpliada; Blank());;
+Set(gblIdxFotoConsulta; 0)
+
+### imgFotoAmpliada.Image
+
+Coalesce(
+    gblFotoConsultaAmpliada.FotoCampo.Full;
+    gblFotoConsultaAmpliada.FotoCampo.Value;
+    gblFotoConsultaAmpliada.FotoCampo
+)
+
+### imgFotoAmpliada.ImagePosition
+
+ImagePosition.Fit
+
+### imgFotoAmpliada.Width
+
+Parent.Width * 0.82
+
+### imgFotoAmpliada.Height
+
+Parent.Height * 0.82
+
+### imgFotoAmpliada.X
+
+(Parent.Width - Self.Width) / 2
+
+### imgFotoAmpliada.Y
+
+(Parent.Height - Self.Height) / 2
+
+### imgFotoAmpliada.OnSelect
+
+false
+
+### btnFecharFotoAmpliada.Text
+
+"×"
+
+### btnFecharFotoAmpliada.OnSelect
+
+Set(gblFotoConsultaAmpliada; Blank());;
+Set(gblIdxFotoConsulta; 0)
+
+### btnFotoAnt.Text
+
+"‹"
+
+### btnFotoAnt.OnSelect
+
+If(
+    gblIdxFotoConsulta > 1;
+    Set(gblIdxFotoConsulta; gblIdxFotoConsulta - 1);;
+    Set(
+        gblFotoConsultaAmpliada;
+        Last(
+            FirstN(
+                If(varFotosSE; galFotosAmbiente.AllItems; galFotosItem.AllItems);
+                gblIdxFotoConsulta
+            )
+        )
+    )
+)
+
+### btnFotoAnt.Visible
+
+!IsBlank(gblFotoConsultaAmpliada) && gblIdxFotoConsulta > 1
+
+### btnFotoAnt.Fill
+
+Cor.TransparentPrimaryDark
+
+### btnFotoAnt.Color
+
+Cor.TextInverted
+
+### btnFotoAnt.X
+
+24
+
+### btnFotoAnt.Y
+
+(Parent.Height - Self.Height) / 2
+
+### btnFotoProx.Text
+
+"›"
+
+### btnFotoProx.OnSelect
+
+If(
+    gblIdxFotoConsulta < CountRows(If(varFotosSE; galFotosAmbiente.AllItems; galFotosItem.AllItems));
+    Set(gblIdxFotoConsulta; gblIdxFotoConsulta + 1);;
+    Set(
+        gblFotoConsultaAmpliada;
+        Last(
+            FirstN(
+                If(varFotosSE; galFotosAmbiente.AllItems; galFotosItem.AllItems);
+                gblIdxFotoConsulta
+            )
+        )
+    )
+)
+
+### btnFotoProx.Visible
+
+!IsBlank(gblFotoConsultaAmpliada)
+    && gblIdxFotoConsulta < CountRows(If(varFotosSE; galFotosAmbiente.AllItems; galFotosItem.AllItems))
+
+### btnFotoProx.Fill
+
+Cor.TransparentPrimaryDark
+
+### btnFotoProx.Color
+
+Cor.TextInverted
+
+### btnFotoProx.X
+
+Parent.Width - Self.Width - 24
+
+### btnFotoProx.Y
+
+(Parent.Height - Self.Height) / 2
+
+### lblFotoNav.Text
+
+gblIdxFotoConsulta & " / " & CountRows(If(varFotosSE; galFotosAmbiente.AllItems; galFotosItem.AllItems))
+
+### lblFotoNav.Visible
+
+!IsBlank(gblFotoConsultaAmpliada)
+
+### lblFotoNav.Color
+
+Cor.TextInverted
+
+### lblFotoNav.X
+
+(Parent.Width - Self.Width) / 2
+
+### lblFotoNav.Y
+
+Parent.Height - Self.Height - 20
+
+### btnFecharFotoAmpliada.Fill
+
+Cor.BackgroundStandard
+
+### btnFecharFotoAmpliada.Color
+
+Cor.NeutralL30
+
+### btnFecharFotoAmpliada.X
+
+Parent.Width - Self.Width - 24
+
+### btnFecharFotoAmpliada.Y
+
+24
+
+## galItensConsulta.TemplateFill — remover se usar outline no card
+
+If(
+    !IsBlank(gblItemConsultaSelecionado)
+    && gblItemConsultaSelecionado.CodAsset = ThisItem.CodAsset
+    && gblItemConsultaSelecionado.ID = ThisItem.ID;
+    Cor.PrimaryL90;
+    Cor.BackgroundStandard
+)
+
+## Fotos da SE (ambiente) — btnFotosSE
+
+### btnFotosSE.OnSelect
+
+Set(varFotosSE; true)
+
+### lblBadgeFotosSE.Text
+
+CountRows(
+    Filter(
+        colFotosSEConsulta;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+        && Coalesce(
+            TipoFoto;
+            If(StartsWith(Coalesce(Title; ""); "AMBIENTE"); "AMBIENTE"; "ITEM")
+        ) = "AMBIENTE"
+    )
+)
+
+### lblBadgeFotosSE.Visible
+
+Value(lblBadgeFotosSE.Text) > 0
+
+## Overlay Fotos da SE — cFotosSE (filho DIRETO da tela)
+
+# Atras de cFotoAmpliada. X=0 Y=0 Width=Parent.Width Height=Parent.Height
+# Mockup: docs/screens/itens-consulta-fotos-se.png
+
+### cFotosSE.Visible
+
+varFotosSE
+
+### cFotosSE.Fill
+
+Cor.TransparentBlack
+
+### cFotosSE.OnSelect
+
+Set(varFotosSE; false)
+
+### cFotosSEPainel.Fill
+
+Cor.BackgroundStandard
+
+### cFotosSEPainel.Width
+
+Parent.Width * 0.72
+
+### cFotosSEPainel.Height
+
+Parent.Height * 0.82
+
+### cFotosSEPainel.X
+
+(Parent.Width - Self.Width) / 2
+
+### cFotosSEPainel.Y
+
+(Parent.Height - Self.Height) / 2
+
+### cFotosSEPainel.OnSelect
+
+false
+
+### lblFotosSETitulo.Text
+
+"Fotos da SE"
+
+### lblFotosSETitulo.Color
+
+Cor.PrimaryD30
+
+### lblFotosSESub.Text
+
+gblSEselecionada.CodSE
+    & " · "
+    & CountRows(galFotosAmbiente.AllItems)
+    & " fotos de ambiente · somente visualização"
+
+### lblFotosSESub.Color
+
+Cor.NeutralL30
+
+### btnFecharFotosSE.Text
+
+"×"
+
+### btnFecharFotosSE.OnSelect
+
+Set(varFotosSE; false)
+
+### btnFecharFotosSE.Fill
+
+Cor.BackgroundStandard
+
+### btnFecharFotosSE.Color
+
+Cor.NeutralL30
+
+### galFotosAmbiente.Items
+
+Filter(
+    Fotos;
+    CodInventario = gblInventarioSelecionado.CodInventario
+    && CodSE = gblSEselecionada.CodSE
+    && Coalesce(
+        TipoFoto;
+        If(StartsWith(Coalesce(Title; ""); "AMBIENTE"); "AMBIENTE"; "ITEM")
+    ) = "AMBIENTE"
+)
+
+### galFotosAmbiente.WrapCount
+
+3
+
+### galFotosAmbiente.DisplayMode
+
+DisplayMode.Edit
+
+### imgFotoAmbiente.Image
+
+Coalesce(
+    ThisItem.FotoCampo.Full;
+    ThisItem.FotoCampo.Value;
+    ThisItem.FotoCampo
+)
+
+### imgFotoAmbiente.ImagePosition
+
+ImagePosition.Fit
+
+### imgFotoAmbiente.OnSelect
+
+Set(gblFotoConsultaAmpliada; ThisItem);;
+Set(
+    gblIdxFotoConsulta;
+    LookUp(
+        ForAll(
+            Sequence(CountRows(galFotosAmbiente.AllItems)) As s;
+            {
+                Pos: s.Value;
+                IdLinha: Last(FirstN(galFotosAmbiente.AllItems; s.Value)).ID
+            }
+        );
+        IdLinha = ThisItem.ID;
+        Pos
+    )
+)
+
+### lblFotoAmbienteData.Text
+
+If(
+    IsBlank(ThisItem.DataCaptura);
+    "—";
+    Text(ThisItem.DataCaptura; "dd/mm/yyyy")
+)
+
+### lblSemFotosSE.Visible
+
+CountRows(galFotosAmbiente.AllItems) = 0
+
+### lblSemFotosSE.Text
+
+"Nenhuma foto de ambiente nesta SE."
+
+## Fotos do item — btnFotosItem (no card ou detalhe)
+
+### btnFotosItem.OnSelect
+
+Set(varModoFoto; "ITEM");;
+Set(varModoConsulta; true);;
+Set(varCodRef; gblItemConsultaSelecionado.CodAsset);;
+Set(varCodTemp; Blank());;
+Set(varCodSE; gblSEselecionada.CodSE);;
+Navigate(Tela_CapturaFoto; ScreenTransition.None)
+
+# Tela_CapturaFoto (consulta): AddMediaCamera.Visible e AddMediaAnexar.Visible = !varModoConsulta
+# Gallery5 so leitura quando varModoConsulta = true
+
+## App.OnStart — acrescentar
+
+Set(gblAbaItensConsulta; "BASE");;
+Set(gblAbaDetalheItem; "INFO");;
+Set(gblItemConsultaSelecionado; {CM: Blank(); CodAsset: Blank()});;
+Set(gblItemConsultaSelecionado; Blank());;
+Set(gblFotoConsultaAmpliada; Blank());;
+Set(gblIdxFotoConsulta; 0);;
+Set(varFotosSE; false);;
+Set(varModoConsulta; false)
+
+# Atalho no card: lblFotosItem.OnSelect -> Set(gblItemConsultaSelecionado; ThisItem);; Set(gblAbaDetalheItem; "FOTOS")
+# (abre painel direto na aba Fotos, sem Navigate)

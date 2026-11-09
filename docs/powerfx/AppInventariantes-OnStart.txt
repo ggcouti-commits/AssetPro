@@ -1,0 +1,530 @@
+# App Inventariantes — OnStart (colar no Studio)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+#
+# Base = OnStart do Desktop Escritorio, ajustado:
+# - Launch = app Inventariantes (b82aebfb-...)
+# - Sem forcar varPerfil ESCRITORIO / gblUsuario do User() — vem do login slot
+# - Campanhas (sem espaco) · TabelaUnificadas (nome neste app)
+# - Campanhas Ativo = Sim (inclui Concluido na galeria)
+# - Sem bloco so de import/export/consulta do Escritorio
+# - Sem varForcarOnline / SaveData / Connection
+#
+# Studio: App → OnStart → apaga → cola o bloco abaixo.
+# StartScreen: Tela_Home
+#
+# Ainda falta a parte (separado): App.Formulas ColItensBase/ColTotalBase/...
+# e reescrever btnEntrar (sem SaveData; Navigate Tela_Inventarios; filtro Alocacoes).
+
+Set(varDark; false);;
+Set(Cor; CoresLight);;
+Set(TCor; TextCoresLight);;
+
+If(
+    (
+        Host.OSType = "Windows" ||
+        Host.OSType = "macOS"
+    ) &&
+    Param("redirected") <> "true";
+
+    Launch(
+        "https://apps.powerapps.com/play/e/default-33d8824a-8d92-4bf1-94d9-291bd6bef9b2/a/b82aebfb-4950-477a-a21c-192bc77bec21?tenantId=33d8824a-8d92-4bf1-94d9-291bd6bef9b2&hint=be323546-58c5-4d5b-a3db-729f1a5200d5&sourcetime=1793641047692&source=portal";
+        {
+            hidenavbar: "true";
+            redirected: "true"
+        };
+        LaunchTarget.Replace
+    )
+);;
+
+Set(varCarregando; true);;
+
+Set(gblFiltroStatus; "Todos");;
+Set(gblFiltroStatusSE; "Todas");;
+
+// Perfil e usuario saem do login (slot Inventariantes).
+Set(varPerfil; Blank());;
+Set(gblUsuario; Blank());;
+
+ClearCollect(colTUC; TabelaTUC);;
+ClearCollect(colAtributosBruto; TabelaAtributos);;
+ClearCollect(colLookup; TabelaUnificadas);;
+ClearCollect(colTabelasCatalogo; TabelasCatalogo);;
+ClearCollect(
+    colCatSimples;
+    ForAll(
+        colTabelasCatalogo As c;
+        {
+            TabelaOrigem: Trim(c.TabelaOrigem);
+            TipoEntrada: Upper(Trim(Coalesce(Text(c.TipoEntrada); "LISTA")));
+            Unidade: Coalesce(c.Unidade; "");
+            UnidadeAlt: Coalesce(c.UnidadeAlt; "");
+            FatorConv: Coalesce(Value(c.FatorConv); 1);
+            CasasDecimais: Coalesce(Value(c.CasasDecimais); 2)
+        }
+    )
+);;
+Clear(colAtributos);;
+ForAll(
+    colAtributosBruto As reg;
+    Collect(
+        colAtributos;
+        {
+            CodTUC: reg.CodTUC;
+            NomenclaturaAtributo: reg.NomenclaturaAtributo;
+            DescricaoAtributo: reg.DescricaoAtributo;
+            ChaveTabela: Trim(reg.ChaveTabela);
+            TabelaOrigem: Trim(reg.ChaveTabela);
+            TipoEntrada: "LISTA";
+            Unidade: "";
+            CasasDecimais: 2
+        }
+    )
+);;
+
+ClearCollect(colDesmPartes; {N: 0; Qtd: 0});;
+Clear(colDesmPartes);;
+Set(varDesmOn; false);;
+Set(varDesmPor; Blank());;
+
+ClearCollect(
+    colUnidadeMedida;
+    {Unidade: "UN"; Rotulo: "UN - Unidade"};
+    {Unidade: "PC"; Rotulo: "PC - Peça"};
+    {Unidade: "M"; Rotulo: "M - Metro"};
+    {Unidade: "M2"; Rotulo: "M² - Metro quadrado"};
+    {Unidade: "KG"; Rotulo: "KG - Quilograma"}
+);;
+
+ClearCollect(
+    colCentroModular;
+    {Codigo: 0; Sigla: "MIG"; Nome: "Infraestrutura geral"};
+    {Codigo: 1; Sigla: ""; Nome: "Equipamentos"};
+    {Codigo: 2; Sigla: "EL"; Nome: "Entrada de linha"};
+    {Codigo: 3; Sigla: "IB"; Nome: "Interligação de barra"};
+    {Codigo: 4; Sigla: "CT/CTA"; Nome: "Conexão de trafo"};
+    {Codigo: 5; Sigla: "CCP/CCS"; Nome: "Conexão de banco"};
+    {Codigo: 6; Sigla: "CRL"; Nome: "Conexão de reator de linha"};
+    {Codigo: 7; Sigla: "CRH"; Nome: "Conexão de reator de barra"};
+    {Codigo: 8; Sigla: "CC"; Nome: "Conexão de compensador"};
+    {Codigo: 9; Sigla: "CCA"; Nome: "Conexão de circuito/alimentador"}
+);;
+
+ClearCollect(
+    colArranjoFisico;
+    {Codigo: 1; Sigla: "BS"; Nome: "Barra simples"};
+    {Codigo: 2; Sigla: "BD"; Nome: "Barra dupla"};
+    {Codigo: 3; Sigla: "BDDD"; Nome: "Barra dupla e disjuntor duplo"};
+    {Codigo: 4; Sigla: "BPT"; Nome: "Barra principal e de transferência"};
+    {Codigo: 5; Sigla: "DJM"; Nome: "Disjuntor e meio"}
+);;
+
+ClearCollect(
+    colLocalInstalacao;
+    {Codigo: 0; Sigla: "RD"; Nome: "Distribuição"};
+    {Codigo: 1; Sigla: "DIT-RPC"; Nome: "DIT — RBSE / interesse restrito"};
+    {Codigo: 2; Sigla: "RBSE"; Nome: "Rede Básica — sistema existente"};
+    {Codigo: 3; Sigla: "RBNI"; Nome: "Rede Básica — novas instalações"};
+    {Codigo: 4; Sigla: "DIT-RCDM"; Nome: "DIT — RBNI"}
+);;
+
+ClearCollect(
+    colTipoInstalacao;
+    {Codigo: 10; Sigla: "HID"; Resumo: "10-HID"; Nome: "Hidroelétrica"};
+    {Codigo: 11; Sigla: "TER"; Resumo: "11-TER"; Nome: "Térmica a combustão — óleo/gás/diesel"};
+    {Codigo: 12; Sigla: "TER"; Resumo: "12-TER"; Nome: "Térmica a vapor — carvão"};
+    {Codigo: 13; Sigla: "TER"; Resumo: "13-TER"; Nome: "Térmica a vapor — gás"};
+    {Codigo: 14; Sigla: "TER"; Resumo: "14-TER"; Nome: "Térmica a vapor — diesel/querosene/óleo"};
+    {Codigo: 15; Sigla: "TER"; Resumo: "15-TER"; Nome: "Térmica a vapor — biomassa"};
+    {Codigo: 16; Sigla: "TER"; Resumo: "16-TER"; Nome: "Térmica a vapor — nuclear"};
+    {Codigo: 17; Sigla: "SOL"; Resumo: "17-SOL"; Nome: "Solar"};
+    {Codigo: 18; Sigla: "EOL"; Resumo: "18-EOL"; Nome: "Eólica"};
+    {Codigo: 19; Sigla: "OUT"; Resumo: "19-OUT"; Nome: "Outras"};
+    {Codigo: 20; Sigla: "DIT"; Resumo: "20-DIT"; Nome: "SE < 230 kV (DIT)"};
+    {Codigo: 21; Sigla: "DIT"; Resumo: "21-DIT"; Nome: "SE ≥ 230 kV e < 345 kV"};
+    {Codigo: 22; Sigla: "DIT"; Resumo: "22-DIT"; Nome: "SE ≥ 345 kV e < 500 kV"};
+    {Codigo: 23; Sigla: "DIT"; Resumo: "23-DIT"; Nome: "SE ≥ 500 kV"};
+    {Codigo: 24; Sigla: "DIT"; Resumo: "24-DIT"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 25; Sigla: "DIT"; Resumo: "25-DIT"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 26; Sigla: "DIT"; Resumo: "26-DIT"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 27; Sigla: "DIT"; Resumo: "27-DIT"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 28; Sigla: "DIT"; Resumo: "28-DIT"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 29; Sigla: "DIT"; Resumo: "29-DIT"; Nome: "Transmissão de interesse restrito (SE ou linha)"};
+    {Codigo: 30; Sigla: "SDU"; Resumo: "30-SDU"; Nome: "SE urbana ≤ 13,8 kV"};
+    {Codigo: 31; Sigla: "SDU"; Resumo: "31-SDU"; Nome: "SE urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 32; Sigla: "SDU"; Resumo: "32-SDU"; Nome: "SE urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 33; Sigla: "SDU"; Resumo: "33-SDU"; Nome: "SE urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 34; Sigla: "SDU"; Resumo: "34-SDU"; Nome: "SE urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 35; Sigla: "LAU"; Resumo: "35-LAU"; Nome: "Linha de distribuição urbana ≤ 13,8 kV"};
+    {Codigo: 36; Sigla: "LAU"; Resumo: "36-LAU"; Nome: "Linha de distribuição urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 37; Sigla: "LAU"; Resumo: "37-LAU"; Nome: "Linha de distribuição urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 38; Sigla: "LAU"; Resumo: "38-LAU"; Nome: "Linha de distribuição urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 39; Sigla: "LAU"; Resumo: "39-LAU"; Nome: "Linha de distribuição urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 40; Sigla: "RAU"; Resumo: "40-RAU"; Nome: "Rede aérea urbana"};
+    {Codigo: 41; Sigla: "RAR"; Resumo: "41-RAR"; Nome: "Rede aérea rural"};
+    {Codigo: 42; Sigla: "RSU"; Resumo: "42-RSU"; Nome: "Rede subterrânea urbana"};
+    {Codigo: 43; Sigla: "RSR"; Resumo: "43-RSR"; Nome: "Rede subterrânea rural"};
+    {Codigo: 44; Sigla: "RSA"; Resumo: "44-RSA"; Nome: "Rede submersa"};
+    {Codigo: 50; Sigla: "SDR"; Resumo: "50-SDR"; Nome: "SE rural ≤ 13,8 kV"};
+    {Codigo: 51; Sigla: "SDR"; Resumo: "51-SDR"; Nome: "SE rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 52; Sigla: "SDR"; Resumo: "52-SDR"; Nome: "SE rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 53; Sigla: "SDR"; Resumo: "53-SDR"; Nome: "SE rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 54; Sigla: "SDR"; Resumo: "54-SDR"; Nome: "SE rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 55; Sigla: "LDR"; Resumo: "55-LDR"; Nome: "Linha de distribuição rural ≤ 13,8 kV"};
+    {Codigo: 56; Sigla: "LDR"; Resumo: "56-LDR"; Nome: "Linha de distribuição rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 57; Sigla: "LDR"; Resumo: "57-LDR"; Nome: "Linha de distribuição rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 58; Sigla: "LDR"; Resumo: "58-LDR"; Nome: "Linha de distribuição rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 59; Sigla: "LDR"; Resumo: "59-LDR"; Nome: "Linha de distribuição rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 60; Sigla: "LSS"; Resumo: "60-LSS"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 61; Sigla: "LSS"; Resumo: "61-LSS"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 62; Sigla: "LSS"; Resumo: "62-LSS"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 63; Sigla: "LSS"; Resumo: "63-LSS"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 64; Sigla: "LSS"; Resumo: "64-LSS"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 65; Sigla: "LSS"; Resumo: "65-LSS"; Nome: "Linha de distribuição ≤ 13,8 kV"};
+    {Codigo: 66; Sigla: "LSS"; Resumo: "66-LSS"; Nome: "Linha de distribuição > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 67; Sigla: "LSS"; Resumo: "67-LSS"; Nome: "Linha de distribuição > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 68; Sigla: "LSS"; Resumo: "68-LSS"; Nome: "Linha de distribuição > 69 kV e ≤ 138 kV"};
+    {Codigo: 69; Sigla: "LSS"; Resumo: "69-LSS"; Nome: "Linha de distribuição > 138 kV e ≤ 230 kV"};
+    {Codigo: 70; Sigla: "TER"; Resumo: "70-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. central"};
+    {Codigo: 71; Sigla: "EQP"; Resumo: "71-EQP"; Nome: "Equipamento geral — adm. central"};
+    {Codigo: 72; Sigla: "EQP"; Resumo: "72-EQP"; Nome: "Sistema de comunicação — adm. central"};
+    {Codigo: 80; Sigla: "TER"; Resumo: "80-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. específica"};
+    {Codigo: 81; Sigla: "EQP"; Resumo: "81-EQP"; Nome: "Equipamento geral — adm. específica"};
+    {Codigo: 82; Sigla: "EQP"; Resumo: "82-EQP"; Nome: "Sistema de comunicação — adm. específica"};
+    {Codigo: 90; Sigla: "TER"; Resumo: "90-TER"; Nome: "Terrenos/benfeitorias fora de outras ODI"};
+    {Codigo: 91; Sigla: "TEL"; Resumo: "91-TEL"; Nome: "Equipamento geral fora de ODI específicas"};
+    {Codigo: 92; Sigla: "TEL"; Resumo: "92-TEL"; Nome: "Telecom, telecontrole, proteção e supervisão"};
+    {Codigo: 93; Sigla: "SMU"; Resumo: "93-SMU"; Nome: "Sistema de medição urbana (fora de usina/SE)"};
+    {Codigo: 94; Sigla: "AUX"; Resumo: "94-AUX"; Nome: "Serviços auxiliares gerais"};
+    {Codigo: 95; Sigla: "OUT"; Resumo: "95-OUT"; Nome: "Apoio operacional (usina e SE)"};
+    {Codigo: 96; Sigla: "SMR"; Resumo: "96-SMR"; Nome: "Sistema de medição rural (fora de usina/SE)"};
+    {Codigo: 97; Sigla: "OUT"; Resumo: "97-OUT"; Nome: "Sistema de despacho de carga"};
+    {Codigo: 98; Sigla: "RES"; Resumo: "98-RES"; Nome: "Reserva imobilizada"};
+    {Codigo: 99; Sigla: "INT"; Resumo: "99-INT"; Nome: "Intangível"}
+);;
+
+ClearCollect(
+    colCampFonte;
+    Filter(Campanhas; Ativo = "Sim")
+);;
+Clear(colCampAbertas);;
+ForAll(
+    Distinct(colCampFonte; CodInventario) As d;
+    Collect(
+        colCampAbertas;
+        LookUp(colCampFonte; CodInventario = d.Value)
+    )
+);;
+
+Clear(colSubestacoes);;
+ForAll(
+    colCampAbertas As camp;
+    Collect(
+        colSubestacoes;
+        Filter(Subestacoes; CodInventario = camp.CodInventario)
+    )
+);;
+
+Clear(colInventarioBase);;
+
+ClearCollect(
+    colCampanhas;
+    AddColumns(
+        colCampAbertas;
+        QtdSEs;
+        With(
+            {cod: ThisRecord.CodInventario};
+            CountRows(Filter(colSubestacoes; CodInventario = cod))
+        );
+        QtdItens;
+        0
+    )
+);;
+
+Set(gblInventarioSelecionado; Blank());;
+Set(gblSEselecionada; Blank());;
+Set(gblVersaoApp; "1.0.0");;
+Set(gblUltimaSincronizacao; Now());;
+
+Set(varToastOn; false);;
+Set(varToastMsg; "");;
+Set(varToastTipo; "OK");;
+
+ClearCollect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Título: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: "";
+        IdUC: "";
+        QtdeContado: 0;
+        CoordX: "";
+        CoordY: ""
+    }
+);;
+
+With(
+    {
+        JsonCapturado: LookUp(BasesJSON; ID = 9).ValoresJson
+    };
+    With(
+        {
+            TabelaTemp: Table(ParseJSON(JsonCapturado))
+        };
+        ClearCollect(
+            colTabelaFinal;
+            DropColumns(
+                AddColumns(
+                    TabelaTemp;
+                    ID; Value(ThisRecord.Value.ID);
+                    Imobilizado; Text(ThisRecord.Value.Imobilizado);
+                    CodAsset; Text(ThisRecord.Value.CodAsset);
+                    CodInventario; Text(ThisRecord.Value.CodInventario);
+                    CodSE; Text(ThisRecord.Value.CodSE);
+                    NomeSE; Text(ThisRecord.Value.NomeSE);
+                    CM; Value(ThisRecord.Value.CM);
+                    TI; Value(ThisRecord.Value.TI);
+                    ArranjoFisico; Value(ThisRecord.Value.ArranjoFisico);
+                    CodTUC; Value(ThisRecord.Value.CodTUC);
+                    DescricaoTUC; Text(ThisRecord.Value.DescricaoTUC);
+                    AtributoA1; Value(ThisRecord.Value.AtributoA1);
+                    AtributoA2; Value(ThisRecord.Value.AtributoA2);
+                    AtributoA3; Value(ThisRecord.Value.AtributoA3);
+                    AtributoA4; Value(ThisRecord.Value.AtributoA4);
+                    AtributoA5; Value(ThisRecord.Value.AtributoA5);
+                    AtributoA6; Value(ThisRecord.Value.AtributoA6);
+                    DescricaoBem; Text(ThisRecord.Value.DescricaoBem);
+                    Quantidade; Value(ThisRecord.Value.Quantidade);
+                    QtdeContado; Value(ThisRecord.Value.QtdeContado);
+                    Unidade; Text(ThisRecord.Value.Unidade);
+                    Fabricante; Text(ThisRecord.Value.Fabricante);
+                    Modelo; Text(ThisRecord.Value.Modelo);
+                    NumSerie; Text(ThisRecord.Value.NumSerie);
+                    Ano; Value(ThisRecord.Value.Ano);
+                    CodOperacao; Text(ThisRecord.Value.CodOperacao);
+                    Bay; Text(ThisRecord.Value.Bay);
+                    Elegivel; Text(ThisRecord.Value.Elegivel);
+                    Reserva; Text(ThisRecord.Value.Reserva);
+                    Observacoes; Text(ThisRecord.Value.Observacoes);
+                    Status; Text(ThisRecord.Value.Status);
+                    Sobra; Text(ThisRecord.Value.Sobra);
+                    ValorA1; Text(ThisRecord.Value.ValorA1);
+                    ValorA2; Text(ThisRecord.Value.ValorA2);
+                    ValorA3; Text(ThisRecord.Value.ValorA3);
+                    ValorA4; Text(ThisRecord.Value.ValorA4);
+                    ValorA5; Text(ThisRecord.Value.ValorA5);
+                    ValorA6; Text(ThisRecord.Value.ValorA6);
+                    Projeto; Text(ThisRecord.Value.Projeto);
+                    IdItem; Value(ThisRecord.Value.IdItem);
+                    IdUC; Text(ThisRecord.Value.IdUC);
+                    ValidadoPor; Text(ThisRecord.Value.ValidadoPor);
+                    Origem; Text(ThisRecord.Value.Origem);
+                    CoordX; Text(ThisRecord.Value.CoordX);
+                    CoordY; Text(ThisRecord.Value.CoordY)
+                );
+                Value
+            )
+        )
+    )
+);;
+
+With(
+    {
+        TabelaHoje: Filter(Inventario; Modificado >= Today())
+    };
+    With(
+        {
+            TabelaHojeSelecionada:
+            ShowColumns(
+                TabelaHoje;
+                ID;
+                Imobilizado;
+                CodAsset;
+                CodInventario;
+                CodSE;
+                NomeSE;
+                CM;
+                TI;
+                LocalInstalacao;
+                ArranjoFisico;
+                CodTUC;
+                DescricaoTUC;
+                AtributoA1;
+                AtributoA2;
+                AtributoA3;
+                AtributoA4;
+                AtributoA5;
+                AtributoA6;
+                DescricaoBem;
+                Quantidade;
+                QtdeContado;
+                Unidade;
+                Fabricante;
+                Modelo;
+                NumSerie;
+                Ano;
+                CodOperacao;
+                Bay;
+                Observacoes;
+                Status;
+                Sobra;
+                Projeto;
+                IdItem;
+                IdUC;
+                ValidadoPor;
+                Origem;
+                CoordX;
+                CoordY
+            )
+        };
+        ForAll(
+            TabelaHojeSelecionada As sp;
+            RemoveIf(
+                colTabelaFinal;
+                CodAsset = sp.CodAsset
+                && CodInventario = sp.CodInventario
+            )
+        );;
+        Collect(
+            colTabelaFinal;
+            TabelaHojeSelecionada
+        )
+    )
+);;
+
+Set(varItemFoto; Last(colInventarioBase));;
+Remove(colInventarioBase; Last(colInventarioBase));;
+Set(varItemFoto; Blank());;
+
+Collect(
+    colInventarioBase;
+    ForAll(
+        colTabelaFinal As lin;
+        {
+            ID: lin.ID;
+            Título: "";
+            CodInventario: Coalesce(lin.CodInventario; "");
+            CodSE: Coalesce(lin.CodSE; "");
+            NomeSE: Coalesce(lin.NomeSE; "");
+            CodAsset: Coalesce(lin.CodAsset; "");
+            IdItem: Value(Coalesce(Text(lin.IdItem); "0"));
+            Imobilizado: Coalesce(lin.Imobilizado; "");
+            CodTUC: Coalesce(lin.CodTUC; 0);
+            DescricaoTUC: Coalesce(lin.DescricaoTUC; "");
+            TI: Coalesce(lin.TI; 0);
+            LocalInstalacao: Coalesce(lin.LocalInstalacao; 0);
+            ArranjoFisico: Coalesce(lin.ArranjoFisico; 0);
+            CM: Coalesce(lin.CM; 0);
+            AtributoA1: Coalesce(lin.AtributoA1; 0);
+            AtributoA2: Coalesce(lin.AtributoA2; 0);
+            AtributoA3: Coalesce(lin.AtributoA3; 0);
+            AtributoA4: Coalesce(lin.AtributoA4; 0);
+            AtributoA5: Coalesce(lin.AtributoA5; 0);
+            AtributoA6: Coalesce(lin.AtributoA6; 0);
+            ValorA1: Value(Coalesce(lin.ValorA1; "0"));
+            ValorA2: Value(Coalesce(lin.ValorA2; "0"));
+            ValorA3: Value(Coalesce(lin.ValorA3; "0"));
+            ValorA4: Value(Coalesce(lin.ValorA4; "0"));
+            ValorA5: Value(Coalesce(lin.ValorA5; "0"));
+            ValorA6: Value(Coalesce(lin.ValorA6; "0"));
+            DescricaoBem: Coalesce(lin.DescricaoBem; "");
+            Quantidade: Coalesce(lin.Quantidade; 0);
+            QuantidadeCampo: 0;
+            QtdeContado: Coalesce(lin.QtdeContado; 0);
+            Unidade: Coalesce(lin.Unidade; "");
+            Elegivel: Coalesce(lin.Elegivel; "");
+            Reserva: Coalesce(lin.Reserva; "");
+            Fabricante: Coalesce(lin.Fabricante; "");
+            Modelo: Coalesce(lin.Modelo; "");
+            NumSerie: Coalesce(lin.NumSerie; "");
+            Ano: Coalesce(lin.Ano; 0);
+            Bay: Coalesce(lin.Bay; "");
+            CodOperacao: Coalesce(lin.CodOperacao; "");
+            Projeto: Coalesce(lin.Projeto; "");
+            Observacoes: Coalesce(lin.Observacoes; "");
+            Status: Coalesce(lin.Status; "");
+            Sobra: Coalesce(lin.Sobra; "");
+            ValidadoPor: Coalesce(lin.ValidadoPor; "");
+            Origem: Coalesce(lin.Origem; "");
+            IdUC: Coalesce(lin.IdUC; "");
+            CoordX: Coalesce(lin.CoordX; "");
+            CoordY: Coalesce(lin.CoordY; "")
+        }
+    )
+);;
+
+ForAll(
+    colCampanhas As camp;
+    Patch(
+        colCampanhas;
+        LookUp(colCampanhas; CodInventario = camp.CodInventario);
+        {
+            QtdItens: CountRows(
+                Filter(
+                    colInventarioBase;
+                    CodInventario = camp.CodInventario
+                )
+            )
+        }
+    )
+);;
+
+ClearCollect(colColItens; Filter(Inventario; ID = -1));;
+ClearCollect(colColFotos; Filter(Fotos; ID = -1));;
+Set(varColItem; First(colColItens));;
+Set(varColGravado; First(colColItens));;
+Set(varColFotoGravada; First(colColFotos));;
+Set(varColAba; "BASE");;
+Set(varColModo; "ITEM");;
+Set(varColRecibo; "");;
+Set(varColFotoRecibo; "");;
+Set(varColNovoCod; "");;
+Set(varColFotoAberto; false);;
+Set(varColFotoModo; "ITEM");;
+Set(varInvPasso; 1);;
+Set(varInvFiltroSE; "Todas");;
+Set(varInvVoltandoColeta; false);;
+Set(varAtualizandoInv; false);;
+Set(varAtualizarSilencioso; false);;
+
+Set(varCarregando; false);;

@@ -1,0 +1,12 @@
+---
+description: Anexar foto — mobile (só AddMediaAnexar, 20.10.2026)
+alwaysApply: true
+---
+
+# Anexar foto (mobile)
+
+Decisão 19.10.2026 · montado 20.10.2026 · **só Anexar** na noite do 20.10 (Fenômeno).
+
+- `Tela_CapturaFoto` → **um** `AddMedia`: `AddMediaAnexar` (`UseMobileCamera = false`).
+- No aparelho o Anexar já oferece câmera ou galeria — botão separado de câmera era desnecessário. `AddMediaCamera` / `Container34` **retirados**.
+- Spec: `docs/powerfx/Tela_FotosSE-formulas.txt`.

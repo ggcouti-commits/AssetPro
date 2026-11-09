@@ -1,0 +1,228 @@
+# Tela_ItensVisita — popup Local + coletar coordenada
+# Locale PT-BR. Aprovado 08.10 (mockup local-itens-coord.png).
+# TI / Local de instalação / Arranjo = do LOCAL (uma vez na SE).
+# Campo que a base já trouxe aparece preenchido e o inventariante pode corrigir.
+# Só leitura apenas com a subestação finalizada.
+# CoordX = longitude. CoordY = latitude. Seis casas, ponto.
+# A foto NÃO grava coordenada.
+
+# --- Tela_ItensVisita → OnVisible (no FIM do que já existe) ---
+# O popup Local abre junto com a tela. É a primeira coisa que o inventariante vê.
+
+Set(
+    varTIBase;
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).TI
+);;
+Set(
+    varLIBase;
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).LocalInstalacao
+);;
+Set(
+    varArrBase;
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).ArranjoFisico
+);;
+Set(varPopLocal; true)
+
+# --- btnLocalSE (botão moderno, só ícone, ao lado do container X/Y) ---
+# Icon = Home | Layout = Icon only | Width/Height = 40 | Radius = 10
+# Fill = Branco | BorderThickness = 1
+# BorderColor e IconColor = a fórmula abaixo
+
+If(
+    IsBlank(
+        LookUp(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        ).TI
+    );
+    ColorValue("#C47B12");
+    ColorValue("#153965")
+)
+
+# OnSelect
+Set(
+    varTIBase;
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).TI
+);;
+Set(
+    varLIBase;
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).LocalInstalacao
+);;
+Set(
+    varArrBase;
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).ArranjoFisico
+);;
+Set(varPopLocal; true)
+
+# --- cPopLocal.Visible ---
+varPopLocal
+
+# --- drpTI (lista suspensa) ---
+# Items
+colTipoInstalacao
+# ItemDisplayText / campo exibido
+ThisItem.Codigo & " — " & ThisItem.Sigla
+# DefaultSelectedItems
+LookUp(colTipoInstalacao; Codigo = Value(Text(varTIBase)))
+# DisplayMode
+If(IsBlank(varTIBase); DisplayMode.Edit; DisplayMode.View)
+
+# --- drpLocal (lista suspensa) ---
+# Items
+colLocalInstalacao
+# ItemDisplayText
+ThisItem.Codigo & " — " & ThisItem.Sigla
+# DefaultSelectedItems
+LookUp(colLocalInstalacao; Codigo = Value(Text(varLIBase)))
+# DisplayMode
+If(IsBlank(varLIBase); DisplayMode.Edit; DisplayMode.View)
+
+# --- drpArranjo (lista suspensa) ---
+# Items
+colArranjoFisico
+# ItemDisplayText
+ThisItem.Codigo & " — " & ThisItem.Sigla
+# DefaultSelectedItems
+LookUp(colArranjoFisico; Codigo = Value(Text(varArrBase)))
+# DisplayMode
+If(IsBlank(varArrBase); DisplayMode.Edit; DisplayMode.View)
+
+# --- lblPopX.Text ---
+"X " & Coalesce(
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).CoordX;
+    "—"
+)
+
+# --- lblPopY.Text ---
+"Y " & Coalesce(
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).CoordY;
+    "—"
+)
+
+# --- btnColetarCoord.OnSelect ---
+# DisplayMode: Edit se a SE não está Finalizada; senão Disabled
+
+If(
+    IsBlank(Location.Latitude) || (Location.Latitude = 0 && Location.Longitude = 0);
+    Notify("Sem sinal de GPS. A coordenada sobe no envio quando tiver sinal."; NotificationType.Warning);
+    UpdateIf(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario;
+        {
+            CoordX: Text(Location.Longitude; "[$-en-US]0.000000");
+            CoordY: Text(Location.Latitude; "[$-en-US]0.000000")
+        }
+    );;
+    IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+    Set(
+        gblSEselecionada;
+        LookUp(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        )
+    );;
+    If(
+        Connection.Connected;
+        Patch(
+            Subestacoes;
+            LookUp(
+                Subestacoes;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            );
+            {
+                CoordX: gblSEselecionada.CoordX;
+                CoordY: gblSEselecionada.CoordY
+            }
+        )
+    );;
+    Notify("Coordenada coletada."; NotificationType.Success)
+)
+
+# --- btnSalvarLocal.OnSelect ---
+
+UpdateIf(
+    colSubestacoes;
+    CodSE = gblSEselecionada.CodSE
+    && CodInventario = gblInventarioSelecionado.CodInventario;
+    {
+        TI: If(IsBlank(varTIBase); drpTI.Selected.Codigo; varTIBase);
+        LocalInstalacao: If(IsBlank(varLIBase); drpLocal.Selected.Codigo; varLIBase);
+        ArranjoFisico: If(IsBlank(varArrBase); drpArranjo.Selected.Codigo; varArrBase)
+    }
+);;
+IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+Set(
+    gblSEselecionada;
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    )
+);;
+If(
+    Connection.Connected;
+    Patch(
+        Subestacoes;
+        LookUp(
+            Subestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        );
+        {
+            TI: gblSEselecionada.TI;
+            LocalInstalacao: gblSEselecionada.LocalInstalacao;
+            ArranjoFisico: gblSEselecionada.ArranjoFisico
+        }
+    )
+);;
+Set(varPopLocal; false);;
+Notify("Local salvo."; NotificationType.Success)
+
+# --- btnFecharLocal.OnSelect ---
+Set(varPopLocal; false)
+
+# --- Faixa X/Y que já existe no topo ---
+# Text do X (troca o que estiver):
+"X " & Coalesce(gblSEselecionada.CoordX; "—")
+# Text do Y:
+"Y " & Coalesce(gblSEselecionada.CoordY; "—")
+
+# --- Tela_CapturaFoto → AddMediaCamera / AddMediaAnexar → OnChange ---
+# Apaga qualquer UpdateIf / Patch que grave CoordX ou CoordY.
+# O Collect da foto e o SaveData de colFotosCampo ficam.

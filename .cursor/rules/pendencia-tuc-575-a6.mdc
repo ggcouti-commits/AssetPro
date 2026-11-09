@@ -1,0 +1,12 @@
+---
+description: RESOLVIDA 22.10.2026 — TUC 575 A6 (Local de instalação) faltava no catálogo
+alwaysApply: false
+---
+
+# Pendência (resolvida) — TUC 575 sem A6
+
+Relato 21.10.2026 · **resolvida 22.10.2026** (Fenômeno).
+
+- **Causa:** `TabelaAtributos` no SharePoint tinha só A1–A5 para CodTUC **575**. O app já fazia `LookUp` de A6; `cCardA6` ficava oculto (`!IsBlank(varAtrA6)`).
+- **Correção:** criada linha A6 · `LOCAL DE INSTALAÇÃO` · `ChaveTabela = TAB_LOCAL_INSTALACAO` · `CodAtributo = 6` (site AssetPro493).
+- **No aparelho:** Baixar dados de novo (ou limpar cache de atributos) para `colAtributos` pegar a linha nova.

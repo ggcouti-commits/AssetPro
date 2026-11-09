@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — progresso na galeria · importar / excluir</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --green:#40A73F; --green-d:#2D752C;
+    --okbg:#ECF6EC; --oktx:#2D752C;
+    --fieldbg:#E8F1FB; --fieldtx:#2464B1;
+    --pendbg:#EEF0F3; --pendtx:#6B7683;
+    --danger:#E24444;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif; color:var(--text); padding:22px 22px 36px}
+  body.shot{padding:0; background:#E8ECF0}
+  body.shot .kicker, body.shot h1, body.shot .lead{display:none}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:28px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1100px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  .app{
+    width:1280px; height:720px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page); position:relative;
+  }
+  body.shot .app{border:0; border-radius:0}
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni.on{background:var(--navy3); color:#fff}
+  .dot{width:16px; height:16px; border-radius:5px; background:rgba(255,255,255,.28)}
+  .ni.on .dot{background:#fff}
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{height:66px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 22px}
+  .toptitle{font-size:20px; font-weight:700; color:var(--title)}
+  .topsub{font-size:12px; color:var(--label); margin-top:2px}
+  .body{padding:16px 20px 18px; display:flex; flex-direction:column; gap:12px; min-height:0; flex:1}
+  .kpis{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .kpi{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px}
+  .kpil{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .kpiv{font-size:26px; font-weight:700; line-height:1.1; margin-top:4px; color:var(--fieldtx)}
+  .kpi.out .kpiv{color:var(--oktx)}
+  .kpisub{font-size:12px; color:var(--label); margin-top:3px}
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0}
+  .panel{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column; min-height:0}
+  .ph{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px}
+  .pt{font-size:15px; font-weight:700; color:var(--title)}
+  .ps{font-size:12px; color:var(--label)}
+  .cta{flex:1; border:1px solid #C5D4E6; border-radius:12px; background:#F7FAFD; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:20px}
+  .ctat{font-size:16px; font-weight:700; color:var(--title)}
+  .btn{height:40px; padding:0 18px; border-radius:8px; font-size:13px; font-weight:700; background:var(--navy); color:#fff; border:0; display:inline-flex; align-items:center}
+  .btn.off{opacity:.45}
+  .rows{display:flex; flex-direction:column; gap:8px; overflow:hidden}
+  .row{border:1px solid var(--border); border-radius:11px; padding:11px 13px 10px; background:#FBFCFD; display:flex; flex-direction:column; gap:8px}
+  .row.busy{border-color:#9EC4F0; background:#F4F8FD}
+  .row.del{border-color:#F5C2C2; background:#FDF6F6}
+  .rowtop{display:flex; align-items:center; gap:12px}
+  .rn{flex:1; min-width:0}
+  .rname{font-size:14px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:11.5px; color:var(--label); margin-top:2px}
+  .chip{display:inline-flex; align-items:center; height:21px; padding:0 8px; border-radius:999px; font-size:10px; font-weight:700; white-space:nowrap}
+  .c-run{background:var(--fieldbg); color:var(--fieldtx)}
+  .c-done{background:var(--okbg); color:var(--oktx)}
+  .c-del{background:#FDECEC; color:#C0392B}
+  .eacts{display:flex; flex-direction:column; gap:6px; flex:0 0 88px}
+  .ebtn{height:28px; border-radius:8px; font-size:11.5px; font-weight:700; border:1px solid var(--navy); background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center}
+  .ebtn.ghost{background:#fff; color:var(--navy)}
+  .ebtn.off{opacity:.4; pointer-events:none}
+  .prog{display:flex; flex-direction:column; gap:5px}
+  .progfoot{display:flex; justify-content:space-between; font-size:11px; color:var(--label)}
+  .progfoot b{color:var(--fieldtx)}
+  .row.del .progfoot b{color:#C0392B}
+  .track{height:6px; background:#E6EAEE; border-radius:3px; overflow:hidden}
+  .fill{height:100%; background:#348FFD; border-radius:3px}
+  .row.del .fill{background:var(--danger)}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .cc{border:1px solid var(--border); border-radius:12px; padding:14px 16px; background:var(--card); position:relative}
+  .cc.lock{opacity:.72; outline:2px solid #9EC4F0}
+  .veil{position:absolute; inset:0; border-radius:12px; background:rgba(241,243,245,.45); display:flex; align-items:flex-start; justify-content:flex-end; padding:10px 12px}
+  .cch{display:flex; justify-content:space-between; align-items:flex-start; gap:10px}
+  .ccname{font-size:15px; font-weight:700; color:var(--title)}
+  .ccmeta{font-size:12px; color:var(--label); margin-top:3px}
+  .bar{height:6px; background:#E6EAEE; border-radius:3px; margin-top:12px}
+  .bar i{display:block; height:100%; width:38%; background:#B7C0CA; border-radius:3px}
+  .mini{display:flex; gap:18px; margin-top:11px; padding-top:10px; border-top:1px solid #EDF0F3; font-size:11px; color:var(--label)}
+  .mini b{display:block; font-size:16px; font-weight:700; color:var(--title)}
+  .mask{position:absolute; inset:0; background:rgba(18,59,110,.42); display:flex; align-items:center; justify-content:center}
+  .dlg{width:560px; background:#fff; border-radius:14px; border:1px solid var(--border); padding:22px 24px 20px; box-shadow:0 18px 48px rgba(18,59,110,.22)}
+  .dlgt{font-size:18px; font-weight:700; color:var(--green-d); margin-bottom:6px}
+  .dlgt.del{color:#C0392B}
+  .dlgs{font-size:13.5px; color:var(--label); line-height:1.5; margin-bottom:16px}
+  .k2{display:flex; gap:16px; margin-bottom:18px}
+  .k2b{flex:1; background:var(--okbg); border-radius:10px; padding:12px 14px}
+  .k2n{font-size:22px; font-weight:700; color:var(--oktx)}
+  .k2l{font-size:11px; font-weight:700; color:var(--label); text-transform:uppercase; margin-top:2px}
+  .ok{height:40px; padding:0 18px; border-radius:8px; background:var(--navy); color:#fff; font-size:13px; font-weight:700; border:0; margin-left:auto; display:flex}
+  .dlgft{display:flex}
+</style>
+</head>
+<body>
+  <div class="kicker">1 · TELA_EXPORTAR · DURANTE A CARGA</div>
+  <h1>Sem popup. A barra vive no card da galeria.</h1>
+  <p class="lead">O fluxo já respondeu. O escritório usa o app. <b>Novo projeto</b> e <b>Excluir</b> ficam desligados. Chip azul <b>Importando</b>. Planilha do card também desliga. O popup só abre no fim, sem barra.</p>
+
+  <div class="app" id="exportar-carga">
+    <aside class="sb">
+      <div class="brand"><div class="logo"></div><div class="brandname">Infralytics</div></div>
+      <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+      <nav class="nav">
+        <div class="ni"><span class="dot"></span>Home</div>
+        <div class="ni"><span class="dot"></span>Projetos</div>
+        <div class="ni on"><span class="dot"></span>Importar / Exportar</div>
+      </nav>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div>
+          <div class="toptitle">Importar / Exportar</div>
+          <div class="topsub">Carga no card · popup só quando terminar</div>
+        </div>
+      </header>
+      <div class="body">
+        <div class="kpis">
+          <div class="kpi"><div class="kpil">Entrada</div><div class="kpiv">5</div><div class="kpisub">projetos no sistema</div></div>
+          <div class="kpi out"><div class="kpil">Saída pronta</div><div class="kpiv">18</div><div class="kpisub">SEs Finalizada</div></div>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <div class="ph"><div class="pt">Importar</div><div class="ps">Cadeado ligado</div></div>
+            <div class="cta">
+              <div class="ctat">Novo projeto</div>
+              <div class="btn off">Novo projeto</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="pt">Exportar</div><div class="ps">Barra no card · some no OK</div></div>
+            <div class="rows">
+              <div class="row busy">
+                <div class="rowtop">
+                  <div class="rn">
+                    <div class="rname">Neoenergia Brasília Nov 2026</div>
+                    <div class="rmeta">INV-002 · Elétrico · 44 instalações</div>
+                  </div>
+                  <span class="chip c-run">Importando</span>
+                  <div class="eacts">
+                    <div class="ebtn off">Planilha</div>
+                    <div class="ebtn ghost off">Excluir</div>
+                  </div>
+                </div>
+                <div class="prog">
+                  <div class="progfoot"><span><b>1284</b> de 3714 itens</span><span>35%</span></div>
+                  <div class="track"><div class="fill" style="width:35%"></div></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="rowtop">
+                  <div class="rn">
+                    <div class="rname">Neoenergia Coelba</div>
+                    <div class="rmeta">Junho 2026 · 15 instalações</div>
+                  </div>
+                  <span class="chip c-done">Concluída</span>
+                  <div class="eacts">
+                    <div class="ebtn">Planilha</div>
+                    <div class="ebtn ghost off">Excluir</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="kicker">2 · TELA_CAMPANHAS · PROJETO TRAVADO</div>
+  <h1>Na Home o card aparece, mas não abre.</h1>
+  <p class="lead">Enquanto <code>varOpArquivo</code> for IMPORTANDO ou EXCLUINDO naquele <b>CodInventario</b>, o clique não navega. Chip <b>Importando</b>. A barra de visita (revisadas) fica cinza — não é progresso de carga.</p>
+
+  <div class="app" id="home-travado">
+    <aside class="sb">
+      <div class="brand"><div class="logo"></div><div class="brandname">Infralytics</div></div>
+      <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+      <nav class="nav">
+        <div class="ni"><span class="dot"></span>Home</div>
+        <div class="ni on"><span class="dot"></span>Projetos</div>
+        <div class="ni"><span class="dot"></span>Importar / Exportar</div>
+      </nav>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div>
+          <div class="toptitle">Projetos</div>
+          <div class="topsub">Carga em andamento · card não abre</div>
+        </div>
+      </header>
+      <div class="body">
+        <div class="grid">
+          <div class="cc lock">
+            <div class="veil"><span class="chip c-run">Importando</span></div>
+            <div class="cch">
+              <div>
+                <div class="ccname">Neoenergia Brasília Nov 2026</div>
+                <div class="ccmeta">Setembro 2026 · 44 instalações</div>
+              </div>
+            </div>
+            <div class="bar"><i></i></div>
+            <div class="mini"><div><b>—</b>em campo</div><div><b>—</b>finalizadas</div><div><b>—</b>pendentes</div></div>
+          </div>
+          <div class="cc">
+            <div class="cch">
+              <div>
+                <div class="ccname">Neoenergia Coelba</div>
+                <div class="ccmeta">Junho 2026 · 15 instalações</div>
+              </div>
+              <span class="chip c-done">Concluída</span>
+            </div>
+            <div class="bar"><i style="width:100%;background:#40A73F"></i></div>
+            <div class="mini"><div><b>0</b>em campo</div><div><b>15</b>finalizadas</div><div><b>0</b>pendentes</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="kicker">3 · POPUP SÓ NO FIM · SEM BARRA</div>
+  <h1>Terminou: resumo + OK. A barra da galeria some no OK.</h1>
+  <p class="lead">Mesmo card de sucesso de antes, <b>sem</b> <code>cSucessoProgresso</code>. Excluir usa o mesmo padrão: card some da Home quando o OK confirma que Inventario e SEs zeraram.</p>
+
+  <div class="app" id="popup-fim">
+    <aside class="sb">
+      <div class="brand"><div class="logo"></div><div class="brandname">Infralytics</div></div>
+      <nav class="nav" style="margin-top:20px">
+        <div class="ni on"><span class="dot"></span>Importar / Exportar</div>
+      </nav>
+    </aside>
+    <section class="main">
+      <header class="top"><div class="toptitle">Importar / Exportar</div></header>
+      <div class="body"></div>
+    </section>
+    <div class="mask">
+      <div class="dlg">
+        <div class="dlgt">Projeto importado</div>
+        <div class="dlgs"><b style="color:#2464B1">INV-002</b> · Neoenergia Brasília Nov 2026</div>
+        <div class="k2">
+          <div class="k2b"><div class="k2n">44</div><div class="k2l">Instalações</div></div>
+          <div class="k2b"><div class="k2n">3714</div><div class="k2l">Itens</div></div>
+        </div>
+        <div class="dlgft"><button class="ok">OK</button></div>
+      </div>
+    </div>
+  </div>
+<script>
+(function () {
+  var s = new URLSearchParams(location.search).get("s");
+  if (!s) return;
+  document.body.classList.add("shot");
+  var keep = { exportar: "exportar-carga", home: "home-travado", popup: "popup-fim" }[s];
+  document.querySelectorAll(".app").forEach(function (el) {
+    if (el.id !== keep) el.remove();
+  });
+  document.querySelectorAll(".kicker, h1.lead, .lead, h1").forEach(function (el) {
+    el.remove();
+  });
+})();
+</script>
+</body>
+</html>

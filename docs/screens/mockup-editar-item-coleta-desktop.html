@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Tela_EditarItemColeta (full-bleed)</title>
+<style>
+  :root{
+    --navy:#153965; --page:#EBEAEA; --card:#FFFFFF; --border:#C2C1C1;
+    --title:#153965; --label:#706F6E; --text:#323130; --primary:#348FFD;
+    --ok:#40A73F; --okbg:#ECF6EC; --oktx:#2D752C;
+    --danger:#F1416C; --dangerbg:#FDECEA;
+    --input:#F5F5F5; --primaryL90:#EBF4FF; --primaryD30:#2464B1;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    color:var(--text); padding:22px 22px 28px;
+  }
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1100px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+
+  .app{
+    width:1280px; height:720px;
+    display:flex; flex-direction:column;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page);
+    box-shadow:0 8px 28px rgba(21,57,101,.12);
+  }
+
+  /* topo */
+  .topo{
+    height:56px; flex:0 0 56px;
+    background:var(--card);
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:12px;
+    padding:0 16px;
+  }
+  .voltar{
+    height:36px; padding:0 14px; border-radius:8px;
+    background:var(--primaryL90); color:var(--primaryD30);
+    font-size:13px; font-weight:700;
+    display:flex; align-items:center; border:1px solid #AED2FE;
+  }
+  .tit{flex:1; font-size:16px; font-weight:650; color:var(--title)}
+  .tit span{font-weight:500; color:var(--label); font-size:13px; margin-left:8px}
+
+  /* corpo */
+  .scroll{
+    flex:1; min-height:0;
+    padding:12px 24px 16px;
+    display:flex; flex-direction:column; gap:12px;
+    overflow:hidden;
+  }
+  .card{
+    flex:1; min-height:0;
+    background:var(--card);
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+    padding:16px;
+    display:flex; flex-direction:column; gap:10px;
+    overflow:hidden;
+  }
+  .row{display:grid; gap:10px}
+  .row2{grid-template-columns:1.2fr 1fr}
+  .row3{grid-template-columns:1fr 1fr 1fr}
+  .fld{display:flex; flex-direction:column; gap:4px; min-width:0}
+  .fl{font-size:12px; font-weight:650; color:var(--label)}
+  .fl em{font-style:normal; font-weight:500; color:#ADADAC}
+  .inp{
+    height:40px; border:1px solid var(--border); border-radius:10px;
+    background:var(--input); display:flex; align-items:center;
+    padding:0 12px; font-size:13px; font-weight:650; color:var(--title);
+  }
+  .inp.dd:after{
+    content:""; margin-left:auto;
+    width:0; height:0;
+    border-left:5px solid transparent; border-right:5px solid transparent;
+    border-top:6px solid #8A93A0;
+  }
+  .qtdline{display:flex; gap:6px; align-items:center}
+  .qtdline .inp{flex:1}
+  .un{width:84px; flex:0 0 84px}
+  .chip{
+    height:40px; padding:0 10px; border-radius:10px;
+    background:var(--okbg); color:var(--oktx);
+    font-size:12px; font-weight:700;
+    display:flex; align-items:center; white-space:nowrap;
+  }
+  .sec{
+    font-size:11px; font-weight:700; letter-spacing:.8px; color:var(--label);
+    margin-top:4px; padding-top:6px; border-top:1px solid #EBEAEA;
+  }
+  .atr{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .atr .fld:nth-child(odd):last-child{grid-column:1 / -1}
+
+  /* ações */
+  .acoes{
+    flex:0 0 56px; height:56px;
+    display:flex; gap:12px; align-items:center;
+  }
+  .ab{
+    flex:1; height:40px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-size:14px; font-weight:700; border:1px solid var(--border);
+    background:#fff;
+  }
+  .ab.no{background:var(--dangerbg); color:var(--danger); border-color:#F5C6C2}
+  .ab.ok{background:var(--okbg); color:var(--oktx); border-color:#C6E5C5}
+  .ab.on{outline:2px solid var(--ok); outline-offset:1px}
+
+  .note{
+    margin-top:14px; max-width:1280px;
+    font-size:12.5px; color:#5A6370; line-height:1.5;
+    padding:10px 12px; background:#fff; border:1px solid var(--border); border-radius:8px;
+  }
+  .note b{color:#1a1a1a}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · COLETA</div>
+  <h1>Tela_EditarItemColeta — layout full-bleed</h1>
+  <p class="lead">
+    Sem menu lateral. Topo com <b>← Voltar</b> + título do item.
+    Card branco com a ficha (quantidade, TUC, CM, atributos, dados técnicos, <b>descrição do bem</b>).
+    Barra de ações embaixo: <b>Não encontrado</b> / <b>Salvar</b> / <b>Confirmado</b>.
+  </p>
+
+  <div class="app">
+    <div class="topo">
+      <div class="voltar">← Voltar</div>
+      <div class="tit">215 — Disjuntor de média tensão <span>Cód. INV-006 · Imob. 1045821</span></div>
+    </div>
+
+    <div class="scroll">
+      <div class="card">
+        <div class="row row2">
+          <div class="fld">
+            <div class="fl">Quantidade <em>· base: 1,0 UN</em></div>
+            <div class="qtdline">
+              <div class="inp">1,0</div>
+              <div class="inp dd un">UN</div>
+              <div class="chip">= base</div>
+            </div>
+          </div>
+          <div class="fld">
+            <div class="fl">Classificação TUC</div>
+            <div class="inp dd">215 — Disjuntor de média tensão</div>
+          </div>
+        </div>
+
+        <div class="row row2">
+          <div class="fld">
+            <div class="fl">Centro modular</div>
+            <div class="inp dd">1 — EQP</div>
+          </div>
+          <div class="fld">
+            <div class="fl">Ano</div>
+            <div class="inp">2018</div>
+          </div>
+        </div>
+
+        <div class="sec">ATRIBUTOS</div>
+        <div class="atr">
+          <div class="fld">
+            <div class="fl">A1 — Tensão nominal</div>
+            <div class="inp dd">13,8 kV</div>
+          </div>
+          <div class="fld">
+            <div class="fl">A2 — Corrente nominal</div>
+            <div class="inp dd">630 A</div>
+          </div>
+          <div class="fld">
+            <div class="fl">A3 — Tipo de acionamento</div>
+            <div class="inp dd">Manual</div>
+          </div>
+          <div class="fld">
+            <div class="fl">A4 — Meio isolante</div>
+            <div class="inp dd">SF6</div>
+          </div>
+        </div>
+
+        <div class="sec">DADOS TÉCNICOS</div>
+        <div class="row row3">
+          <div class="fld">
+            <div class="fl">Fabricante</div>
+            <div class="inp">Schneider</div>
+          </div>
+          <div class="fld">
+            <div class="fl">Modelo</div>
+            <div class="inp">SM6</div>
+          </div>
+          <div class="fld">
+            <div class="fl">Nº série</div>
+            <div class="inp">SN-99281</div>
+          </div>
+        </div>
+        <div class="fld">
+          <div class="fl">Descrição do bem</div>
+          <div class="inp" style="height:64px;align-items:flex-start;padding-top:10px;font-weight:500;line-height:1.35">Disjuntor MT 13,8 kV 630 A — acionamento manual — SF6</div>
+        </div>
+        <div class="fld">
+          <div class="fl">Observações de campo</div>
+          <div class="inp" style="height:48px;align-items:flex-start;padding-top:10px;font-weight:500">Sem avarias aparentes</div>
+        </div>
+      </div>
+
+      <div class="acoes">
+        <div class="ab no">✕ Não encontrado</div>
+        <div class="ab" style="background:#ECF6EC;color:#2D752C;border-color:#C6E5C5">💾 Salvar</div>
+        <div class="ab ok on">✓ Confirmado</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Fluxo:</b> Inventário → SE → lista (só galeria, sem painel branco) → clique no item → esta tela.
+    Salvar / Confirmado volta para a coleta. No Studio sem Play a ficha fica oculta até haver item em <code>varColItem</code>.
+  </div>
+</body>
+</html>

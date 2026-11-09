@@ -1,0 +1,31 @@
+---
+description: Cores do app — só Cor / TCor do App.Formulas; status azul / verde / cinza
+alwaysApply: true
+---
+
+# Cores — `App.Formulas` (`Cor` / `TCor`)
+
+Desktop e mobile usam **a mesma paleta**. Não inventar `RGBA(...)` hex solto.
+
+- **Fill / Color / BorderColor / HoverFill** → `Cor.Algo`
+- **SVG / string hex** (menu Mundo Power) → `TCor.Algo`
+- **OnStart:** `Set(Cor; CoresLight);;` e `Set(TCor; TextCoresLight);;`
+- **Dark:** `varDark` + `CoresDark` / `TextCoresDark`
+
+## Status (chip, KPI, mini)
+
+| Status | Tom | Fill | Color |
+|--------|-----|------|-------|
+| Em andamento / Em campo | **Azul** (`Primary`) | `Cor.PrimaryL90` | `Cor.PrimaryD30` |
+| Concluído / Finalizada | **Verde** (`Success`) | `ColorFade(Cor.Success; 70%)` | `ColorFade(Cor.Success; -0.3)` |
+| Pendente | **Cinza** (`Neutral`) | `Cor.NeutralL90` | `Cor.NeutralL30` |
+
+Não copiar o `Switch` antigo da `Tela_SelecionarInventario` (lá andamento era verde e concluído era azul).
+
+## Escala do Success
+
+`Success` (`#40A73F`) não tinha variantes — daí o `ColorFade`. Escala a colar nos **quatro** blocos (`CoresLight`, `CoresDark`, `TextCoresLight`, `TextCoresDark`): `SuccessD30` · `SuccessL30` · `SuccessL70` · `SuccessL90`. Light: `#2D752C` · `#79C179` · `#C6E5C5` · `#ECF6EC`. Blocos prontos em `docs/powerfx/cores-formulas.txt`.
+
+Equivale ao que já existe: `Cor.SuccessD30` = `ColorFade(Cor.Success; -0.3)`, `Cor.SuccessL70` = `ColorFade(Cor.Success; 70%)`. Em **SVG** e **HtmlText** `ColorFade` não serve (a cor é string hex) — ali é `TCor.SuccessD30`.
+
+Fonte: `App.Formulas`. Spec: `docs/powerfx/cores-formulas.txt`

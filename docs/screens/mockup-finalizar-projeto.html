@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Finalizar projeto</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --green:#3BAA48;
+    --okbg:#DFF3E3; --oktx:#2E7D32;
+    --fieldbg:#D6E8FF; --fieldtx:#1B4C86;
+    --pendbg:#EEF0F3; --pendtx:#6B7683;
+    --sel:#E8F1FB;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    color:var(--text); padding:22px 22px 28px;
+  }
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1280px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+
+  .app{
+    width:1280px; height:720px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page);
+  }
+
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni svg{flex:0 0 18px}
+  .ni.on{background:var(--navy3); color:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px; gap:2px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{
+    height:66px; background:#fff; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; padding:0 20px 0 22px; gap:14px;
+  }
+  .topt{display:flex; align-items:center; gap:10px; min-width:0}
+  .back{
+    width:34px; height:34px; border-radius:8px; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; flex:0 0 34px; background:#fff;
+  }
+  .toptitle{font-size:20px; font-weight:700; color:var(--title)}
+  .topsub{font-size:12px; color:var(--label); margin-top:2px}
+  .hint{font-size:12px; font-weight:600; color:var(--label); flex:0 0 auto}
+
+  .body{padding:14px 20px 16px; display:flex; flex-direction:column; gap:10px; min-height:0; flex:1}
+
+  .ctx{
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:12px 16px 13px; display:flex; align-items:center; gap:14px;
+  }
+  .ctxh{flex:1; min-width:0}
+  .ctxname{font-size:14px; font-weight:700; color:var(--title); display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .ctxmeta{font-size:12px; color:var(--label); margin-top:2px}
+  .chip{display:inline-flex; align-items:center; height:21px; padding:0 9px; border-radius:999px; font-size:10px; font-weight:700; white-space:nowrap}
+  .c-run{background:var(--fieldbg); color:var(--fieldtx)}
+  .c-done{background:var(--okbg); color:var(--oktx)}
+  .c-pend{background:var(--pendbg); color:var(--pendtx)}
+  .barwrap{width:168px; flex:0 0 168px}
+  .bar{height:6px; background:#E6EAEE; border-radius:3px}
+  .bar i{display:block; height:100%; background:var(--green); border-radius:3px}
+  .barfoot{display:flex; justify-content:space-between; font-size:11.5px; color:var(--label); margin-top:6px}
+  .barfoot b{color:var(--title)}
+  .minis{display:flex; gap:14px; padding-left:14px; border-left:1px solid #EDF0F3}
+  .mi{font-size:11px; color:var(--label)}
+  .mi b{display:block; font-size:16px; font-weight:700; color:var(--title); margin-bottom:1px}
+  .mi.a b{color:var(--fieldtx)}
+  .mi.g b{color:var(--oktx)}
+  .mi.n b{color:var(--pendtx)}
+
+  .fin{
+    flex:0 0 auto; margin-left:2px; padding-left:14px;
+    border-left:1px solid #EDF0F3;
+    display:flex; flex-direction:column; align-items:stretch; gap:5px;
+  }
+  .btnfin{
+    height:36px; padding:0 14px; border-radius:8px;
+    background:#2D752C; color:#fff; font-size:13px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:8px; white-space:nowrap;
+    box-shadow:0 0 0 3px #C6E5C5;
+  }
+  .fincap{font-size:10px; font-weight:700; color:#2D752C; text-align:center}
+
+  .tools{display:flex; align-items:center; gap:8px}
+  .search{
+    height:34px; flex:1; border:1px solid var(--border); border-radius:9px; background:#fff;
+    display:flex; align-items:center; padding:0 12px; gap:8px; color:#9AA3AE; font-size:13px;
+  }
+  .filt{height:28px; padding:0 11px; border-radius:999px; font-size:11px; font-weight:700; border:1px solid var(--border); background:#fff; color:var(--label); display:flex; align-items:center}
+  .filt.on{background:var(--navy); border-color:var(--navy); color:#fff}
+
+  .seg{display:grid; grid-template-columns:1fr 1fr; gap:10px; min-height:0; flex:1; align-content:start}
+  .se{
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:12px 14px 12px; display:flex; flex-direction:column; gap:8px;
+  }
+  .seh{display:flex; justify-content:space-between; align-items:flex-start; gap:8px}
+  .secod{font-size:12px; font-weight:700; color:var(--label); letter-spacing:.3px}
+  .sename{font-size:15px; font-weight:700; color:var(--title); margin-top:1px}
+  .semeta{font-size:11px; color:var(--label); margin-top:2px}
+  .sefoot{display:flex; justify-content:space-between; align-items:flex-end; padding-top:8px; border-top:1px solid #EDF0F3}
+  .tec{font-size:12px; font-weight:600; color:var(--title)}
+  .tec small{display:block; font-size:10.5px; font-weight:600; color:var(--label); margin-bottom:2px}
+  .tec.none{color:var(--label)}
+  .prg{text-align:right; font-size:13px; font-weight:700; color:var(--title)}
+  .prg span{display:block; font-size:10px; font-weight:600; color:var(--label)}
+  .fotos{display:flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; color:var(--primary); margin-top:2px}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TELA_SUBESTACOES</div>
+  <h1>Finalizar projeto fica na barra do projeto.</h1>
+  <p class="lead">Abre ao clicar no card na Home. O botão verde é o único caminho para <b>Concluída</b>. O escritório vê o progresso (aqui ainda falta 1 SE) e decide fechar. O clique abre confirmação. O filtro <b>Concluída</b> fica na Home, na lista de projetos. Os chips de baixo continuam sendo status da subestação.</p>
+
+  <div class="app">
+    <aside class="sb">
+      <div class="brand">
+        <div class="logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/><circle cx="12" cy="6.2" r="1.5" fill="#fff" stroke="none"/><circle cx="17.2" cy="15.4" r="1.5" fill="#fff" stroke="none"/><circle cx="6.8" cy="15.4" r="1.5" fill="#fff" stroke="none"/><path d="M12 12V7.2M12 12l4.4 2.8M12 12l-4.4 2.8"/></svg>
+        </div>
+        <div class="brandname">Asset Pro</div>
+      </div>
+      <div class="user">
+        <div class="av">GC</div>
+        <div class="uname"><b>Gustavo Coutinho</b>escritório</div>
+      </div>
+      <nav class="nav">
+        <div class="ni on"><svg width="18" height="18" viewBox="0 0 512 512" fill="#fff"><path d="M261.56 101.28a8 8 0 00-11.06 0L66.4 277.15a8 8 0 00-2.47 5.79L63.9 448a32 32 0 0032 32H192a16 16 0 0016-16V328a8 8 0 018-8h80a8 8 0 018 8v136a16 16 0 0016 16h96.06a32 32 0 0032-32V282.94a8 8 0 00-2.47-5.79z"/><path d="M490.91 244.15l-74.8-71.56V64a16 16 0 00-16-16h-48a16 16 0 00-16 16v32L278.19 40.62C272.77 35.14 264.71 32 256 32c-8.68 0-16.72 3.14-22.14 8.63L21.16 244.13c-6.22 6-7 15.87-1.34 22.37A16 16 0 0043 267.56L250.5 69.28a8 8 0 0111.06 0L469.08 267.56a16 16 0 0022.59-.44c6.14-6.36 5.63-16.86-.76-22.97z"/></svg>Home</div>
+        <div class="ni"><svg width="18" height="18" viewBox="0 0 512 512" fill="#E8F0FA"><path d="M376 160H272v176.37l52.69-52.69a16 16 0 0122.62 22.62l-80 80a16 16 0 01-22.62 0l-80-80a16 16 0 0122.62-22.62L240 336.37V160H136a56.06 56.06 0 00-56 56v208a56.06 56.06 0 0056 56h240a56.06 56.06 0 0056-56V216a56.06 56.06 0 00-56-56z"/><path d="M272 32h-32a16 16 0 00-16 16v112h64V48a16 16 0 00-16-16z"/></svg>Importar / Exportar</div>
+        <div class="ni"><svg width="18" height="18" viewBox="0 0 512 512" fill="#E8F0FA"><path d="M456.69 421.39L362.6 327.3a173.81 173.81 0 0034.84-104.58C397.44 126.38 319.06 48 222.72 48S48 126.38 48 222.72s78.38 174.72 174.72 174.72A173.81 173.81 0 00327.3 362.6l94.09 94.09a25 25 0 0035.3-35.3zM97.92 222.72a124.8 124.8 0 11124.8 124.8 124.95 124.95 0 01-124.8-124.8z"/></svg>Conferência</div>
+        <div class="ni"><svg width="18" height="18" viewBox="0 0 512 512" fill="#E8F0FA"><path d="M368 48H356.59a8 8 0 01-7.44-5.08A42.18 42.18 0 00309.87 16H202.13a42.18 42.18 0 00-39.28 26.92A8 8 0 01155.41 48H144a64 64 0 00-64 64V432a64 64 0 0064 64H368a64 64 0 0064-64V112A64 64 0 00368 48zm-48.13 64H192.13a16 16 0 010-32H319.87a16 16 0 010 32z"/></svg>Inventários</div>
+        <div class="ni"><svg width="18" height="18" viewBox="0 0 512 512" fill="#E8F0FA"><path d="M256 48C141.31 48 48 141.31 48 256s93.31 208 208 208 208-93.31 208-208S370.69 48 256 48zm-50.22 116.82C218.45 151.39 236.28 144 256 144s37.39 7.44 50.11 20.94c12.89 13.7 19.16 31.8 17.69 51C320.39 247.17 290.22 272 256 272s-64.39-24.83-67.8-56.15c-1.47-19.21 4.8-37.31 17.58-51.03zM256 432a175.49 175.49 0 01-126-53.22 122.91 122.91 0 0129.09-27C182.36 337.51 218.06 320 256 320s73.64 17.51 96.91 31.78A122.91 122.91 0 01382 378.78 175.49 175.49 0 01256 432z"/></svg>Cadastros</div>
+      </nav>
+      <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+    </aside>
+
+    <section class="main">
+      <header class="top">
+        <div class="topt">
+          <div class="back" title="Voltar para Home">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B3E6F" stroke-width="2.2"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <div>
+            <div class="toptitle">Enel Ceará Jul 2026</div>
+            <div class="topsub">julho 2026 · 4 instalações · Em andamento</div>
+          </div>
+        </div>
+        <div class="hint">Consulta · sem inserção</div>
+      </header>
+      <div class="body">
+        <div class="ctx">
+          <div class="ctxh">
+            <div class="ctxname">Subestações desta campanha <span class="chip c-run">Em andamento</span></div>
+            <div class="ctxmeta">Clique na SE para ver itens revisados e fotos capturadas</div>
+          </div>
+          <div class="barwrap">
+            <div class="bar"><i style="width:75%"></i></div>
+            <div class="barfoot"><span><b>3</b> de 4 revisadas</span><span>75%</span></div>
+          </div>
+          <div class="minis">
+            <div class="mi a"><b>3</b>em campo</div>
+            <div class="mi g"><b>0</b>finalizadas</div>
+            <div class="mi n"><b>1</b>pendente</div>
+          </div>
+          <div class="fin">
+            <div class="btnfin">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg>
+              Finalizar projeto
+            </div>
+            <div class="fincap">único caminho para Concluída</div>
+          </div>
+        </div>
+        <div class="tools">
+          <div class="search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA3AE" stroke-width="2"><circle cx="11" cy="11" r="6"/><path d="M20 20l-3.5-3.5"/></svg>
+            Buscar SE ou município
+          </div>
+          <div class="filt on">Todas (4)</div>
+          <div class="filt">Pendente (1)</div>
+          <div class="filt">Em campo (3)</div>
+          <div class="filt">Finalizada (0)</div>
+        </div>
+        <div class="seg">
+          <div class="se">
+            <div class="seh">
+              <div>
+                <div class="secod">SE-0142</div>
+                <div class="sename">Sub. Est. Fortaleza Norte</div>
+                <div class="semeta">Fortaleza · 138 kV</div>
+              </div>
+              <span class="chip c-run">Em campo</span>
+            </div>
+            <div class="fotos">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#348FFD" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10.5" r="1.5"/><path d="M21 16l-5.5-5.5L8 18"/></svg>
+              12 fotos
+            </div>
+            <div class="sefoot">
+              <div class="tec"><small>Técnico</small>Ricardo Alves</div>
+              <div class="prg">18 / 24<span>revisados</span></div>
+            </div>
+          </div>
+          <div class="se">
+            <div class="seh">
+              <div>
+                <div class="secod">SE-0087</div>
+                <div class="sename">Sub. Est. Maracanaú</div>
+                <div class="semeta">Maracanaú · 69 kV</div>
+              </div>
+              <span class="chip c-run">Em campo</span>
+            </div>
+            <div class="fotos">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#348FFD" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10.5" r="1.5"/><path d="M21 16l-5.5-5.5L8 18"/></svg>
+              6 fotos
+            </div>
+            <div class="sefoot">
+              <div class="tec"><small>Técnico</small>Ana Bezerra</div>
+              <div class="prg">9 / 15<span>revisados</span></div>
+            </div>
+          </div>
+          <div class="se">
+            <div class="seh">
+              <div>
+                <div class="secod">SE-0203</div>
+                <div class="sename">Sub. Est. Sobral</div>
+                <div class="semeta">Sobral · 69 kV</div>
+              </div>
+              <span class="chip c-run">Em campo</span>
+            </div>
+            <div class="fotos">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#348FFD" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10.5" r="1.5"/><path d="M21 16l-5.5-5.5L8 18"/></svg>
+              3 fotos
+            </div>
+            <div class="sefoot">
+              <div class="tec"><small>Técnico</small>Paulo Mendes</div>
+              <div class="prg">4 / 11<span>revisados</span></div>
+            </div>
+          </div>
+          <div class="se">
+            <div class="seh">
+              <div>
+                <div class="secod">SE-0031</div>
+                <div class="sename">Sub. Est. Juazeiro</div>
+                <div class="semeta">Juazeiro do Norte · 69 kV</div>
+              </div>
+              <span class="chip c-pend">Pendente</span>
+            </div>
+            <div class="sefoot">
+              <div class="tec none"><small>Técnico</small>—</div>
+              <div class="prg">0 / 8<span>revisados</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

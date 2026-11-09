@@ -1,0 +1,2052 @@
+# Tela_Exportar — importar / exportar (Studio 2026-09-07)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Mockup arquivo: docs/screens/mockup-home-importar-exportar.html
+# Mockup pastas: docs/screens/mockup-pastas-fotos.html
+# Mockup importar: docs/screens/mockup-importar-projeto.html
+# PNG: docs/screens/tela-exportar.png (antes do clique)
+#      docs/screens/tela-exportar-container.png (depois do clique)
+#      docs/screens/importar-projeto-existente.png · importar-projeto-nova.png
+#      docs/screens/exportar-planilha-fotos.png
+#      docs/screens/pastas-fotos-apos-importar.png
+#      docs/screens/pastas-fotos-apos-visita.png
+# Mockup barra no card: docs/screens/mockup-progresso-galeria.html
+# PNG: docs/screens/progresso-galeria-exportar.png
+#      docs/screens/campanhas-projeto-bloqueado.png
+#      docs/screens/importar-sucesso-sem-barra.png
+#
+# NOMES NO APP (nao criar Tela_Campanhas)
+#   Tela_Home     = galeria de projetos (trabalho). StartScreen. Lista SP = Campanhas.
+#   Tela_Exportar = arquivo. Menu: Importar / Exportar.
+# Front: Projeto. Back: Campanhas / colCampanhas / flxImportarCampanha.
+#
+# Recorte
+#   Importar: uma planilha = um projeto (SEs + itens) + pasta raiz no SharePoint.
+#   Exportar: um botao Planilha = xlsx. So Subestacoes.Status = "Finalizada".
+#   Zero finalizada: "Sem saida" (DisplayMode.Disabled).
+#   Fotos ZIP (btnExportarFotos / flxExportarFotos) = stand-by. Foto ja esta em Projetos.
+#   Excluir: btnExcluirCamp no card → popup → flxExcluirCampanha. Sem ForAll no App.
+#
+# Canvas nao le Excel. btnExportarCamp chama flxExportarCampanha.
+#   flxExportarCampanha — xlsx. TI / LocalInstalacao / ArranjoFisico = colunas do Inventario.
+#   flxImportarCampanha — entrada — ja cria a pasta do projeto
+#   flxPastaFoto — gatilho da lista Fotos (nao e botao)
+#
+# Fluxo: docs/automate/flxExportarCampanha.md
+# Template: docs/bases/modelo-exportacao.xlsx
+# Script: docs/automate/PreencherExportacao.ts
+# Pastas: docs/exportacao-fotos-pastas.md
+
+## Ja no Studio (nao mexer)
+
+# KPIs, galeria, chip — prontos.
+# btnExportarCamp: um botao. NAO duplicar btnExportarFotos (stand-by).
+# btnExcluirCamp: no mesmo card. Popup + flxExcluirCampanha.
+# btnNovoProjeto (ex-btnEscolherArquivo): so abre o container. Nao anexa arquivo.
+
+## Fluxo — saida (planilha)
+
+# Site: https://gustavogarciacoutinho991.sharepoint.com/sites/AssetPro
+# Biblioteca: Exportacoes (.xlsx). Fotos = biblioteca Projetos (sem ZIP).
+# Template: docs/bases/modelo-exportacao.xlsx
+# tblItens: CodAsset; Imobilizado; CodSE; TI; LocalInstalacao; ArranjoFisico;
+#   CM; CodTUC; AtributoA1..A6; DescricaoBem; Quantidade; Unidade; Elegivel;
+#   Reserva; Fabricante; Modelo; NumSerie; Ano; Bay; CodOperacao; Projeto;
+#   Observacoes; Status; ValidadoPor; Origem; Sobra
+# TI / LocalInstalacao / ArranjoFisico vem do item (Inventario).
+
+# btnExportarCamp → flxExportarCampanha → .xlsx (SEs Finalizada)
+# Spec Automate: docs/automate/flxExportarCampanha.md
+
+### 1. Tela_Exportar → btnExportarCamp → Text
+
+# Sem SE finalizada: Sem saída.
+# Gerando: o fluxo ainda monta o xlsx.
+# Com link: Atualizar (gera de novo). Senão: Planilha.
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    CountRows(
+        Filter(
+            colSubestacoes;
+            CodInventario = ThisItem.CodInventario && Status = "Finalizada"
+        )
+    ) = 0;
+    "Sem saída";
+    Coalesce(ThisItem.StatusPlanilha; "") = "gerando";
+    "Gerando";
+    !IsBlank(ThisItem.LinkPlanilha);
+    "Atualizar";
+    "Planilha"
+)
+```
+
+### 2. Tela_Exportar → btnExportarCamp → OnSelect
+
+# O Run volta na hora (erro = "-" ou "gerando"). Não liga varCarregando.
+# O xlsx nasce no fluxo. O timer lê StatusPlanilha / LinkPlanilha.
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    Coalesce(ThisItem.StatusPlanilha; "") = "gerando";
+    With(
+        {_: true};
+        Set(varToastMsg; "Essa planilha já está sendo gerada.");;
+        Set(varToastTipo; "AVISO");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    );
+    With(
+        {
+            saida: IfError(
+                flxExportarCampanha.Run(ThisItem.CodInventario);
+                {
+                    link: "-";
+                    erro: "Falha no fluxo de exportação. Confere o Automate."
+                }
+            )
+        };
+        If(
+            saida.erro = "gerando";
+            With(
+                {_: true};
+                Set(varToastMsg; "Essa planilha já está sendo gerada.");;
+                Set(varToastTipo; "AVISO");;
+                Set(varToastOn; false);;
+                Set(varToastOn; true)
+            );
+            saida.erro = "-" || IsBlank(saida.erro);
+            With(
+                {_: true};
+                Patch(
+                    colCampanhas;
+                    ThisItem;
+                    {
+                        StatusPlanilha: "gerando";
+                        LinkPlanilha: Blank()
+                    }
+                );;
+                Set(varToastMsg; "Gerando a planilha. O Baixar acende neste card quando ficar pronta.");;
+                Set(varToastTipo; "OK");;
+                Set(varToastOn; false);;
+                Set(varToastOn; true)
+            );
+            With(
+                {_: true};
+                Set(varToastMsg; saida.erro);;
+                Set(varToastTipo; "ERRO");;
+                Set(varToastOn; false);;
+                Set(varToastOn; true)
+            )
+        )
+    )
+)
+```
+
+### 2b. Galeria do card → duplicar `btnExportarCamp` → `btnBaixarPlanilha`
+
+# Image Mundo Power. Mesmo X Y Width Height do Planilha (fica por cima).
+# Ionicons 5 "download". Troca so o primeiro With. O "Nao altere abaixo" fica.
+
+No template da galeria: seleciona `btnExportarCamp` → Ctrl+C → Ctrl+V. Renomeia o clone para `btnBaixarPlanilha`. Deixa X Y Width Height iguais ao Planilha.
+
+**2b-1. `btnBaixarPlanilha` → Image**  
+Apaga só o primeiro `With` (de `IconSVG` até `FontFamily`). O bloco `//Não altere baixo` fica.
+
+Cola:
+
+```
+With(
+    {
+        IconSVG: "<path fill-rule='evenodd' d='M80 48h352a32 32 0 0132 32v352a32 32 0 01-32 32H80a32 32 0 01-32-32V80a32 32 0 0132-32zm0 112h384v32H80zm0 104h384v28H80zm0 100h384v28H80zM196 160h32v304h-32zm120 0h32v304h-32z'/></svg>";
+        IconText: "Baixar";
+        IconColor: TCor.TextInverted;
+        TextColor: TCor.TextInverted;
+        TextSize: 16;
+        FontWeight: "bold";
+        TextCenter: true;
+        PaddingText: 0;
+        PaddingIcon: 18;
+        varLoading: false;
+        TextLoading: "Loading";
+        FontFamily: "Arial"
+    };
+```
+
+**2b-2. `btnBaixarPlanilha` → Fill**  
+Apaga. Cola:
+
+```
+ColorFade(Cor.Success; -0.3)
+```
+
+**2b-3. `btnBaixarPlanilha` → HoverFill**  
+Apaga. Cola:
+
+```
+ColorFade(Cor.Success; -0.15)
+```
+
+**2b-4. `btnBaixarPlanilha` → BorderColor**  
+Apaga. Cola:
+
+```
+ColorFade(Cor.Success; -0.15)
+```
+
+**2b-5. `btnBaixarPlanilha` → HoverBorderColor**  
+Apaga. Cola:
+
+```
+ColorFade(Cor.Success; -0.15)
+```
+
+**2b-6. `btnBaixarPlanilha` → OnSelect**  
+Apaga. Cola:
+
+```
+Launch(ThisItem.LinkPlanilha; {}; LaunchTarget.New)
+```
+
+**2b-7. `btnBaixarPlanilha` → Visible**  
+Apaga. Cola:
+
+```
+!IsBlank(ThisItem.LinkPlanilha) && Coalesce(ThisItem.StatusPlanilha; "") <> "gerando" && !(ThisItem.CodInventario = varLockCod && ArquivoOcupado)
+```
+
+No card que está importando ou excluindo, o Baixar some. A barra do `cCardProg` fica sozinha embaixo.
+
+**2b-8. `btnBaixarPlanilha` → DisplayMode**  
+Apaga. Cola:
+
+```
+DisplayMode.Edit
+```
+
+**2b-9. `btnBaixarPlanilha` → Y**  
+
+Não fica em cima do Planilha. Fica embaixo.
+
+Apaga. Cola:
+
+```
+btnExportarCamp.Y + btnExportarCamp.Height + 6
+```
+
+**2b-10. `btnExportarCamp` → Visible**  
+Apaga. Cola:
+
+```
+true
+```
+
+Os dois botões ficam no card. Planilha vira Gerando ou Atualizar. Baixar só aparece com arquivo pronto.
+
+### 2c. Tela_Exportar → inserir → Rótulo → `lblEstadoPlanilha`
+
+No template da galeria, abaixo do texto do período do card. X alinhado ao nome. Height 18. Size 11. FontWeight Bold.
+
+**2c-1. `lblEstadoPlanilha` → Text**  
+Apaga. Cola:
+
+```
+If(
+    Coalesce(ThisItem.StatusPlanilha; "") = "gerando";
+    "Gerando planilha";
+    !IsBlank(ThisItem.LinkPlanilha);
+    "Planilha pronta";
+    ""
+)
+```
+
+**2c-2. `lblEstadoPlanilha` → Color**  
+Apaga. Cola:
+
+```
+If(
+    Coalesce(ThisItem.StatusPlanilha; "") = "gerando";
+    Cor.PrimaryD30;
+    Cor.SuccessD30
+)
+```
+
+**2c-3. `lblEstadoPlanilha` → Visible**  
+Apaga. Cola:
+
+```
+!IsBlank(Self.Text) && !(ThisItem.CodInventario = varLockCod && ArquivoOcupado)
+```
+
+No card que está importando ou excluindo, o rótulo some.
+
+### 2d. Tela_Exportar → inserir → Timer → `tmrPlanilha`
+
+Fora da galeria. Visible = false. AutoStart não. Duration, Repeat, Start e OnTimerEnd abaixo.
+
+**2d-1. `tmrPlanilha` → Duration**  
+Apaga. Cola:
+
+```
+5000
+```
+
+**2d-1b. `tmrPlanilha` → Visible**  
+Tem que ficar ligado. Timer com Visible desligado não roda, e o card fica em Gerando para sempre.
+
+**2d-1c. `tmrPlanilha` → Fill**  
+Apaga. Cola:
+
+```
+Cor.Transparent
+```
+
+Height 1 e Width 1. O timer fica na tela, mas não aparece.
+
+**2d-2. `tmrPlanilha` → Repeat**  
+Liga.
+
+**2d-3. `tmrPlanilha` → Start**  
+Apaga. Cola:
+
+```
+!IsBlank(LookUp(colCampanhas; StatusPlanilha = "gerando"))
+```
+
+**2d-4. `tmrPlanilha` → OnTimerEnd**  
+Apaga. Cola:
+
+```
+Refresh('Campanhas ');;
+ForAll(
+    Filter(colCampanhas; StatusPlanilha = "gerando") As g;
+    With(
+        {
+            c: LookUp(
+                'Campanhas ';
+                CodInventario = g.CodInventario
+            )
+        };
+        If(
+            !IsBlank(c) && Coalesce(c.StatusPlanilha; "") <> "gerando";
+            Patch(
+                colCampanhas;
+                LookUp(colCampanhas; CodInventario = g.CodInventario);
+                {
+                    StatusPlanilha: c.StatusPlanilha;
+                    LinkPlanilha: c.LinkPlanilha
+                }
+            );;
+            If(
+                c.StatusPlanilha = "pronta";
+                With(
+                    {_: true};
+                    Set(varToastMsg; "Planilha pronta. Clica em Baixar.");;
+                    Set(varToastTipo; "OK");;
+                    Set(varToastOn; false);;
+                    Set(varToastOn; true)
+                );
+                c.StatusPlanilha = "erro";
+                With(
+                    {_: true};
+                    Set(varToastMsg; "Não foi possível gerar a planilha.");;
+                    Set(varToastTipo; "ERRO");;
+                    Set(varToastOn; false);;
+                    Set(varToastOn; true)
+                )
+            )
+        )
+    )
+)
+```
+
+### 3. Tela_Exportar → btnExportarCamp → DisplayMode
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.CodInventario = varLockCod && (ArquivoOcupado || varBarraCard);
+    DisplayMode.Disabled;
+    CountRows(
+        Filter(
+            colSubestacoes;
+            CodInventario = ThisItem.CodInventario && Status = "Finalizada"
+        )
+    ) > 0;
+    DisplayMode.Edit;
+    DisplayMode.Disabled
+)
+```
+
+Enquanto gera, o botão continua azul e o texto vira Gerando. Um segundo clique só avisa. Disabled apaga o desenho do botão e ele fica um retângulo branco.
+
+### 4. Tela_Exportar → btnExportarFotos → Visible
+
+# Se o clone ja existir no card: some. Nao montar o fluxo.
+
+Apaga o que estiver la. Cola:
+
+```
+false
+```
+
+# Fill btnExportarCamp = Cor.PrimaryD60 | Color Cor.TextInverted
+
+---
+
+## Importar — container na Tela_Exportar (colar agora)
+
+# Nao e tela nova. Overlay: cMaskImportar + cImportarProjeto.
+# Tela de arquivo: botao Novo projeto (btnNovoProjeto). Sem drop. Sem Attachments.
+
+# Picker: attPlanilha so DENTRO do container. Fluxo so no btnConfirmarImportar.
+#
+# Campos do projeto (lista Campanhas):
+#   NomeInventario ← inpNomeProjeto
+#   Periodo        ← drpMes.Selected.Texto & " " & Text(drpAno.Selected.Valor)
+#   Setor          ← drpSetor.Selected.Value
+#   Concessionaria / CodConcessionaria / UF
+#   Status = "Pendente"; Ativo = "Sim"; CodInventario = "INV-" & proximo sequencial
+#   DataCriacao = Today()
+#   PastaProjeto   ← o fluxo grava ao criar a pasta na biblioteca Projetos
+#                     (docs/exportacao-fotos-pastas.md)
+#
+# Concessionaria existente: drpConcessionaria.Items = colConcessionarias
+# Nova: Patch Concessionarias (NomeConcessionaria, Sigla, CNPJ, UF, Setor, Ativo="Sim")
+#   CodConcessionaria = "CONC-" & sequencial (mesmo padrao do INV-XXX; Mid no 6)
+#
+# Planilha do André = 1 aba achatada. Spec: docs/bases/mapeamento-base-eletrica.md
+# Sobra / TipoFoto nao entram na importacao.
+# Todo item novo: Status vazio / Pendente. Toda SE nova: Status = "Pendente".
+
+### 0. App → OnStart (acrescentar nos Sets globais)
+
+```
+Set(varImportarAberto; false);;
+Set(varExportandoFotos; false);;
+Set(varImportOK; false);;
+Set(varSucessoAberto; false);;
+Set(varOpArquivo; "");;
+Set(varLockCod; "");;
+Set(varBarraCard; false);;
+Set(varUltimaOp; "");;
+Set(varExcluirTotal; 0);;
+Set(varExcluirTotalSEs; 0);;
+Set(varConfirmExcluirCamp; false);;
+Set(varExcluindoCamp; false);;
+Set(varCampExcluir; Blank());;
+Set(varModoConc; "EXISTENTE");;
+ClearCollect(
+    colMeses;
+    {Valor: 1; Texto: "Janeiro"};
+    {Valor: 2; Texto: "Fevereiro"};
+    {Valor: 3; Texto: "Março"};
+    {Valor: 4; Texto: "Abril"};
+    {Valor: 5; Texto: "Maio"};
+    {Valor: 6; Texto: "Junho"};
+    {Valor: 7; Texto: "Julho"};
+    {Valor: 8; Texto: "Agosto"};
+    {Valor: 9; Texto: "Setembro"};
+    {Valor: 10; Texto: "Outubro"};
+    {Valor: 11; Texto: "Novembro"};
+    {Valor: 12; Texto: "Dezembro"}
+);;
+ClearCollect(
+    colAnos;
+    {Valor: Year(Today()) - 1};
+    {Valor: Year(Today())};
+    {Valor: Year(Today()) + 1}
+)
+```
+
+### 0b. Tela_Exportar → OnVisible
+
+# Volta na tela: so atualiza a barra do card. Nao reabre o popup.
+
+```
+If(
+    varOpArquivo = "IMPORTANDO" && !IsBlank(varImportResumo.Codigo);
+    With(
+        {p: flxProgressoImportacao.Run(varImportResumo.Codigo)};
+        Set(varImportSEsCriadas; Value(p.ses));;
+        Set(varImportCriados; Value(p.criados));;
+        If(
+            Value(p.ses) >= varImportTotalSEs && Value(p.criados) >= varImportTotal;
+            Set(varOpArquivo; "");;
+            Set(varBarraCard; false);;
+            Set(varLockCod; "");;
+            Patch(
+                'Campanhas ';
+                LookUp('Campanhas '; CodInventario = varImportResumo.Codigo);
+                {Status: "Pendente"}
+            );;
+            Patch(
+                colCampanhas;
+                LookUp(colCampanhas; CodInventario = varImportResumo.Codigo);
+                {Status: "Pendente"}
+            );;
+            ClearCollect(
+                colSubestacoes;
+                Filter(
+                    Subestacoes;
+                    CodInventario = varImportResumo.Codigo
+                )
+            )
+        )
+    );
+    varOpArquivo = "EXCLUINDO" && !IsBlank(varLockCod);
+    With(
+        {p: flxProgressoImportacao.Run(varLockCod)};
+        Set(varImportSEsCriadas; Value(p.ses));;
+        Set(varImportCriados; Value(p.criados));;
+        If(
+            varExcluirTotal = 0 && Value(p.criados) > 0;
+            Set(varExcluirTotal; Value(p.criados))
+        );;
+        If(
+            varExcluirTotalSEs = 0 && Value(p.ses) > 0;
+            Set(varExcluirTotalSEs; Value(p.ses))
+        );;
+        If(
+            Value(p.ses) = 0 && Value(p.criados) = 0;
+            Set(varOpArquivo; "");;
+            Set(varBarraCard; false);;
+            Set(varLockCod; "");;
+            Set(varCampExcluir; Blank());;
+            Refresh('Campanhas ');;
+            Refresh(Subestacoes);;
+            Clear(colSubestacoes);;
+            ForAll(
+                Filter('Campanhas '; Ativo = "Sim") As camp;
+                Collect(
+                    colSubestacoes;
+                    Filter(Subestacoes; CodInventario = camp.CodInventario)
+                )
+            );;
+            ClearCollect(
+                colCampanhas;
+                AddColumns(
+                    Filter('Campanhas '; Ativo = "Sim");
+                    QtdSEs;
+                    With(
+                        {cod: ThisRecord.CodInventario};
+                        CountRows(Filter(colSubestacoes; CodInventario = cod))
+                    );
+                    QtdItens;
+                    0
+                )
+            )
+        )
+    )
+)
+```
+
+### 1. Tela_Exportar → btnNovoProjeto → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Novo projeto"
+```
+
+### 1b. Tela_Exportar → btnNovoProjeto → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Reset(inpNomeProjeto);;
+Reset(drpMes);;
+Reset(drpAno);;
+Reset(drpSetor);;
+Reset(drpConcessionaria);;
+Reset(inpNomeConc);;
+Reset(inpSiglaConc);;
+Reset(inpCNPJConc);;
+Reset(drpUFConc);;
+Reset(inpCodigoANEEL);;
+Reset(attPlanilha);;
+Set(varModoConc; "EXISTENTE");;
+Set(varImportarAberto; true)
+```
+
+### 1c. Tela_Exportar → btnNovoProjeto → DisplayMode
+
+```
+If(
+    ArquivoOcupado;
+    DisplayMode.Disabled;
+    DisplayMode.Edit
+)
+```
+
+### 2. Tela_Exportar → cMaskImportar → Visible
+
+```
+varImportarAberto
+```
+
+### 3. Tela_Exportar → cMaskImportar → OnSelect
+
+```
+false
+```
+
+# Fill: ColorFade(Cor.PrimaryD60; 40%) — nao usar RGBA.
+
+### 4. Tela_Exportar → cImportarProjeto → Visible
+
+```
+varImportarAberto
+```
+
+### 5. Tela_Exportar → icoFecharImportar → OnSelect
+
+```
+Set(varImportarAberto; false)
+```
+
+### 6. Tela_Exportar → btnCancelarImportar → OnSelect
+
+```
+Set(varImportarAberto; false)
+```
+
+### 7. Tela_Exportar → btnModoExistente → OnSelect
+
+```
+Set(varModoConc; "EXISTENTE")
+```
+
+### 8. Tela_Exportar → btnModoNova → OnSelect
+
+```
+Set(varModoConc; "NOVA")
+```
+
+# Fill dos dois botoes do segmento:
+# btnModoExistente.Fill = If(varModoConc = "EXISTENTE"; Cor.PrimaryD60; Cor.NeutralL90)
+# btnModoNova.Fill      = If(varModoConc = "NOVA"; Cor.PrimaryD60; Cor.NeutralL90)
+# Color invertido: EXISTENTE/NOVA ativo = Cor.TextInverted (branco)
+
+# Container: cConcExistente (filho de cEscolhaConcExistenteNova, depois do Container55).
+# Filhos: Text CONCESSIONÁRIA CADASTRADA + borda + drpConcessionaria + lblConcMeta.
+
+### 8b. Tela_Exportar → cEscolhaConcExistenteNova → Height
+
+```
+180
+```
+
+### 8c. Tela_Exportar → cConcExistente → Visible
+
+```
+varModoConc = "EXISTENTE"
+```
+
+### 9. Tela_Exportar → drpConcessionaria → Items
+
+```
+SortByColumns(colConcessionarias; "NomeConcessionaria")
+```
+
+### 10. Tela_Exportar → drpConcessionaria → Visible
+
+```
+varModoConc = "EXISTENTE"
+```
+
+### 11. Tela_Exportar → lblConcMeta → Text
+
+```
+If(
+    IsBlank(drpConcessionaria.Selected);
+    "Escolha uma concessionária já cadastrada";
+    "CNPJ " & Coalesce(drpConcessionaria.Selected.CNPJ; "—")
+        & " · UF "
+        & Coalesce(drpConcessionaria.Selected.UF; "—")
+)
+```
+
+### 12. Tela_Exportar → lblConcMeta → Visible
+
+```
+varModoConc = "EXISTENTE"
+```
+
+### 13. Tela_Exportar → cCadastroConc → Visible
+
+```
+varModoConc = "NOVA"
+```
+
+# Filhos de cCadastroConc: inpNomeConc, inpSiglaConc, inpCNPJConc, drpUFConc, inpCodigoANEEL
+
+### 14. Tela_Exportar → drpMes → Items
+
+```
+colMeses
+```
+
+# Value = Texto. Default = LookUp(colMeses; Valor = Month(Today()))
+
+### 15. Tela_Exportar → drpAno → Items
+
+```
+colAnos
+```
+
+# Value = Valor. Default = LookUp(colAnos; Valor = Year(Today()))
+
+### 16. Tela_Exportar → drpSetor → Items
+
+```
+["Elétrico"; "Saneamento"; "Gás"]
+```
+
+### 17. Tela_Exportar → drpUFConc → Items
+
+```
+["AC"; "AL"; "AM"; "AP"; "BA"; "CE"; "DF"; "ES"; "GO"; "MA"; "MG"; "MS"; "MT"; "PA"; "PB"; "PE"; "PI"; "PR"; "RJ"; "RN"; "RO"; "RR"; "RS"; "SC"; "SE"; "SP"; "TO"]
+```
+
+### 18. Tela_Exportar → Image6_close_sharp_6 → DisplayMode
+
+# No YAML atual o botao Importar projeto e Image6_close_sharp_6
+# (renomear depois para btnConfirmarImportar, se quiser).
+# TextInput classico: usa .Text (o .Value do modern nao existe aqui).
+
+```
+If(
+    !IsBlank(Trim(inpNomeProjeto.Text))
+        && !IsBlank(drpMes.Selected)
+        && !IsBlank(drpAno.Selected)
+        && !IsBlank(drpSetor.Selected)
+        && CountRows(attPlanilha.Attachments) > 0
+        && If(
+            varModoConc = "EXISTENTE";
+            !IsBlank(drpConcessionaria.Selected);
+            !IsBlank(Trim(inpNomeConc.Text))
+                && !IsBlank(Trim(inpCNPJConc.Text))
+                && !IsBlank(drpUFConc.Selected)
+        );
+    DisplayMode.Edit;
+    DisplayMode.Disabled
+)
+```
+
+### 18b. Tela_Exportar → Image6_close_sharp_6 → Fill
+
+```
+If(
+    !IsBlank(Trim(inpNomeProjeto.Text))
+        && !IsBlank(drpMes.Selected)
+        && !IsBlank(drpAno.Selected)
+        && !IsBlank(drpSetor.Selected)
+        && CountRows(attPlanilha.Attachments) > 0
+        && If(
+            varModoConc = "EXISTENTE";
+            !IsBlank(drpConcessionaria.Selected);
+            !IsBlank(Trim(inpNomeConc.Text))
+                && !IsBlank(Trim(inpCNPJConc.Text))
+                && !IsBlank(drpUFConc.Selected)
+        );
+    Cor.PrimaryD30;
+    Cor.Disabled
+)
+```
+
+### 19. Tela_Exportar → btnImportarProjeto → OnSelect
+
+# (ex-Image6_close_sharp_6)
+
+# Processo:
+#   1) Patch Concessionarias se NOVA
+#   2) Patch Campanhas com CodInventario no padrao INV-XXX (sequencial, ja usado na base)
+#   3) flxImportarCampanha.Run({file:{name; contentBytes}}; CodInventario) — grava na Importacoes
+# Sucesso do import = saida.erro igual a "-". Saidas do V2 vem minusculas (saida.qtdses).
+# Lista Campanhas: mesmo nome do OnStart ('Campanhas ' com espaco, se for o caso).
+#
+# Gatilho V2 com entrada Arquivo: o record precisa das DUAS colunas.
+# Neste app o Studio aceitou SEM o nivel 'file' (record chapado):
+#   {contentBytes: ...; name: ...}
+# Faltando contentBytes -> "Coluna ausente ... com um tipo de 'Blob'".
+# Publicar o fluxo e Atualizar no Studio ANTES de julgar o erro (assinatura velha engana).
+#
+# PLANO B (se o Studio insistir no Blob): Image escondido converte appres:// em base64.
+#   imgPlanilhaBin.Image = First(attPlanilha.Attachments).Value
+#   base64 = Last(Split(JSON(imgPlanilhaBin.Image; JSONFormat.IncludeBinaryData); ",")).Value
+#   gatilho passa a 3 textos (nome; base64; CodInventario) e o Criar_arquivo usa base64ToBinary.
+# Nao existe coluna '{Content}' na biblioteca pelo conector — nao voltar pro Patch Importacoes.
+
+```
+Set(varCarregando; true);;
+If(
+    varModoConc = "NOVA";
+    Set(
+        varSeqConc;
+        Coalesce(
+            Max(
+                AddColumns(
+                    Filter(Concessionarias; StartsWith(CodConcessionaria; "CONC-"));
+                    "SeqNum";
+                    IfError(Value(Mid(CodConcessionaria; 6; 10)); 0)
+                );
+                SeqNum
+            );
+            0
+        ) + 1
+    );;
+    Set(
+        varConcUsada;
+        Patch(
+            Concessionarias;
+            Defaults(Concessionarias);
+            {
+                Title: Trim(inpNomeConc.Text);
+                CodConcessionaria: "CONC-" & Text(varSeqConc; "000");
+                NomeConcessionaria: Trim(inpNomeConc.Text);
+                Sigla: Trim(inpSiglaConc.Text);
+                CNPJ: Trim(inpCNPJConc.Text);
+                UF: drpUFConc.Selected.Value;
+                Setor: drpSetor.Selected.Value;
+                CodigoANEEL: Trim(inpCodigoANEEL.Text);
+                Ativo: "Sim"
+            }
+        )
+    );;
+    Collect(colConcessionarias; varConcUsada);
+    Set(varConcUsada; drpConcessionaria.Selected)
+);;
+Set(
+    varSeqNovo;
+    Coalesce(
+        Max(
+            AddColumns(
+                Filter('Campanhas '; StartsWith(CodInventario; "INV-"));
+                "SeqNum";
+                IfError(Value(Mid(CodInventario; 5; 10)); 0)
+            );
+            SeqNum
+        );
+        0
+    ) + 1
+);;
+Set(varCodNovo; "INV-" & Text(varSeqNovo; "000"));;
+Set(
+        varNovaCampanha;
+        Patch(
+            'Campanhas ';
+            Defaults('Campanhas ');
+            {
+                Title: Trim(inpNomeProjeto.Text);
+                CodInventario: varCodNovo;
+                NomeInventario: Trim(inpNomeProjeto.Text);
+                Periodo: drpMes.Selected.Texto & " " & Text(drpAno.Selected.Valor);
+                Setor: drpSetor.Selected.Value;
+                CodConcessionaria: varConcUsada.CodConcessionaria;
+                Concessionaria: varConcUsada.NomeConcessionaria;
+                UF: varConcUsada.UF;
+                Status: "Importando";
+                Ativo: "Sim";
+                DataCriacao: Now()
+            }
+        )
+);;
+If(
+    IsBlank(varNovaCampanha);
+    With(
+        {_: true};
+        Set(varToastMsg; "Não foi possível criar o projeto");;
+        Set(varToastTipo; "ERRO");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    );
+    Collect(
+        colCampanhas;
+        Patch(
+            {QtdSEs: 0; QtdItens: 0};
+            varNovaCampanha
+        )
+    );;
+    If(
+        CountRows(attPlanilha.Attachments) = 0;
+        With(
+            {_: true};
+            Set(varToastMsg; "Anexa a planilha .xlsx antes de importar.");;
+            Set(varToastTipo; "ERRO");;
+            Set(varToastOn; false);;
+            Set(varToastOn; true)
+        );
+        With(
+            {
+                saida: flxImportarCampanha.Run(
+                    {
+                        contentBytes: First(attPlanilha.Attachments).Value;
+                        name: First(attPlanilha.Attachments).Name
+                    };
+                    varCodNovo
+                )
+            };
+            If(
+                !IsBlank(saida.erro) && saida.erro <> "-";
+                With(
+                    {_: true};
+                    Set(varToastMsg; saida.erro);;
+                    Set(varToastTipo; "ERRO");;
+                    Set(varToastOn; false);;
+                    Set(varToastOn; true)
+                );;
+                Patch(
+                    'Campanhas ';
+                    varNovaCampanha;
+                    {Status: "Pendente"}
+                );;
+                Patch(
+                    colCampanhas;
+                    LookUp(colCampanhas; CodInventario = varCodNovo);
+                    {Status: "Pendente"}
+                );
+                Collect(
+                    colSubestacoes;
+                    Filter(
+                        Subestacoes;
+                        CodInventario = varCodNovo
+                    )
+                );;
+                Patch(
+                    colCampanhas;
+                    LookUp(
+                        colCampanhas;
+                        CodInventario = varCodNovo
+                    );
+                    {
+                        QtdSEs: Value(saida.qtdses);
+                        QtdItens: Value(saida.qtditens)
+                    }
+                );;
+                Patch(
+                    'Campanhas ';
+                    varNovaCampanha;
+                    {PastaProjeto: saida.pasta}
+                );;
+                Set(varImportarAberto; false);;
+                Reset(attPlanilha);;
+                Set(
+                    varImportResumo;
+                    {
+                        Codigo: varCodNovo;
+                        Nome: varNovaCampanha.NomeInventario;
+                        QtdSEs: saida.qtdses;
+                        QtdItens: saida.qtditens;
+                        ListaSEs: saida.listases;
+                        Pasta: saida.pasta
+                    }
+                );;
+                Set(varImportOK; true);;
+                Set(varSucessoAberto; true);;
+                Set(varOpArquivo; "IMPORTANDO");;
+                Set(varUltimaOp; "IMPORTANDO");;
+                Set(varLockCod; varCodNovo);;
+                Set(varBarraCard; true)
+            )
+        )
+    )
+);;
+Set(varCarregando; false)
+```
+
+# Mapeamento:
+# NomeInventario = inpNomeProjeto.Text
+# Periodo = drpMes.Selected.Texto & " " & Text(drpAno.Selected.Valor)
+# Setor = drpSetor.Selected.Value
+# se EXISTENTE: CodConcessionaria / Concessionaria / UF da Selected
+# se NOVA: Patch Concessionarias depois usa o CodConcessionaria gerado
+# PastaProjeto: App grava com saida.pasta (NAO usar Atualizar item no fluxo — zera colunas)
+
+---
+
+## 20. Popup de sucesso da importacao (troca o Notify)
+
+# Sucesso = varImportOK true. Dados em varImportResumo (record).
+# Overlay novo, irmao do cMaskImportar. Cores: verde = Success (regra cores-formulas).
+
+### 20a. cMaskSucesso → Visible
+
+# Popup e sessao de importacao sao coisas diferentes. Fechar o card nao mata o fluxo.
+
+```
+varSucessoAberto
+```
+
+### 20b. cMaskSucesso → Fill
+
+```
+ColorFade(Cor.PrimaryD60; 40%)
+```
+
+### 20c. cMaskSucesso → X / Y / Width / Height
+
+```
+X = 0
+Y = 0
+Width = Parent.Width
+Height = Parent.Height
+```
+
+### 20d. cSucessoCard → Fill
+
+```
+Cor.BackgroundStandard
+```
+
+### 20e. lblSucessoTitulo → Text
+
+```
+If(
+    varUltimaOp = "EXCLUINDO";
+    "Projeto excluído";
+    ImportandoAgora;
+    "Importando projeto";
+    "Projeto importado"
+)
+```
+
+### 20f. lblSucessoTitulo → Color
+
+```
+If(
+    varUltimaOp = "EXCLUINDO";
+    Cor.Delete;
+    ImportandoAgora;
+    Cor.PrimaryD30;
+    Cor.SuccessD30
+)
+```
+
+### 20g. htmSucessoResumo → HtmlText
+
+# Duas cores na mesma linha => nao da com Label (Color e uma so).
+# Troca o lblSucessoResumo por um controle HTML text (Inserir → Texto → HTML text).
+# Codigo em azul TCor.PrimaryD30 (#2464B1), nome do projeto em TCor.NeutralL30 (#706F6E).
+# Cor dentro de HTML e string hex => TCor.*, nunca Cor.*. Segue o dark automatico.
+
+```
+With(
+    {
+        cod: If(varUltimaOp = "EXCLUINDO"; varLockCod; varImportResumo.Codigo);
+        nome: If(
+            varUltimaOp = "EXCLUINDO";
+            Coalesce(varCampExcluir.NomeInventario; "");
+            varImportResumo.Nome
+        )
+    };
+    $"<span style='font-family:Open Sans, sans-serif;font-size:14px'><b style='color:{TCor.PrimaryD30}'>{cod}</b><span style='color:{TCor.NeutralL30}'> · {nome}</span></span>"
+)
+```
+
+# AutoHeight = true | Width = Parent.Width - 140 | Fill = Cor.Transparent
+# As contagens sairam desta linha: ficam nos KPIs lblSucessoQtdSEs / lblSucessoQtdItens.
+
+### 20h. htmSucessoSEs → HtmlText  (lista das SEs em 3 colunas)
+
+# Troca o lblSucessoSEs por HTML text. saida.listases e string unica, sem contagem —
+# por isso a lista sai de colSucessoSEs (ver 20h-1), nao de varImportResumo.ListaSEs.
+# Cor em HTML = string hex => TCor.*. Mostra 6 SEs + "e mais N" (projeto real tem 44).
+
+```
+$"<table style='width:100%;border-collapse:collapse;font-family:Open Sans, sans-serif;font-size:13px'>"
+& Concat(
+    FirstN(colSucessoSEs; 6);
+    $"<tr>
+        <td style='padding:6px 10px 6px 0;border-bottom:1px solid {TCor.NeutralL90};color:{TCor.PrimaryD30};font-weight:700;white-space:nowrap'>{CodSE}</td>
+        <td style='padding:6px 0;border-bottom:1px solid {TCor.NeutralL90};color:{TCor.NeutralL30}'>{NomeSE}</td>
+        <td style='padding:6px 0;border-bottom:1px solid {TCor.NeutralL90};color:{TCor.NeutralL30};font-weight:700;text-align:right;white-space:nowrap'>{Qtd}</td>
+    </tr>"
+)
+& If(
+    CountRows(colSucessoSEs) > 6;
+    $"<tr><td colspan='3' style='padding:8px 0 0 0;color:{TCor.NeutralL60};font-size:12px'>e mais {CountRows(colSucessoSEs) - 6} instalações</td></tr>";
+    ""
+)
+& "</table>"
+```
+
+# AutoHeight = true | Width = Parent.Width - 48 | Fill = Cor.Transparent
+# O titulo "INSTALAÇÕES CRIADAS" continua num Label separado (lblSucessoSEsTitulo).
+
+### 20h-2. htmSucessoSEs → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUltimaOp <> "EXCLUINDO"
+```
+
+### 20h-3. lblSucessoSEsTitulo → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUltimaOp <> "EXCLUINDO"
+```
+# Coluna Numero do SharePoint dentro de $"..." precisa de Text(...): sem isso da
+# "expressoes dentro de cadeia interpolada devem ser avaliadas a Texto ou tipo compativel".
+
+### 20h-1. btnImportarProjeto → OnSelect — coleção da lista (antes do Set(varImportOK; true))
+
+# Quebra a propria resposta do fluxo. saida.listases vem como
+#   "7SEGU001 — SE U 138KV GUARA II CONSTR (12) · 7SEVA001 — ... (14)"
+# Contagem do script, pronta. Sem coluna nova no SharePoint, sem CountRows:
+# CountRows(Filter(Inventario; ...)) da numero errado porque o fluxo responde ao app antes
+# do Aplicar_Itens terminar (run 13.09: 65 itens criados, popup mostrando 0/4/0/1/1).
+
+```
+ClearCollect(
+    colSucessoSEs;
+    ForAll(
+        Split(Coalesce(varImportResumo.ListaSEs; ""); " · ") As L;
+        With(
+            {
+                cod: Trim(First(Split(L.Value; "—")).Value);
+                resto: Trim(Last(Split(L.Value; "—")).Value)
+            };
+            {
+                CodSE: cod;
+                NomeSE: Trim(Left(resto; Find("("; resto & "(") - 1));
+                Qtd: Substitute(
+                    Substitute(Mid(resto; Find("("; resto & "(")); "("; "");
+                    ")";
+                    ""
+                )
+            }
+        )
+    )
+);;
+```
+
+### 20i. cSucessoPasta (caixa azul clara) → Fill / borda
+
+# A caixa e do container; o HTML text so leva o texto.
+
+```
+Fill = Cor.PrimaryL90
+BorderColor = Cor.PrimaryL60
+BorderThickness = 1
+Radius* = 10
+```
+
+### 20i-1. htmSucessoPasta → HtmlText
+
+# "Pasta criada:" em azul medio, nome da pasta em negrito escuro. Cor em HTML => TCor.*.
+# word-break: nome de pasta e longo (NomeProjeto_INV-XXX) e nao pode estourar a caixa.
+
+```
+With(
+    {pasta: Coalesce(varImportResumo.Pasta; "-")};
+    $"<div style='font-family:Open Sans, sans-serif;font-size:13px;color:{TCor.PrimaryD30};word-break:break-word'>Pasta criada: <b style='color:{TCor.PrimaryD60}'>{pasta}</b></div>"
+)
+```
+
+# AutoHeight = true | Width = Parent.Width - 24 | Fill = Cor.Transparent | X = 12
+
+### 20i-3. cSucessoPasta → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUltimaOp <> "EXCLUINDO"
+```
+
+### 20i-2. htmSucessoPasta → Y  (centraliza na vertical)
+
+# HTML text nao tem VerticalAlign. Com AutoHeight a altura acompanha o texto,
+# entao o jeito certo e centrar o controle dentro do container:
+
+```
+(Parent.Height - Self.Height) / 2
+```
+
+# Serve para qualquer HTML text em caixa (vale tambem no htmSucessoResumo).
+# Nao usar line-height no CSS para isso: quebra quando o texto passa de uma linha.
+
+### 20j. btnSucessoOK → Text
+
+```
+If(
+    ImportandoAgora || varOpArquivo = "EXCLUINDO";
+    "Continuar no app";
+    "OK"
+)
+```
+
+### 20j-1. btnSucessoOK → DisplayMode
+
+# Sempre clicavel. 3000 itens nao podem prender o escritorio no modal.
+
+```
+DisplayMode.Edit
+```
+
+### 20k. btnSucessoOK → OnSelect
+
+# So fecha o popup. Barra do card, cadeado e sessao ficam.
+
+```
+Set(varSucessoAberto; false)
+```
+
+### 20l. cMaskSucesso → OnSelect — NAO EXISTE
+
+# cMaskSucesso e GroupContainer@1.5.0 e container NAO tem OnSelect. Fechar clicando fora
+# so seria possivel trocando a mascara por um Botao/Retangulo transparente atras do card.
+# Nao vale: o unico jeito de fechar e o btnSucessoOK (20k).
+
+### 20m. cSucessoIcone (quadrado atras do check) → Fill
+
+# No Studio o quadrado e o proprio Fill do controle de imagem (Image6_checkmark_sharp).
+# Azul claro enquanto importa, verde claro quando termina — acompanha o titulo (20e/20f).
+
+```
+If(
+    varUltimaOp = "EXCLUINDO";
+    ColorFade(Cor.Delete; 70%);
+    ImportandoAgora;
+    Cor.PrimaryL90;
+    Cor.SuccessL70
+)
+```
+
+# Depende da escala Success no App.Formulas (ver cores-formulas.txt).
+# Enquanto nao colar as chaves: ColorFade(Cor.Success; 70%) — mesmo hex (#C6E5C5).
+
+# Width = 56 | Height = 56 | Radius* = 16 | BorderColor = Cor.Transparent
+
+### 20n. imgSucessoCheck → Image  (padrao Mundo Power / Ionicons 5 "checkmark")
+
+# Ionicons viewBox 512. O stroke fica #000 no path — o Substitute troca por IconColor.
+# Mesma mecanica dos icones da Tela_Home: SVG + Substitute("#000"; IconColor) + EncodeUrl.
+# Width = 30 | Height = 30 | Centralizado dentro de cSucessoIcone.
+
+```
+With(
+    {
+        IconSVG: "<path d='M416,128,192,384l-96-96' style='fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round;stroke-width:44px'/></svg>";
+        IconColor: TCor.SuccessD30
+    };
+    "data:image/svg+xml;utf8, "
+        & EncodeUrl(
+            Substitute(
+                $"<svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 512 512' style='fill:{IconColor}'>"
+                    & IconSVG;
+                "#000";
+                IconColor
+            )
+        )
+)
+```
+
+### 20n-1. imgSucessoCheck → duas linhas do template Mundo Power
+
+# No Studio o controle e o template completo do Mundo Power (Image6_checkmark_sharp),
+# que ja tem os parametros IconColor e varLoading. Nao precisa reescrever nada: trocar
+# so estas duas linhas do bloco de parametros do With.
+# varLoading = true faz o proprio template desenhar o spinner giratorio em vez do path.
+# Ou seja: enquanto os itens entram, o icone GIRA; no fim vira o check verde.
+
+```
+    IconColor: If(varUltimaOp = "EXCLUINDO"; TCor.Delete; ImportandoAgora; TCor.PrimaryD30; TCor.SuccessD30),
+    varLoading: ImportandoAgora && varUltimaOp <> "EXCLUINDO",
+```
+
+# Atencao: esse bloco no Studio esta em en-US (virgula), porque veio colado do Mundo Power.
+# Dentro dele mantem virgula. O resto da tela e PT-BR (;).
+
+# Variante cheia (check dentro de circulo, Ionicons "checkmark-circle") — troca so o IconSVG:
+# "<path d='M256 48C141.31 48 48 141.31 48 256s93.31 208 208 208 208-93.31 208-208S370.69 48 256 48zm108.25 138.29l-134.4 160a16 16 0 01-12 5.71h-.27a16 16 0 01-11.89-5.3l-57.6-64a16 16 0 1123.78-21.4l45.29 50.32 122.59-145.91a16 16 0 0124.5 20.58z'/></svg>"
+# Nessa variante o path e preenchido (fill) — nao tem stroke, o style='fill:{IconColor}' do header resolve.
+
+### 20p. Barra de progresso — processo (decisao 13.09: "quase total")
+
+# O Responder_OK subiu no fluxo: agora e a primeira acao do ramo `Se nao` do JaImportou,
+# antes do Listar_SEs (ver docs/automate/flxImportarCampanha.md, passo 18). O App e solto
+# em ~12 s e a barra cobre SEs + pastas + itens — 89% do tempo, contra 63% de antes.
+# Fica cego so upload + script + pasta raiz, porque durante o Run o App esta bloqueado:
+# Timer nao dispara, Set nao roda. Ali e spinner (varCarregando), nao tem volta.
+
+# Peso: 1 SE = 3 chamadas ao SharePoint (item + pasta da SE + pasta Visão geral),
+# 1 item = 1 chamada. Amostra 5 SEs / 65 itens => 15 + 65 = 80 unidades.
+# Dividir em "50% SEs / 50% itens" mentiria: a barra ficaria parada em 50% no minuto
+# mais longo e o usuario acha que travou.
+
+#### Fluxo `flxProgressoImportacao` (novo, leve)
+
+# 1. Gatilho Power Apps (V2) → uma entrada Texto: CodInventario
+# 2. SharePoint — Obter itens — `Obter_Criados`
+#    Lista: Inventario
+#    Consulta de filtro: CodInventario eq '@{triggerBody()?['text']}'
+#    Selecionar consulta: ID          (so o ID: resposta pequena, chamada rapida)
+#    Contagem superior: 5000 · Paginacao ligada 5000
+# 2b. SharePoint — Obter itens — `Obter_SEs_criadas`
+#    Lista: Subestacoes · mesmo filtro · Selecionar consulta: ID · limite 100
+# 3. Responder ao Power App — duas saidas (Número):
+#    criados = length(body('Obter_Criados')?['value'])
+#    ses     = length(body('Obter_SEs_criadas')?['value'])
+# Publicar. No Studio: Dados → adicionar o fluxo em Power Automate.
+# Duas chamadas por tick, so ID nas duas: ~300 ms. Timer de 3 s aguenta sem fila.
+
+#### 20p-0. App.Formulas — duas formulas nomeadas
+
+# A condicao "ainda importando" aparece em 7 controles (titulo, cor do titulo, Fill do
+# icone, Image do icone, htmProgTexto, cProgTrilha.Visible, tmrProgresso.Start).
+# Repetir a expressao em 7 lugares e onde nasce divergencia. Formula nomeada resolve —
+# recalcula sozinha quando qualquer uma das quatro variaveis muda.
+
+```
+ImportandoAgora =
+    varImportSEsCriadas < varImportTotalSEs
+        || varImportCriados < varImportTotal;
+
+ArquivoOcupado =
+    varOpArquivo = "IMPORTANDO" || varOpArquivo = "EXCLUINDO";
+
+ProgressoImport =
+    Min(
+        1;
+        (varImportSEsCriadas * 3 + varImportCriados)
+            / Max(1; varImportTotalSEs * 3 + varImportTotal)
+    );
+
+ProgressoExcluir =
+    If(
+        varExcluirTotalSEs + varExcluirTotal <= 0;
+        0;
+        Min(
+            1;
+            1 - (varImportSEsCriadas + varImportCriados)
+                / Max(1; varExcluirTotalSEs + varExcluirTotal)
+        )
+    );
+
+ProgressoCard =
+    If(
+        varUltimaOp = "EXCLUINDO";
+        ProgressoExcluir;
+        ProgressoImport
+    );
+```
+
+# Max(1; ...) no denominador: antes do Run os quatro sao 0 e 0/0 daria erro.
+# Min(1; ...): item de outra origem na lista nao empurra a barra fora da trilha.
+
+#### 20p-1. btnImportarProjeto → OnSelect — dois lugares diferentes
+
+# (a) Zerar no COMECO, na primeira linha, junto do Set(varCarregando; true).
+# Sem isso a segunda importacao da sessao abre o popup com a barra cheia da anterior
+# (varImportCriados fica com 65 e varImportTotal com 65 => 100% antes de criar nada).
+
+```
+Set(varCarregando; true);;
+Set(varImportTotal; 0);;
+Set(varImportCriados; 0);;
+Set(varImportTotalSEs; 0);;
+Set(varImportSEsCriadas; 0);;
+```
+
+# (b) Os totais so existem DEPOIS do Run — saida.qtditens e saida.qtdses. Vao na linha
+# de cima do Set(varImportOK; true), dentro do With, no ramo de sucesso:
+
+```
+Set(varImportTotal; Value(saida.qtditens));;
+Set(varImportTotalSEs; Value(saida.qtdses));;
+Set(varImportOK; true);;
+Set(varSucessoAberto; true);;
+Set(varOpArquivo; "IMPORTANDO");;
+Set(varUltimaOp; "IMPORTANDO");;
+Set(varLockCod; varCodNovo);;
+Set(varBarraCard; true)
+```
+
+# varImportOK liga AGORA, nao no fim do progresso: o fluxo respondeu antes do Listar_SEs
+# e continua trabalhando. Popup abre UMA vez (resumo). Barra do card segue no fundo.
+# Voltar na Tela_Exportar NAO reabre o popup.
+
+# (c) O Collect(colSubestacoes; Filter(Subestacoes; CodInventario = varCodNovo)) SAI do
+# OnSelect. Com o Responder_OK antes do Aplicar_SEs, nao existe SE nenhuma no SharePoint
+# nesse instante — a colecao viria vazia e as outras telas ficariam sem as SEs novas.
+# Vai para o btnSucessoOK.OnSelect (ver 20k).
+
+#### 20p-2. tmrProgresso → Duration
+
+# 1000 = 1 s. 500 empilha run em cima de run (OnTimerEnd espera o fluxo). Teste 14.09.
+
+```
+3000
+```
+
+#### 20p-3. tmrProgresso → Repeat
+
+```
+true
+```
+
+#### 20p-4. tmrProgresso → Start
+
+```
+varOpArquivo = "IMPORTANDO" || varOpArquivo = "EXCLUINDO"
+```
+
+#### 20p-5. tmrProgresso → OnTimerEnd
+
+# IMPORTANDO / EXCLUINDO: atualiza a barra. Solta o cadeado no fim. Nao reabre popup.
+
+```
+If(
+    varOpArquivo = "IMPORTANDO";
+    With(
+        {p: flxProgressoImportacao.Run(varImportResumo.Codigo)};
+        Set(varImportSEsCriadas; Value(p.ses));;
+        Set(varImportCriados; Value(p.criados));;
+        If(
+            Value(p.ses) >= varImportTotalSEs && Value(p.criados) >= varImportTotal;
+            Set(varOpArquivo; "");;
+            Set(varBarraCard; false);;
+            Set(varLockCod; "");;
+            Patch(
+                'Campanhas ';
+                LookUp('Campanhas '; CodInventario = varImportResumo.Codigo);
+                {Status: "Pendente"}
+            );;
+            Patch(
+                colCampanhas;
+                LookUp(colCampanhas; CodInventario = varImportResumo.Codigo);
+                {Status: "Pendente"}
+            );;
+            ClearCollect(
+                colSubestacoes;
+                Filter(
+                    Subestacoes;
+                    CodInventario = varImportResumo.Codigo
+                )
+            )
+        )
+    );
+    varOpArquivo = "EXCLUINDO";
+    With(
+        {p: flxProgressoImportacao.Run(varLockCod)};
+        Set(varImportSEsCriadas; Value(p.ses));;
+        Set(varImportCriados; Value(p.criados));;
+        If(
+            varExcluirTotal = 0 && Value(p.criados) > 0;
+            Set(varExcluirTotal; Value(p.criados))
+        );;
+        If(
+            varExcluirTotalSEs = 0 && Value(p.ses) > 0;
+            Set(varExcluirTotalSEs; Value(p.ses))
+        );;
+        If(
+            Value(p.ses) = 0 && Value(p.criados) = 0;
+            Set(varOpArquivo; "");;
+            Set(varBarraCard; false);;
+            Set(varLockCod; "");;
+            Set(varCampExcluir; Blank());;
+            Refresh('Campanhas ');;
+            Refresh(Subestacoes);;
+            Clear(colSubestacoes);;
+            ForAll(
+                Filter('Campanhas '; Ativo = "Sim") As camp;
+                Collect(
+                    colSubestacoes;
+                    Filter(Subestacoes; CodInventario = camp.CodInventario)
+                )
+            );;
+            ClearCollect(
+                colCampanhas;
+                AddColumns(
+                    Filter('Campanhas '; Ativo = "Sim");
+                    QtdSEs;
+                    With(
+                        {cod: ThisRecord.CodInventario};
+                        CountRows(Filter(colSubestacoes; CodInventario = cod))
+                    );
+                    QtdItens;
+                    0
+                )
+            )
+        )
+    )
+)
+```
+
+#### 20p-6. cSucessoProgresso — container do progresso (cSucessoCard e AutoLayout!)
+
+# O cSucessoCard e GroupContainer AutoLayout Vertical (LayoutGap 20, Height 700,
+# Width 700, padding 20). Em AutoLayout X e Y NAO existem: a posicao e a ordem do
+# filho na arvore. Entao nada de ancorar em cSucessoPasta (Container63) —
+# basta inserir o container entre Container63 (caixa da pasta) e btnSucessoOK.
+
+```
+Variant           = AutoLayout          (Layout vertical)
+LayoutDirection   = LayoutDirection.Vertical
+LayoutGap         = 6
+AlignInContainer  = AlignInContainer.Stretch    (ocupa a largura do card)
+FillPortions      = 0                            (altura fixa; quem estica e o htmSucessoSEs)
+Height            = 40
+Fill              = Cor.Transparent
+Visible           = varImportTotalSEs > 0
+```
+
+# Height 40 = 22 (texto) + 6 (gap) + 12 (barra).
+# Nao mexer no Height 700 do card nem no btnSucessoOK: htmSucessoSEs tem FillPortions 1
+# e devolve sozinho os 40 + 20 de gap que a barra ocupa (mostra 5 SEs em vez de 6).
+# Visible por SEs, nao por itens: importacao sem nenhuma SE nao existe (o script barra),
+# mas projeto com 0 itens existe — e ali ainda tem a fase das instalacoes para mostrar.
+
+#### 20p-7. htmProgTexto → HtmlText  (HtmlViewer dentro de cSucessoProgresso)
+
+# Duas cores na mesma linha (contagem cinza + porcentagem verde) => HTML text, mesma
+# mecanica do htmSucessoResumo (HtmlText1). Cor em HTML e string hex => TCor.*.
+# Text(...; "0") em tudo: numero cru dentro de $"..." quebra com "expressoes dentro de
+# cadeia interpolada devem ser avaliadas a Texto".
+
+# Tres fases: instalacoes (enquanto faltam SEs), itens (SEs prontas) e o fim.
+# A porcentagem e sempre a ponderada (ProgressoImport) — nao a da fase.
+
+```
+With(
+    {
+        pct: Text(Round(ProgressoImport * 100; 0); "0") & "%";
+        estilo: $"font-family:Open Sans, sans-serif;font-size:15px";
+        verde: TCor.SuccessD30;
+        cinza: TCor.NeutralL30
+    };
+    If(
+        !ImportandoAgora;
+        $"<div style='{estilo};font-weight:700;color:{verde}'>Importação concluída · {Text(varImportTotal; "0")} itens</div>";
+        varImportSEsCriadas < varImportTotalSEs;
+        $"<div style='{estilo};color:{cinza}'>{Text(varImportSEsCriadas; "0")} de {Text(varImportTotalSEs; "0")} instalações · <b style='color:{verde}'>{pct}</b></div>";
+        $"<div style='{estilo};color:{cinza}'>{Text(varImportCriados; "0")} de {Text(varImportTotal; "0")} itens · <b style='color:{verde}'>{pct}</b></div>"
+    )
+)
+```
+
+# AlignInContainer = Stretch | FillPortions = 0 | Height = 22 | Fill = Cor.Transparent
+# Font = Font.'Open Sans' | Size = 10 (igual aos outros HtmlViewer do card)
+# 15px porque o card e 700x700: 13px fica miudo do lado do resumo em 18px.
+
+#### 20p-8. cProgTrilha — a trilha e um container, nao um retangulo
+
+# Em AutoLayout dois filhos nao se sobrepoem, e a barra precisa ficar EM CIMA da trilha.
+# Solucao: a trilha e um GroupContainer ManualLayout (Fill cinza + radius) e a barra e
+# filha dela, com X/Y (dentro de ManualLayout X e Y voltam a existir).
+
+```
+Variant           = ManualLayout
+Fill              = Cor.NeutralL90
+Radius*           = 6      (os quatro cantos)
+AlignInContainer  = AlignInContainer.Stretch
+FillPortions      = 0
+Height            = 12
+BorderThickness   = 0
+Visible           = ImportandoAgora
+```
+
+#### 20p-9. cProgBarra → Width  (filha de cProgTrilha, GroupContainer)
+
+```
+Parent.Width * ProgressoImport
+```
+
+# Variant = ManualLayout | Fill = Cor.SuccessD30 | Radius* = 6 | BorderThickness = 0
+# X = 0 | Y = 0 | Height = Parent.Height
+# Parent.Width aqui e a largura da trilha — nao precisa referenciar cProgTrilha.Width.
+# O Min(1; ...) ja esta dentro do ProgressoImport (20p-0).
+# Container (e nao retangulo) porque retangulo nao tem Radius; o card todo e radius 15.
+
+#### 20p-9a. Visible da trilha (a barra herda)
+
+```
+ImportandoAgora
+```
+
+# So no cProgTrilha: esconder o pai esconde a filha. No fim, trilha e barra saem
+# do popup; a barra do card (20q) continua ate o timer zerar varBarraCard.
+
+#### 20p-9b. Titulo e icone — ImportandoAgora + varUltimaOp
+
+# 20e / 20f / 20m / 20n-1 ja usam varUltimaOp. Nao voltar para ImportandoAgora.
+
+#### 20p-10. tmrProgresso — onde inserir
+
+# Solto na Tela_Exportar, fora de cMaskSucesso e de cSucessoProgresso.
+# Visible = false | AutoStart = false | X = 0 | Y = 0 | Width = 40 | Height = 40
+# Timer invisivel continua contando; dentro de container escondido, nao.
+# Duration / Repeat / Start / OnTimerEnd: ver 20p-2 a 20p-5.
+
+## 20q. Barra no card da galeria (2026-09-17)
+
+# Popup abre uma vez no Run. Barra do card segue no fundo e some quando a carga acaba
+# (varBarraCard = false no timer). OK so fecha o popup.
+# Inserir: cCardProg (AutoLayout) no template, abaixo dos botoes Planilha / Excluir.
+
+### 20q-1. Tela_Exportar → template da galeria → cCardProg → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.CodInventario = varLockCod && varBarraCard
+```
+
+# Variant = AutoLayout Vertical | LayoutGap = 4 | AlignInContainer = Stretch
+# FillPortions = 0 | Height = 36 | Fill = Cor.Transparent | PaddingTop = 4
+
+### 20q-2. Tela_Exportar → htmCardProg → HtmlText
+
+# HtmlViewer dentro de cCardProg. Mesma regra TCor.* do htmProgTexto.
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        pct: Text(Round(ProgressoCard * 100; 0); "0") & "%";
+        estilo: $"font-family:Open Sans, sans-serif;font-size:12px";
+        azul: TCor.PrimaryD30;
+        vermelho: TCor.Delete;
+        cinza: TCor.NeutralL30
+    };
+    If(
+        varUltimaOp = "EXCLUINDO";
+        $"<div style='{estilo};color:{cinza}'>{Text(varImportCriados; "0")} itens restantes · <b style='color:{vermelho}'>{pct}</b></div>";
+        varImportSEsCriadas < varImportTotalSEs;
+        $"<div style='{estilo};color:{cinza}'>{Text(varImportSEsCriadas; "0")} de {Text(varImportTotalSEs; "0")} instalações · <b style='color:{azul}'>{pct}</b></div>";
+        $"<div style='{estilo};color:{cinza}'>{Text(varImportCriados; "0")} de {Text(varImportTotal; "0")} itens · <b style='color:{azul}'>{pct}</b></div>"
+    )
+)
+```
+
+# AlignInContainer = Stretch | Height = 18 | Fill = Cor.Transparent
+
+### 20q-3. Tela_Exportar → cCardTrilha → Fill / Height / Visible
+
+```
+Fill              = Cor.NeutralL90
+Height            = 8
+Radius*           = 4
+BorderThickness   = 0
+AlignInContainer  = Stretch
+Visible           = true
+```
+
+# Variant = ManualLayout | Height = 8 | AlignInContainer = Stretch
+
+### 20q-4. Tela_Exportar → cCardBarra → Width
+
+# Filha de cCardTrilha (ManualLayout). X = 0 | Y = 0 | Height = Parent.Height
+
+Apaga o que estiver la. Cola:
+
+```
+Parent.Width * ProgressoCard
+```
+
+# Fill = If(varUltimaOp = "EXCLUINDO"; Cor.Delete; Cor.Primary)
+# Radius* = 4 | BorderThickness = 0
+
+### 20q-5. Tela_Exportar → cCardBarra → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    varUltimaOp = "EXCLUINDO";
+    Cor.Delete;
+    Cor.Primary
+)
+```
+
+### 20q-6. Tela_Exportar → chip de status do card (o que hoje mostra Concluída) → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.CodInventario = varLockCod && ArquivoOcupado;
+    If(varOpArquivo = "EXCLUINDO"; "Excluindo"; "Importando");
+    ThisItem.Status
+)
+```
+
+### 20q-7. Tela_Exportar → chip de status do card → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.CodInventario = varLockCod && ArquivoOcupado;
+    If(varOpArquivo = "EXCLUINDO"; ColorFade(Cor.Delete; 70%); Cor.PrimaryL90);
+    Switch(
+        ThisItem.Status;
+        "Em andamento"; Cor.PrimaryL90;
+        "Concluído"; ColorFade(Cor.Success; 70%);
+        "Concluída"; ColorFade(Cor.Success; 70%);
+        "Finalizada"; ColorFade(Cor.Success; 70%);
+        Cor.NeutralL90
+    )
+)
+```
+
+### 20q-8. Tela_Exportar → chip de status do card → Color
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.CodInventario = varLockCod && ArquivoOcupado;
+    If(varOpArquivo = "EXCLUINDO"; ColorFade(Cor.Delete; -0.3); Cor.PrimaryD30);
+    Switch(
+        ThisItem.Status;
+        "Em andamento"; Cor.PrimaryD30;
+        "Concluído"; ColorFade(Cor.Success; -0.3);
+        "Concluída"; ColorFade(Cor.Success; -0.3);
+        "Finalizada"; ColorFade(Cor.Success; -0.3);
+        Cor.NeutralL30
+    )
+)
+```
+
+### 20o. Esquema de cores do popup
+
+# Controle (Fill/Color) = Cor.*   |   SVG e HtmlText (string hex) = TCor.*
+# Success* vem da escala nova do App.Formulas — ver docs/powerfx/cores-formulas.txt.
+
+| Elemento              | Controle          | Propriedade                          |
+|-----------------------|-------------------|--------------------------------------|
+| Fundo escurecido      | cMaskSucesso      | Fill  = ColorFade(Cor.PrimaryD60; 40%) |
+| Card branco           | cSucessoCard      | Fill  = Cor.BackgroundStandard       |
+| Borda do card         | cSucessoCard      | BorderColor = Cor.Border             |
+| Quadrado do icone     | cSucessoIcone     | Fill  = Cor.SuccessL70               |
+| Check (SVG)           | imgSucessoCheck   | IconColor = TCor.SuccessD30          |
+| Titulo                | lblSucessoTitulo  | Color = Cor.SuccessD30               |
+| Codigo (INV-XXX)      | htmSucessoResumo  | HtmlText: TCor.PrimaryD30            |
+| Nome do projeto       | htmSucessoResumo  | HtmlText: TCor.NeutralL30            |
+| Numeros (5 / 65)      | lblSucessoQtd*    | Color = Cor.SuccessD30               |
+| Lista de SEs          | lblSucessoSEs     | Color = Cor.PrimaryD60               |
+| Caixa da pasta        | cSucessoPasta     | Fill = Cor.PrimaryL90 · Color = Cor.PrimaryD30 |
+| Contagem "42 de 65"   | htmProgTexto      | HtmlText: TCor.NeutralL30            |
+| Porcentagem "65%"     | htmProgTexto      | HtmlText: TCor.SuccessD30 (negrito)  |
+| Trilha da barra       | cProgTrilha       | Fill = Cor.NeutralL90                |
+| Barra preenchida      | cProgBarra        | Fill = Cor.SuccessD30                |
+| Botao Fechar          | btnSucessoOK      | Fill = Cor.PrimaryD60 · Color = Cor.TextInverted |
+
+# Sem as chaves Success* no App.Formulas, o equivalente exato e:
+#   Cor.SuccessL70  ->  ColorFade(Cor.Success; 70%)     (#C6E5C5)
+#   Cor.SuccessD30  ->  ColorFade(Cor.Success; -0.3)    (#2D752C)
+#   TCor.SuccessD30 ->  nao tem equivalente (SVG/HTML querem string hex) — precisa da chave.
+
+---
+
+## Excluir projeto (2026-09-15)
+
+# Recorte: Tela_Exportar, no card ao lado de Planilha. NAO na galeria de Projetos
+# (Tela_Campanhas) — um clique errado apaga a campanha inteira.
+# Fotos ZIP continua stand-by (btnExportarFotos Visible = false). Excluir ocupa
+# aquele slot visual.
+# App NAO faz Remove/ForAll nas listas. Chama flxExcluirCampanha.
+# Spec: docs/automate/flxExcluirCampanha.md
+# Mockup: docs/screens/mockup-excluir-projeto.html
+# PNG: docs/screens/excluir-projeto.png · excluir-projeto-popup.png
+
+# Overlay na RAIZ da tela (por cima do menu), igual cMaskUsrExcluir.
+
+### 30. App → OnStart (acrescentar junto dos outros Sets)
+
+Apaga nada. Cola depois de Set(varImportarAberto; false):;
+
+```
+Set(varConfirmExcluirCamp; false);;
+Set(varExcluindoCamp; false);;
+Set(varCampExcluir; Blank())
+```
+
+### 31. Tela_Exportar → btnExcluirCamp → Text
+
+# Botao novo no template da galeria de exportar (mesmo card do btnExportarCamp).
+# Width 96 | Height 28 | Radius 8
+# Fill = Cor.BackgroundStandard | Color = Cor.Delete | BorderColor = Cor.Delete
+# DisabledFill = Self.Fill | DisabledColor = Self.Color | DisabledBorderColor = Self.BorderColor
+# HoverFill = ColorFade(Cor.Delete; 90%) | HoverColor = Cor.Delete | HoverBorderColor = Cor.Delete
+
+Apaga o que estiver la. Cola:
+
+```
+"Excluir"
+```
+
+### 32. Tela_Exportar → btnExcluirCamp → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ArquivoOcupado;
+    With(
+        {_: true};
+        Set(varToastMsg; "Espera terminar a importação ou a exclusão.");;
+        Set(varToastTipo; "AVISO");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    );
+    Set(varCampExcluir; ThisItem);;
+    Set(varConfirmExcluirCamp; true)
+)
+```
+
+### 33. Tela_Exportar → btnExcluirCamp → DisplayMode
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ArquivoOcupado;
+    DisplayMode.Disabled;
+    DisplayMode.Edit
+)
+```
+
+# Sempre Edit (mesmo com 0 SE Finalizada). Excluir nao depende de saida.
+
+### 34. Tela_Exportar → btnExcluirCamp → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+true
+```
+
+### 35. Tela_Exportar → cMaskExcluirCamp → Visible
+
+# Container na raiz. X=0 Y=0 Width=Parent.Width Height=Parent.Height
+# Fill = ColorFade(Cor.PrimaryD60; 40%) | DropShadow = None
+
+Apaga o que estiver la. Cola:
+
+```
+varConfirmExcluirCamp
+```
+
+### 36. Tela_Exportar → cMaskExcluirCamp → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    !varExcluindoCamp;
+    Set(varConfirmExcluirCamp; false)
+)
+```
+
+### 37. Tela_Exportar → cPopExcluirCamp → Visible
+
+# Width 460 | Radius 12 | Fill Cor.BackgroundStandard | BorderColor Cor.Border
+# Align horizontal/vertical center no mask
+
+Apaga o que estiver la. Cola:
+
+```
+varConfirmExcluirCamp
+```
+
+### 38. Tela_Exportar → lblPopExcluirCampTitulo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Excluir projeto?"
+```
+
+# Color = Cor.PrimaryD60 | Size 18 | FontWeight Semibold
+
+### 39. Tela_Exportar → htmPopExcluirCampDesc → HtmlText
+
+# Inserir → Texto → HTML text. Embaixo do titulo. Nao usar Label (nome do projeto e outra cor).
+# AutoHeight = true | Fill = Cor.Transparent | Width = Parent.Width - 44
+
+Apaga o que estiver la. Cola:
+
+```
+$"<p style='margin:0;font-family:Open Sans, sans-serif;font-size:13.5px;line-height:1.5;color:{TCor.NeutralL30}'>O projeto <b style='color:{TCor.PrimaryD60}'>{Coalesce(varCampExcluir.NomeInventario; "")}</b> sai das listas, da pasta em Projetos e dos arquivos. Esta ação não tem volta.</p>"
+```
+
+### 40. lblPopExcluirCampLista
+
+# Nao criar. Popup curto, igual o Excluir slot: titulo + uma frase + Cancelar/Excluir.
+
+### 41. Tela_Exportar → btnExcluirCampCancelar → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Cancelar"
+```
+
+# Fill Cor.BackgroundStandard | Color Cor.PrimaryD60 | BorderColor Cor.Border
+# Height 40 | Radius 8 | Width ~110
+
+### 42. Tela_Exportar → btnExcluirCampCancelar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    !varExcluindoCamp;
+    Set(varConfirmExcluirCamp; false)
+)
+```
+
+### 43. Tela_Exportar → btnExcluirCampCancelar → DisplayMode
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    varExcluindoCamp;
+    DisplayMode.Disabled;
+    DisplayMode.Edit
+)
+```
+
+### 44. Tela_Exportar → btnExcluirCampConfirmar → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    varExcluindoCamp;
+    "Excluindo...";
+    "Excluir"
+)
+```
+
+# Fill Cor.Delete | Color Cor.TextInverted | BorderColor Cor.Delete
+# Height 40 | Radius 8 | Width ~110
+# DisabledFill = Self.Fill | DisabledColor = Self.Color | DisabledBorderColor = Self.BorderColor
+
+### 45. Tela_Exportar → btnExcluirCampConfirmar → DisplayMode
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    varExcluindoCamp;
+    DisplayMode.View;
+    DisplayMode.Edit
+)
+```
+
+### 46. Tela_Exportar → btnExcluirCampConfirmar → OnSelect
+
+# Lista Campanhas: se no OnStart for 'Campanhas ' (com espaco), usa o mesmo nome aqui.
+# O Run volta cedo (Responder_OK no 6c). O card some na hora com Remove(colCampanhas).
+# NAO zera varOpArquivo / varLockCod no sucesso se ainda tem SE/item: o tmrProgresso
+# (20p-5) e o OnVisible so Refresh quando EXCLUINDO e SEs+itens = 0.
+# Se zerar aqui, o timer para, colCampanhas nao recarrega e o card volta a parecer vivo.
+# SEs ja em 0 (segunda tentativa): Refresh + ClearCollect na hora.
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ArquivoOcupado;
+    With(
+        {_: true};
+        Set(varToastMsg; "Espera terminar a importação ou a exclusão.");;
+        Set(varToastTipo; "AVISO");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    );
+    IsBlank(varCampExcluir);
+    With(
+        {_: true};
+        Set(varToastMsg; "Nenhum projeto selecionado.");;
+        Set(varToastTipo; "AVISO");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    );
+    Set(varLockCod; varCampExcluir.CodInventario);;
+    Set(varOpArquivo; "EXCLUINDO");;
+    Set(varUltimaOp; "EXCLUINDO");;
+    Set(varBarraCard; true);;
+    Set(varExcluindoCamp; true);;
+    Set(varConfirmExcluirCamp; false);;
+    With(
+        {p: flxProgressoImportacao.Run(varCampExcluir.CodInventario)};
+        Set(varExcluirTotalSEs; Value(p.ses));;
+        Set(varExcluirTotal; Value(p.criados));;
+        Set(varImportSEsCriadas; Value(p.ses));;
+        Set(varImportCriados; Value(p.criados))
+    );;
+    With(
+        {saida: flxExcluirCampanha.Run(varCampExcluir.CodInventario)};
+        Set(varExcluindoCamp; false);;
+        If(
+            saida.ok = "true";
+            If(
+                !IsBlank(gblInventarioSelecionado) && gblInventarioSelecionado.CodInventario = varLockCod;
+                Set(gblInventarioSelecionado; Blank())
+            );;
+            Remove(
+                colCampanhas;
+                LookUp(colCampanhas; CodInventario = varLockCod)
+            );;
+            Set(varToastMsg; "Projeto em exclusão. Pode usar o app.");;
+            Set(varToastTipo; "OK");;
+            Set(varToastOn; false);;
+            Set(varToastOn; true);;
+            If(
+                varExcluirTotalSEs = 0 && varExcluirTotal = 0;
+                Set(varOpArquivo; "");;
+                Set(varBarraCard; false);;
+                Set(varUltimaOp; "");;
+                Set(varLockCod; "");;
+                Set(varCampExcluir; Blank());;
+                Refresh('Campanhas ');;
+                Refresh(Subestacoes);;
+                Clear(colSubestacoes);;
+                ForAll(
+                    Filter('Campanhas '; Ativo = "Sim") As camp;
+                    Collect(
+                        colSubestacoes;
+                        Filter(Subestacoes; CodInventario = camp.CodInventario)
+                    )
+                );;
+                ClearCollect(
+                    colCampanhas;
+                    AddColumns(
+                        Filter('Campanhas '; Ativo = "Sim");
+                        QtdSEs;
+                        With(
+                            {cod: ThisRecord.CodInventario};
+                            CountRows(Filter(colSubestacoes; CodInventario = cod))
+                        );
+                        QtdItens;
+                        0
+                    )
+                )
+            );
+            Set(varToastMsg; Coalesce(saida.erro; "Não foi possível excluir o projeto"));;
+            Set(varToastTipo; "ERRO");;
+            Set(varToastOn; false);;
+            Set(varToastOn; true);;
+            Set(varOpArquivo; "");;
+            Set(varLockCod; "");;
+            Set(varBarraCard; false);;
+            Set(varUltimaOp; "");;
+            Set(varCampExcluir; Blank())
+        )
+    )
+)
+```

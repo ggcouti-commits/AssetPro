@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Barra de progresso — processo total vs. hoje</title>
+<style>
+  :root{
+    --border:#E1E5EA; --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1; --primaryD60:#153965; --primaryL90:#E4F0FF;
+    --neutralL30:#706F6E; --neutralL60:#ADADAC; --neutralL90:#EBEAEA; --neutralL95:#F5F5F5;
+    --success:#40A73F; --successD30:#2D752C; --successL70:#C6E5C5; --successL90:#ECF6EC;
+    --warn:#B26A00; --warnbg:#FFF4E0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:26px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1000px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  code{font-family:Consolas,"Courier New",monospace; font-size:12.5px; color:var(--primaryD30)}
+
+  /* ---------- timelines ---------- */
+  .tl{width:1000px; background:#fff; border:1px solid var(--border); border-radius:14px; padding:20px 22px 22px}
+  .escala{display:flex; margin:0 0 6px 210px; position:relative; height:16px}
+  .escala span{position:absolute; font-size:10.5px; color:var(--neutralL60); font-family:Consolas,monospace; transform:translateX(-50%)}
+  .lin{display:flex; align-items:center; margin-bottom:14px}
+  .lin:last-child{margin-bottom:0}
+  .nome{width:210px; flex:0 0 210px; padding-right:14px}
+  .nomet{font-size:13px; font-weight:700; color:var(--title)}
+  .nomes{font-size:11.5px; color:var(--label); margin-top:2px; line-height:1.35}
+  .faixa{flex:1; height:38px; display:flex; border-radius:8px; overflow:hidden; border:1px solid var(--border)}
+  .seg{display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; white-space:nowrap; overflow:hidden}
+  .seg.cego{background:repeating-linear-gradient(135deg,#EDEFF2,#EDEFF2 6px,#E2E6EB 6px,#E2E6EB 12px); color:#6B7683}
+  .seg.barra{background:var(--successL90); color:var(--successD30); border-left:1px dashed var(--successD30)}
+  .marco{width:210px; flex:0 0 210px}
+  .marcos{display:flex; margin-top:8px}
+  .marcos .faixa{border:none; height:36px; position:relative; overflow:visible}
+  .mk{position:absolute; top:0; transform:translateX(-50%); text-align:center; font-size:10.5px; color:var(--label); line-height:1.3}
+  .mk b{display:block; color:var(--primaryD30); font-family:Consolas,monospace; font-size:10.5px}
+  .nota{margin-top:16px; font-size:12.5px; color:#3d444e; line-height:1.6; border-top:1px solid var(--neutralL90); padding-top:14px}
+  .nota p{margin-bottom:6px}
+  .tag{display:inline-block; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px; margin-right:6px}
+  .tag.cego{background:#EDEFF2; color:#5A6673}
+  .tag.barra{background:var(--successL90); color:var(--successD30)}
+
+  /* ---------- fases ---------- */
+  .fases{width:1000px; display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+  .fase{background:#fff; border:1px solid var(--border); border-radius:14px; padding:16px 16px 18px}
+  .fasel{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase; margin-bottom:12px}
+  .cprog{display:flex; flex-direction:column; gap:6px}
+  .progtxt{height:22px; font-size:14px; color:var(--neutralL30); display:flex; align-items:center; white-space:nowrap}
+  .progtxt b{color:var(--successD30); margin-left:4px}
+  .progtxt.done{font-weight:700; color:var(--successD30)}
+  .trilha{height:12px; border-radius:6px; background:var(--neutralL90); overflow:hidden}
+  .barra{height:12px; border-radius:6px; background:var(--successD30)}
+  .barra.indet{background:repeating-linear-gradient(135deg,var(--successD30),var(--successD30) 7px,#5FA85E 7px,#5FA85E 14px)}
+  .fasesub{font-size:11.5px; color:var(--label); margin-top:12px; line-height:1.5}
+  .fasesub code{font-size:11px}
+  .so{display:inline-block; font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; background:var(--warnbg); color:var(--warn); margin-top:8px}
+
+  /* ---------- conta ---------- */
+  .conta{width:1000px; background:#fff; border:1px solid var(--border); border-radius:14px; padding:20px 22px}
+  .contat{font-size:14px; font-weight:700; color:var(--title); margin-bottom:10px}
+  .peso{display:flex; gap:10px; margin-bottom:14px}
+  .pbox{flex:1; border:1px solid var(--border); border-radius:10px; background:var(--neutralL95); padding:10px 14px}
+  .pbox .pv{font-size:20px; font-weight:700; color:var(--primaryD30)}
+  .pbox .pl{font-size:11.5px; color:var(--label); margin-top:2px; line-height:1.35}
+  pre{background:#F7FAFD; border:1px solid var(--border); border-radius:10px; padding:12px 14px; font-family:Consolas,"Courier New",monospace; font-size:12.5px; color:#22406B; line-height:1.6; overflow:auto}
+</style>
+</head>
+<body>
+
+<div class="kicker">ONDE A BARRA CONSEGUE ANDAR · AMOSTRA DE 5 SES / 65 ITENS (~95 S)</div>
+<h1>A barra só corre depois que o App é liberado.</h1>
+<p class="lead">Enquanto o <code>Run</code> está em execução o App fica travado numa linha de fórmula: Timer não dispara, <code>Set</code> não roda, nada na tela muda. Por isso o que decide o alcance da barra é <b>onde o fluxo responde ao App</b> — e não como o container é montado.</p>
+
+<div class="tl" id="timelines">
+  <div class="escala">
+    <span style="left:0%">0 s</span>
+    <span style="left:10.5%">10 s</span>
+    <span style="left:36.8%">35 s</span>
+    <span style="left:68%">65 s</span>
+    <span style="left:96.5%">95 s</span>
+  </div>
+
+  <div class="lin">
+    <div class="nome">
+      <div class="nomet">Hoje</div>
+      <div class="nomes">Responder_OK no passo 18</div>
+    </div>
+    <div class="faixa">
+      <div class="seg cego" style="flex:0 0 36.8%">spinner · 35 s no escuro</div>
+      <div class="seg barra" style="flex:1">barra · itens (63%)</div>
+    </div>
+  </div>
+
+  <div class="lin">
+    <div class="nome">
+      <div class="nomet">Quase total</div>
+      <div class="nomes">Responder_OK movido para o passo 7, depois do script</div>
+    </div>
+    <div class="faixa">
+      <div class="seg cego" style="flex:0 0 10.5%">10 s</div>
+      <div class="seg barra" style="flex:1">barra · instalações + pastas + itens (89%)</div>
+    </div>
+  </div>
+
+  <div class="lin">
+    <div class="nome">
+      <div class="nomet">Total de verdade</div>
+      <div class="nomes">Gatilho SharePoint; App só grava o arquivo e abre o popup</div>
+    </div>
+    <div class="faixa">
+      <div class="seg cego" style="flex:0 0 2.2%"></div>
+      <div class="seg barra" style="flex:1">barra · leitura da planilha + instalações + pastas + itens (98%)</div>
+    </div>
+  </div>
+
+  <div class="marcos">
+    <div class="marco"></div>
+    <div class="faixa">
+      <div class="mk" style="left:5%">upload<br><b>~6 s</b></div>
+      <div class="mk" style="left:14%">script<br><b>~4 s</b></div>
+      <div class="mk" style="left:24%">5 SEs<br><b>~10 s</b></div>
+      <div class="mk" style="left:32%">11 pastas<br><b>~15 s</b></div>
+      <div class="mk" style="left:66%">65 itens<br><b>~60 s</b></div>
+    </div>
+  </div>
+
+  <div class="nota">
+    <p><span class="tag cego">hachurado</span> App bloqueado no <code>Run</code> — só o spinner do <code>varCarregando</code>, sem número nenhum.</p>
+    <p><span class="tag barra">verde</span> App livre, popup aberto, <code>tmrProgresso</code> chamando o <code>flxProgressoImportacao</code> a cada 3 s.</p>
+  </div>
+</div>
+
+<div class="kicker">O QUE O HTMPROGTEXTO MOSTRA EM CADA FASE</div>
+<h1>Uma barra, três fases, o mesmo par de variáveis.</h1>
+<p class="lead">A fase vem de <code>varImportEtapa</code>, que o <code>flxProgressoImportacao</code> devolve junto com as contagens. A barra é sempre a mesma: muda o texto e o quanto ela está cheia.</p>
+
+<div class="fases" id="fases-barra">
+  <div class="fase">
+    <div class="fasel">1 · lendo a planilha</div>
+    <div class="cprog">
+      <div class="progtxt">Lendo a planilha…</div>
+      <div class="trilha"><div class="barra indet" style="width:8%"></div></div>
+    </div>
+    <div class="fasesub">Totais ainda não existem — o script é quem conta. Barra listrada, sem porcentagem.</div>
+    <div class="so">só no desenho “total de verdade”</div>
+  </div>
+
+  <div class="fase">
+    <div class="fasel">2 · criando instalações</div>
+    <div class="cprog">
+      <div class="progtxt">2 de 5 instalações ·<b>8%</b></div>
+      <div class="trilha"><div class="barra" style="width:8%"></div></div>
+    </div>
+    <div class="fasesub">Cada SE vale 3 chamadas (item + pasta da SE + pasta <code>Ambiente</code>), por isso 2 de 5 dá 8% e não 40%.</div>
+    <div class="so">nos dois desenhos novos</div>
+  </div>
+
+  <div class="fase">
+    <div class="fasel">3 · criando itens</div>
+    <div class="cprog">
+      <div class="progtxt">42 de 65 itens ·<b>71%</b></div>
+      <div class="trilha"><div class="barra" style="width:71%"></div></div>
+    </div>
+    <div class="fasesub">15 unidades das SEs já contadas + 42 itens, sobre 80 no total.</div>
+    <div class="so">é a fase que já funciona hoje</div>
+  </div>
+
+  <div class="fase">
+    <div class="fasel">4 · terminou</div>
+    <div class="cprog">
+      <div class="progtxt done">Importação concluída · 65 itens</div>
+    </div>
+    <div class="fasesub" style="margin-top:26px">Trilha e barra saem (<code>Visible</code>), o <code>cSucessoProgresso</code> mantém os 40 de altura e o card não pula.</div>
+  </div>
+</div>
+
+<div class="kicker">A CONTA DA PORCENTAGEM</div>
+<h1>Peso por chamada ao SharePoint, não por “etapa”.</h1>
+<p class="lead">Dividir o progresso em “33% cada fase” mentiria: na amostra as SEs custam 19% do trabalho e os itens 81%. A unidade honesta é a chamada ao SharePoint, que é o que consome o tempo.</p>
+
+<div class="conta" id="conta-peso">
+  <div class="contat">Amostra: 5 SEs · 65 itens</div>
+  <div class="peso">
+    <div class="pbox"><div class="pv">3</div><div class="pl">chamadas por SE<br>item + pasta da SE + pasta Ambiente</div></div>
+    <div class="pbox"><div class="pv">1</div><div class="pl">chamada por item<br>Criar_Item</div></div>
+    <div class="pbox"><div class="pv">15</div><div class="pl">unidades das instalações<br>5 × 3</div></div>
+    <div class="pbox"><div class="pv">80</div><div class="pl">unidades no total<br>15 + 65</div></div>
+  </div>
+  <pre>(varImportSEsCriadas * 3 + varImportCriados)
+    / Max(1; varImportTotalSEs * 3 + varImportTotal)</pre>
+</div>
+
+</body>
+</html>

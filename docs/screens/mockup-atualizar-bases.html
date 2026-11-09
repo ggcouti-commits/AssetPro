@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Atualizar a base — as quatro telas</title>
+<style>
+  :root{
+    --navy:#153965; --navy2:#1B4C86;
+    --page:#EBEAEA; --card:#fff; --border:#C2C1C1;
+    --title:#153965; --label:#706F6E; --text:#323130;
+    --primary:#348FFD; --primaryD30:#2464B1; --primaryL90:#EBF4FF;
+    --successD30:#2D752C;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#d5d8dc}
+  body{font-family:"Segoe UI",Arial,sans-serif; color:var(--text); padding:16px 18px 22px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.1px; color:var(--primary); margin-bottom:4px}
+  h1{font-size:20px; font-weight:700; margin-bottom:4px}
+  .lead{font-size:13px; color:#3d444e; line-height:1.45; max-width:1080px; margin-bottom:14px}
+  .lead b{color:#1a1a1a}
+  .stack{display:flex; flex-direction:column; gap:12px; width:1080px}
+  .shot{background:var(--page); border:1px solid #b7b6b6; border-radius:12px; overflow:hidden}
+  .cap{display:flex; justify-content:space-between; align-items:baseline; padding:8px 12px 0}
+  .cap b{font-size:12px; color:var(--title)}
+  .cap span{font-size:12px; color:var(--label)}
+  .top{height:64px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 16px; gap:16px}
+  .left{display:flex; align-items:center; gap:10px; min-width:0}
+  .back{width:28px; height:28px; border-radius:8px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--title); font-size:16px; flex:0 0 28px}
+  .toptitle{font-size:17px; font-weight:700; color:var(--title); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .topsub{font-size:12px; color:var(--label); margin-top:1px}
+  .right{display:flex; align-items:center; gap:10px; flex:0 0 auto}
+  .hint{font-size:12px; color:var(--label); font-weight:600}
+  .foto{height:32px; padding:0 10px; border-radius:8px; border:1px solid var(--primaryD30); color:var(--primaryD30); font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px}
+  .badge{background:var(--primaryL90); color:var(--primaryD30); border-radius:8px; padding:1px 6px; font-size:11px}
+  .btn{
+    height:36px; min-width:148px; padding:0 16px; border-radius:10px;
+    border:1px solid var(--navy); background:#fff; color:var(--navy);
+    font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .btn svg{flex:0 0 16px}
+  .crumb{height:36px; display:flex; align-items:center; gap:8px; padding:0 16px; font-size:12px; color:var(--label); background:var(--page)}
+  .crumb b{color:var(--title)}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · MESMO LUGAR NAS QUATRO TELAS</div>
+  <h1>Atualizar fica no canto direito da faixa de cima</h1>
+  <p class="lead">Um botão só, contorno azul, sempre à direita. O clique relê a base daquela tela. Enquanto roda, o texto vira <b>Atualizando</b>. Não cobre a tela.</p>
+
+  <div class="stack" id="faixas">
+
+    <div class="shot">
+      <div class="cap"><b>Tela_Home</b><span>Relê os projetos ativos</span></div>
+      <header class="top">
+        <div class="left">
+          <div>
+            <div class="toptitle">Home</div>
+            <div class="topsub">Projetos em andamento</div>
+          </div>
+        </div>
+        <div class="right">
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 512 512" fill="none"><path d="M434.67,285.59v-29.8C434.67,157.06,354.43,77,255.47,77a179,179,0,0,0-140.14,67.36m-38.53,82v29.8C76.8,355,157,435,256,435a180.45,180.45,0,0,0,140-66.92" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="32 256 76 212 122 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="480 256 436 300 390 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
+            Atualizar
+          </button>
+        </div>
+      </header>
+    </div>
+
+    <div class="shot">
+      <div class="cap"><b>Tela_Subestações</b><span>Relê as subestações deste projeto</span></div>
+      <header class="top">
+        <div class="left">
+          <div class="back">‹</div>
+          <div>
+            <div class="toptitle">Enel Ceará Jul 2026</div>
+            <div class="topsub">julho 2026 · 4 instalações · Em andamento</div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="hint">Consulta</div>
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 512 512" fill="none"><path d="M434.67,285.59v-29.8C434.67,157.06,354.43,77,255.47,77a179,179,0,0,0-140.14,67.36m-38.53,82v29.8C76.8,355,157,435,256,435a180.45,180.45,0,0,0,140-66.92" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="32 256 76 212 122 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="480 256 436 300 390 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
+            Atualizar
+          </button>
+        </div>
+      </header>
+    </div>
+
+    <div class="shot">
+      <div class="cap"><b>Tela_ItensConsulta</b><span>Relê itens e fotos desta subestação</span></div>
+      <header class="top">
+        <div class="left">
+          <div class="back">‹</div>
+          <div>
+            <div class="toptitle">SE-0142 — Sub. Est. Fortaleza Norte</div>
+            <div class="topsub">Enel Ceará Jul 2026 · Fortaleza · 138 kV</div>
+          </div>
+        </div>
+        <div class="right">
+          <div class="foto">Fotos da SE <span class="badge">12</span></div>
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 512 512" fill="none"><path d="M434.67,285.59v-29.8C434.67,157.06,354.43,77,255.47,77a179,179,0,0,0-140.14,67.36m-38.53,82v29.8C76.8,355,157,435,256,435a180.45,180.45,0,0,0,140-66.92" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="32 256 76 212 122 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="480 256 436 300 390 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
+            Atualizar
+          </button>
+        </div>
+      </header>
+    </div>
+
+    <div class="shot">
+      <div class="cap"><b>Tela_Exportar</b><span>Relê os projetos e as finalizadas dos cards</span></div>
+      <header class="top">
+        <div class="left">
+          <div>
+            <div class="toptitle">Importar / Exportar</div>
+            <div class="topsub">Importar planilha e exportar SEs finalizadas</div>
+          </div>
+        </div>
+        <div class="right">
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 512 512" fill="none"><path d="M434.67,285.59v-29.8C434.67,157.06,354.43,77,255.47,77a179,179,0,0,0-140.14,67.36m-38.53,82v29.8C76.8,355,157,435,256,435a180.45,180.45,0,0,0,140-66.92" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="32 256 76 212 122 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><polyline points="480 256 436 300 390 256" stroke="#153965" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
+            Atualizar
+          </button>
+        </div>
+      </header>
+      <div class="crumb">Última importação <b>Neoenergia Brasil Out 2026 · 08/10/2026</b></div>
+    </div>
+
+  </div>
+</body>
+</html>

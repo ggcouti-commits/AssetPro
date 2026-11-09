@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>btnFinalizarSE — Tela_ItensVisita</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy2:#1B4C86; --track:#0E2E55; --green:#3BAA48;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA; --title:#1B3E6F;
+    --label:#6B7683; --strip:#EBF4FF; --okbg:#DFF3E3; --oktx:#2E7D32;
+    --warnbg:#FDF0DC; --warntx:#8A5300; --warn:#F9C000; --primary:#348FFD;
+    --chipwait:#C47A00;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    background:#FAFBFC; color:#1a1a1a; padding:18px 16px 36px;
+  }
+  h1{font-size:18px; font-weight:650; margin-bottom:4px}
+  .sub{font-size:12.5px; color:#5c6470; margin-bottom:16px; max-width:960px; line-height:1.5}
+  .sub b{color:#1a1a1a}
+  .row{display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap}
+  .col{width:300px}
+  .tag{display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap}
+  .tagname{font-size:12px; font-weight:700; letter-spacing:.3px}
+  .rec{font-size:11px; font-weight:600; color:var(--primary)}
+  .mute{font-size:11px; font-weight:600; color:#8A93A0}
+  .cap{font-size:12px; color:#5c6470; line-height:1.55; margin-top:10px}
+
+  .phone{width:300px; border:1px solid var(--border); border-radius:16px; overflow:hidden; background:var(--page); position:relative; height:580px}
+  .hd{background:var(--navy); padding:11px 12px 10px; display:flex; align-items:flex-start; gap:8px}
+  .hd-mid{flex:1; min-width:0}
+  .hdt{color:#fff; font-size:14px; font-weight:700; line-height:1.25}
+  .hds{color:#9EC4F0; font-size:10px; margin-top:4px; display:flex; align-items:center; gap:5px}
+  .cam{width:46px; height:46px; border-radius:12px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); display:flex; align-items:center; justify-content:center; flex:0 0 auto; position:relative}
+  .badge{position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:var(--green); color:#fff; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center}
+  .pg{background:var(--track); padding:7px 12px}
+  .pgt{display:flex; justify-content:space-between; color:#fff; font-size:10px; font-weight:700}
+  .bar{height:7px; background:rgba(255,255,255,.18); border-radius:4px; margin-top:5px}
+  .bar > i{display:block; height:100%; background:var(--green); border-radius:4px}
+  .chips{display:flex; gap:7px; padding:8px 12px 6px}
+  .chip{height:28px; padding:0 13px; border-radius:999px; display:flex; align-items:center; font-size:11px; font-weight:700; border:1px solid var(--border); background:#fff; color:var(--label)}
+  .chip.on{background:var(--navy); border-color:var(--navy); color:#fff}
+  .list{padding:0 11px 86px; display:flex; flex-direction:column; gap:8px}
+  .item{display:flex; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden}
+  .stripe{width:5px; flex:0 0 auto}
+  .body{flex:1; min-width:0; padding:9px 10px; display:flex; flex-direction:column; gap:7px}
+  .t{font-size:11px; font-weight:700; color:var(--title); line-height:1.35}
+  .qtd{display:flex; align-items:stretch; gap:10px; background:var(--strip); border-radius:8px; padding:5px 9px}
+  .qk{font-size:8px; font-weight:700; color:var(--label); letter-spacing:.4px}
+  .qv{font-size:12px; font-weight:700; color:var(--title)}
+  .vsep{width:1px; background:var(--border)}
+  .amber{color:var(--warntx)}
+  .foot{display:flex; justify-content:space-between; align-items:center}
+  .pill{font-size:10px; font-weight:700; padding:3px 9px; border-radius:999px; white-space:nowrap}
+  .ok{background:var(--okbg); color:var(--oktx)}
+  .wait{background:var(--warnbg); color:var(--chipwait)}
+  .pend{background:#EEF0F3; color:#6B7683}
+  .field{background:#D6E8FF; color:#1B4C86}
+  .ib{width:32px; height:26px; border:1px solid var(--border); border-radius:7px; background:#fff; display:flex; align-items:center; justify-content:center}
+  .icons{display:flex; gap:5px}
+
+  .fab{
+    position:absolute; right:12px; bottom:76px;
+    display:flex; align-items:center; gap:7px;
+    height:40px; padding:0 14px; border-radius:999px;
+    background:var(--navy); color:#fff; font-size:12px; font-weight:700;
+    box-shadow:0 2px 8px rgba(18,59,110,.25);
+  }
+  .dock{
+    position:absolute; left:0; right:0; bottom:0;
+    background:var(--card); border-top:1px solid var(--border);
+    padding:10px 12px 12px;
+  }
+  .dockbtn{
+    height:48px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    color:#fff; font-size:14px; font-weight:700; background:var(--navy);
+  }
+  .dockbtn.off{background:#C5CDD6; color:#fff}
+
+  .callout{
+    position:absolute; left:12px; right:12px; bottom:66px;
+    background:#1B3E6F; color:#fff; font-size:10.5px; font-weight:700;
+    padding:6px 10px; border-radius:8px; text-align:center; letter-spacing:.2px;
+  }
+  .callout:after{
+    content:""; position:absolute; left:50%; bottom:-6px; margin-left:-6px;
+    border:6px solid transparent; border-top-color:#1B3E6F; border-bottom:0;
+  }
+
+  .sehd{background:var(--navy); padding:14px 14px 12px}
+  .sehd .hdt{font-size:18px}
+  .search{margin:10px 12px 0; height:36px; border-radius:10px; border:1px solid var(--border); background:#fff; display:flex; align-items:center; padding:0 12px; color:#9AA3AE; font-size:12px; gap:8px}
+  .filters{display:flex; gap:6px; padding:10px 12px 6px; flex-wrap:wrap}
+  .filt{height:26px; padding:0 10px; border-radius:999px; font-size:10.5px; font-weight:700; border:1px solid var(--border); background:#fff; color:var(--label); display:flex; align-items:center}
+  .filt.on{background:var(--navy); border-color:var(--navy); color:#fff}
+  .secard{margin:0 12px 8px; background:#fff; border:1px solid var(--border); border-radius:14px; padding:12px 12px 11px; position:relative}
+  .secod{font-size:13.5px; font-weight:700; color:var(--title); padding-right:120px}
+  .semeta{font-size:11px; color:var(--label); margin-top:4px}
+  .status{
+    position:absolute; top:14px; right:12px;
+    height:28px; padding:0 11px; border-radius:999px;
+    font-size:10.5px; font-weight:700; display:flex; align-items:center;
+  }
+  .st-wait{background:#FDF0DC; color:#8A5300}
+  .st-field{background:#D6E8FF; color:#1B4C86}
+  .st-ok{background:var(--okbg); color:var(--oktx)}
+  .st-pend{background:#EEF0F3; color:#6B7683}
+</style>
+</head>
+<body>
+  <h1>Botão Finalizar SE — só na Tela_ItensVisita</h1>
+  <p class="sub">
+    O controle <b>btnFinalizarSE</b> fica na raiz dessa tela, fora das galerias.
+    Depois do toque o app navega para <b>Tela_SelecionarSE</b> — lá e na Home só muda o <b>chip</b>. Não cria o botão nessas duas.
+  </p>
+
+  <div class="row">
+
+    <!-- 1. ItensVisita — botão ativo -->
+    <div class="col">
+      <div class="tag">
+        <span class="tagname">Tela_ItensVisita</span>
+        <span class="rec">cola o botão aqui</span>
+      </div>
+      <div class="phone">
+        <div class="hd">
+          <svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+          <div class="hd-mid">
+            <div class="hdt">SE-005 - Sub. Est. Litoral</div>
+            <div class="hds">
+              <svg width="10" height="14" viewBox="0 0 512 512" fill="none" stroke="#9EC4F0" stroke-width="40"><path d="M315 33L96 304h128l-32 173 224-269H288z"/></svg>
+              Neoenergia Pernambuco Ago 2026
+            </div>
+          </div>
+          <div class="cam">
+            <span class="badge">3</span>
+            <svg width="20" height="20" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100 310.6 96 302 96h-92c-8.6 0-16.3 4-21.9 10.6l-26.6 42.1C155.9 155 148.6 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg>
+          </div>
+        </div>
+        <div class="pg">
+          <div class="pgt"><span>5 de 6 itens revisados</span><span>83%</span></div>
+          <div class="bar"><i style="width:83%"></i></div>
+        </div>
+        <div class="chips"><div class="chip on">BASE (5)</div><div class="chip">SOBRAS (1)</div></div>
+        <div class="list">
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">570.01 - TRANSFORMADOR DE FORÇA TRIPOLAR 5,0/6,25MVA 34,5/13,8KV</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">1 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv">1 UN</div></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">160.15 - CHAVE INTERRUPTORA SOB CARGA TRIPOLAR 13,8KV 400A AUTO</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">3 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv amber">5 UN</div></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fab">
+          <svg width="14" height="14" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round"><line x1="256" y1="112" x2="256" y2="400"/><line x1="400" y1="256" x2="112" y2="256"/></svg>
+          Adicionar item
+        </div>
+        <div class="callout">btnFinalizarSE · raiz da tela, fora das galerias</div>
+        <div class="dock">
+          <div class="dockbtn">Finalizar subestação</div>
+        </div>
+      </div>
+      <p class="cap">Rodapé fixo. O <b>btnAddItem</b> sobe e fica acima da barra. Depois do toque: toast + Navigate para a lista de SEs.</p>
+    </div>
+
+    <!-- 2. ItensVisita — já finalizada (reabre) -->
+    <div class="col">
+      <div class="tag">
+        <span class="tagname">Tela_ItensVisita</span>
+        <span class="mute">reabre a SE já finalizada</span>
+      </div>
+      <div class="phone">
+        <div class="hd">
+          <svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+          <div class="hd-mid">
+            <div class="hdt">SE-005 - Sub. Est. Litoral</div>
+            <div class="hds">
+              <svg width="10" height="14" viewBox="0 0 512 512" fill="none" stroke="#9EC4F0" stroke-width="40"><path d="M315 33L96 304h128l-32 173 224-269H288z"/></svg>
+              Neoenergia Pernambuco Ago 2026
+            </div>
+          </div>
+          <div class="cam">
+            <span class="badge">3</span>
+            <svg width="20" height="20" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100 310.6 96 302 96h-92c-8.6 0-16.3 4-21.9 10.6l-26.6 42.1C155.9 155 148.6 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg>
+          </div>
+        </div>
+        <div class="pg">
+          <div class="pgt"><span>5 de 6 itens revisados</span><span>83%</span></div>
+          <div class="bar"><i style="width:83%"></i></div>
+        </div>
+        <div class="chips"><div class="chip on">BASE (5)</div><div class="chip">SOBRAS (1)</div></div>
+        <div class="list">
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">570.01 - TRANSFORMADOR DE FORÇA TRIPOLAR 5,0/6,25MVA 34,5/13,8KV</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">1 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv">1 UN</div></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="stripe" style="background:var(--green)"></div>
+            <div class="body">
+              <div class="t">160.15 - CHAVE INTERRUPTORA SOB CARGA TRIPOLAR 13,8KV 400A AUTO</div>
+              <div class="qtd">
+                <div><div class="qk">BASE</div><div class="qv">3 UN</div></div>
+                <div class="vsep"></div>
+                <div><div class="qk">CONTADO</div><div class="qv amber">5 UN</div></div>
+              </div>
+              <div class="foot">
+                <span class="pill ok">Confirmado</span>
+                <div class="icons">
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg></div>
+                  <div class="ib"><svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fab">
+          <svg width="14" height="14" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round"><line x1="256" y1="112" x2="256" y2="400"/><line x1="400" y1="256" x2="112" y2="256"/></svg>
+          Adicionar item
+        </div>
+        <div class="dock">
+          <div class="dockbtn off">Subestação finalizada</div>
+        </div>
+      </div>
+      <p class="cap">Mesmo botão, <b>DisplayMode.Disabled</b>. Texto vira “Subestação finalizada”. Ainda dá para editar item até o Enviar.</p>
+    </div>
+
+    <!-- 3. SelecionarSE — sem botão, só chip -->
+    <div class="col">
+      <div class="tag">
+        <span class="tagname">Tela_SelecionarSE</span>
+        <span class="mute">sem o botão — só o chip</span>
+      </div>
+      <div class="phone">
+        <div class="sehd">
+          <div class="hdt">Subestações</div>
+          <div class="hds" style="margin-top:6px">Neoenergia Pernambuco · Ago 2026</div>
+        </div>
+        <div class="search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA3AE" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+          Buscar SE
+        </div>
+        <div class="filters">
+          <div class="filt">Todas</div>
+          <div class="filt">Pendente</div>
+          <div class="filt">Em campo</div>
+          <div class="filt on">Finalizadas</div>
+        </div>
+        <div class="secard">
+          <div class="status st-wait">Aguard. envio</div>
+          <div class="secod">SE-005 - Sub. Est. Litoral</div>
+          <div class="semeta">5 item(ns) revisado(s)</div>
+          <div class="semeta" style="margin-top:6px">Litoral - Recife/PE</div>
+        </div>
+        <div class="secard">
+          <div class="status st-ok">Finalizada</div>
+          <div class="secod">SE-002 - Sub. Est. Centro</div>
+          <div class="semeta">8 item(ns) revisado(s)</div>
+          <div class="semeta" style="margin-top:6px">Centro - Recife/PE</div>
+        </div>
+        <div class="secard">
+          <div class="status st-field">Em campo</div>
+          <div class="secod">SE-008 - Sub. Est. Norte</div>
+          <div class="semeta">2 item(ns) revisado(s)</div>
+          <div class="semeta" style="margin-top:6px">Norte - Olinda/PE</div>
+        </div>
+        <div class="secard">
+          <div class="status st-pend">Pendente</div>
+          <div class="secod">SE-011 - Sub. Est. Sul</div>
+          <div class="semeta">Ainda não iniciada</div>
+          <div class="semeta" style="margin-top:6px">Sul - Jaboatão/PE</div>
+        </div>
+      </div>
+      <p class="cap">Destino do <b>Navigate</b>. Chip <b>Button3_15</b> já existe. Home usa o mesmo critério no <b>Button3_14</b>.</p>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,483 @@
+# Mobile — recorte por perfil (projeto + instalação)
+#
+# Inventariante: só vê o que está em Alocacoes (Login + Ativo = Sim).
+# Escritório: vê todos os projetos e todas as SEs. Não filtra.
+# Front: Projeto. Lista SP: Campanhas. Instalação: Subestacoes / CodSE.
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Fonte: reunião 17.09.2026. Alocações: Tela_Alocacoes-formulas.txt
+
+# varPerfil sai do login (lista Inventariantes). Só "ESCRITORIO" vê tudo.
+# Qualquer outro perfil (INVENTARIANTE ou vazio) recorta. Fail-closed.
+# O fluxo flxBaixarCampanha continua mandando a campanha inteira. O recorte é no app.
+
+---
+
+## 0. App (Mobile) → Dados → Adicionar dados
+
+SharePoint → site AssetPro → marca a lista **Alocacoes**.
+
+# Sem isso o Filter nem existe. Desktop já tem esta lista na Tela_Alocacoes.
+
+---
+
+## 1. Tela_Login → btnEntrar → OnSelect
+
+# Se o botão ainda se chama Button3, é o Entrar. Apaga o que estiver lá. Cola:
+
+```
+Set(varLoginErro; Blank());;
+If(
+    !Connection.Connected;
+    Set(varLoginErro; "Sem internet. O primeiro acesso precisa de rede.");
+    With(
+        {
+            u: LookUp(
+                Inventariantes;
+                Login = Trim(inpLogin.Text) && Ativo = "Sim"
+            )
+        };
+        If(
+            IsBlank(u) || u.Senha <> inpSenha.Text;
+            Set(varLoginErro; "Login ou senha inválidos.");
+            With(
+                {
+                    sessao:
+                        {
+                            Login: u.Login;
+                            Perfil: u.Perfil;
+                            Nome: Coalesce(u.UsadoPor; u.Nome);
+                            UsadoPor: u.UsadoPor;
+                            CodUsuario: u.CodUsuario;
+                            SessaoVersao: Coalesce(u.SessaoVersao; 0)
+                        }
+                };
+                Set(gblUsuario; sessao);;
+                Set(varPerfil; u.Perfil);;
+                ClearCollect(colSessao; sessao);;
+                IfError(SaveData(colSessao; "cache_Sessao"); Blank());;
+                ClearCollect(
+                    colAlocacoes;
+                    Filter(
+                        Alocacoes;
+                        Login = u.Login && Ativo = "Sim"
+                    )
+                );;
+                IfError(SaveData(colAlocacoes; "cache_Alocacoes"); Blank());;
+                Reset(inpSenha);;
+                Navigate(Tela_SelecionarInventario; ScreenTransition.None)
+            )
+        )
+    )
+)
+```
+
+# Escritório também carrega colAlocacoes (vai vir vazio — não designa). A galeria ignora o filtro.
+
+---
+
+## 2. App → OnStart
+
+OnStart completo (sessão + alocações + catálogos): `docs/powerfx/AppMobile-OnStart.txt`.
+Apaga o OnStart inteiro. Cola o bloco de lá.
+
+O recorte de `colAlocacoes` (se for só acrescentar no fim de um OnStart que **já** tem a sessão do slot):
+
+```
+IfError(LoadData(colAlocacoes; "cache_Alocacoes"; true); Blank());;
+If(
+    varSessaoOk && Connection.Connected;
+    ClearCollect(
+        colAlocacoes;
+        Filter(
+            Alocacoes;
+            Login = First(colSessao).Login && Ativo = "Sim"
+        )
+    );;
+    IfError(SaveData(colAlocacoes; "cache_Alocacoes"); Blank());
+    !varSessaoOk;
+    With(
+        {_: true};
+        Clear(colAlocacoes);;
+        IfError(ClearData("cache_Alocacoes"); Blank())
+    )
+)
+```
+
+# Sem internet: usa o cache. Sessão inválida: zera. Se o bloco de sessão (Tela_Login passo 24) ainda não estiver no OnStart, cola aquele primeiro.
+
+---
+
+## 3. Tela_SelecionarInventario → Gallery2 → Items
+
+Apaga o que estiver lá. Cola:
+
+```
+SortByColumns(
+    Filter(
+        colCampanhas;
+        (
+            varPerfil = "ESCRITORIO"
+            || CodInventario in Filter(
+                colAlocacoes;
+                Login = gblUsuario.Login && Ativo = "Sim"
+            ).CodInventario
+        )
+        && (gblFiltroStatus = "Todos" || Status = gblFiltroStatus)
+        && (
+            IsBlank(InputBuscaCampanha.Text)
+            || InputBuscaCampanha.Text in NomeInventario
+            || InputBuscaCampanha.Text in Concessionaria
+            || InputBuscaCampanha.Text in UF
+        )
+    );
+    "DataCriacao";
+    SortOrder.Descending
+)
+```
+
+# Inventariante sem linha em Alocacoes: galeria vazia. Escritório: todos os projetos.
+
+---
+
+## 4. Tela_SelecionarSE → Gallery4 → Items
+
+Apaga o que estiver lá. Cola:
+
+```
+SortByColumns(
+    Filter(
+        AddColumns(
+            AddColumns(
+                AddColumns(
+                    Filter(
+                        colSubestacoes;
+                        CodInventario = gblInventarioSelecionado.CodInventario
+                        && (
+                            varPerfil = "ESCRITORIO"
+                            || CodSE in Filter(
+                                colAlocacoes;
+                                Login = gblUsuario.Login
+                                && Ativo = "Sim"
+                                && CodInventario = gblInventarioSelecionado.CodInventario
+                            ).CodSE
+                        )
+                    );
+                    QtdRevisadaCalc;
+                    With(
+                        {codSEAtual: CodSE};
+                        CountRows(
+                            Filter(
+                                colCampoOffline;
+                                CodSE = codSEAtual
+                                && (
+                                    TipoRegistro = "CONFIRMACAO"
+                                    || TipoRegistro = "NAO_ENCONTRADO"
+                                )
+                            )
+                        )
+                    )
+                );
+                FinalizadaCalc;
+                With(
+                    {codSEAtual: CodSE};
+                    !IsBlank(LookUp(colSEsFinalizadas; CodSE = codSEAtual))
+                )
+            );
+            PendenteEnvioCalc;
+            With(
+                {codSEAtual: CodSE};
+                CountRows(
+                    Filter(
+                        colCampoOffline;
+                        CodSE = codSEAtual && !Sincronizada
+                    )
+                ) > 0
+            )
+        );
+        (
+            gblFiltroStatusSE = "Todas"
+            || (
+                gblFiltroStatusSE = "Pendente"
+                && QtdRevisadaCalc = 0
+                && Coalesce(Status; "Pendente") <> "Em campo"
+                && Coalesce(Status; "Pendente") <> "Finalizada"
+            )
+            || (
+                gblFiltroStatusSE = "Em campo"
+                && (
+                    Status = "Em campo"
+                    || (Coalesce(Status; "") = "Finalizada" && PendenteEnvioCalc)
+                    || (
+                        QtdRevisadaCalc > 0
+                        && Coalesce(Status; "Pendente") <> "Finalizada"
+                    )
+                )
+            )
+            || (
+                gblFiltroStatusSE = "Finalizadas"
+                && Coalesce(Status; "") = "Finalizada"
+                && !PendenteEnvioCalc
+            )
+        )
+        && (
+            IsBlank(InputBuscaSE.Text)
+            || InputBuscaSE.Text in CodSE
+            || InputBuscaSE.Text in NomeSE
+        )
+    );
+    "CodSE";
+    SortOrder.Ascending
+)
+```
+
+---
+
+## 5. Tela_Home → Gallery1 → Items
+
+Apaga o que estiver lá. Cola:
+
+```
+Filter(
+    colSubestacoes;
+    CodInventario = gblInventarioSelecionado.CodInventario
+    && (
+        varPerfil = "ESCRITORIO"
+        || CodSE in Filter(
+            colAlocacoes;
+            Login = gblUsuario.Login
+            && Ativo = "Sim"
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        ).CodSE
+    )
+)
+```
+
+# Mini lista "visitas deste inventário". Mesma regra da Gallery4.
+
+---
+
+## 6. Tela_Home → btnBaixarDados → OnSelect
+
+# Overlay transparente em cima do tile "Baixar dados". No YAML antigo era Button3.
+# Se o Baixar dados ainda for Filter(Inventario) antigo, este bloco já traz o JSON + o recorte.
+# Apaga o que estiver lá. Cola:
+
+```
+Set(varCarregando; true);;
+If(
+    Connection.Connected;
+    ClearCollect(colTUC; TabelaTUC);;
+    SaveData(colTUC; "cache_TUC");;
+    ClearCollect(colAtributos; TabelaAtributos);;
+    SaveData(colAtributos; "cache_Atributos");;
+    ClearCollect(colLookup; TabelasUnificadas);;
+    SaveData(colLookup; "cache_Lookup");;
+    ClearCollect(colConcessionarias; Filter(Concessionarias; Ativo = "Sim"));;
+    SaveData(colConcessionarias; "cache_Concessionarias");;
+    ClearCollect(
+        colCampanhas;
+        AddColumns(
+            Filter('Campanhas '; Ativo = "Sim");
+            QtdSEs;
+            With(
+                {cod: ThisRecord.CodInventario};
+                CountRows(Filter(Subestacoes; CodInventario = cod))
+            );
+            QtdItens;
+            0
+        )
+    );;
+    Set(varCodCampanha; gblInventarioSelecionado.CodInventario);;
+    With(
+        {saida: flxBaixarCampanha.Run(varCodCampanha)};
+        If(
+            !IsBlank(saida.erro) && saida.erro <> "-";
+            Notify(saida.erro; NotificationType.Error);
+            ClearCollect(
+                colSubestacoes;
+                ForAll(
+                    Table(ParseJSON(saida.jsonses)) As lin;
+                    {
+                        ID: Value(Coalesce(Text(lin.Value.ID); "0"));
+                        CodInventario: Coalesce(Text(lin.Value.CodInventario); "");
+                        CodSE: Coalesce(Text(lin.Value.CodSE); "");
+                        NomeSE: Coalesce(Text(lin.Value.NomeSE); "");
+                        SubODI: Coalesce(Text(lin.Value.SubODI); "");
+                        Regional: Coalesce(Text(lin.Value.Regional); "");
+                        Municipio: Coalesce(Text(lin.Value.Municipio); "");
+                        UF: Coalesce(Text(lin.Value.UF); "");
+                        TI: Value(Coalesce(Text(lin.Value.TI); "0"));
+                        CM: Value(Coalesce(Text(lin.Value.CM); "0"));
+                        ClasseTensao: Coalesce(Text(lin.Value.ClasseTensao); "");
+                        ArranjoFisico: Value(Coalesce(Text(lin.Value.ArranjoFisico); "0"));
+                        LocalInstalacao: Value(Coalesce(Text(lin.Value.LocalInstalacao); "0"));
+                        Status: Coalesce(Text(lin.Value.Status); "")
+                    }
+                )
+            );;
+            ClearCollect(
+                colInventarioBase;
+                ForAll(
+                    Table(ParseJSON(saida.jsonitens)) As lin;
+                    {
+                        ID: Value(Coalesce(Text(lin.Value.ID); "0"));
+                        CodInventario: Coalesce(Text(lin.Value.CodInventario); "");
+                        CodSE: Coalesce(Text(lin.Value.CodSE); "");
+                        NomeSE: Coalesce(Text(lin.Value.NomeSE); "");
+                        CodTUC: Value(Coalesce(Text(lin.Value.CodTUC); "0"));
+                        AtributoA1: Value(Coalesce(Text(lin.Value.AtributoA1); "0"));
+                        AtributoA2: Value(Coalesce(Text(lin.Value.AtributoA2); "0"));
+                        AtributoA3: Value(Coalesce(Text(lin.Value.AtributoA3); "0"));
+                        AtributoA4: Value(Coalesce(Text(lin.Value.AtributoA4); "0"));
+                        AtributoA5: Value(Coalesce(Text(lin.Value.AtributoA5); "0"));
+                        AtributoA6: Value(Coalesce(Text(lin.Value.AtributoA6); "0"));
+                        DescricaoBem: Coalesce(Text(lin.Value.DescricaoBem); "");
+                        Quantidade: Value(Coalesce(Text(lin.Value.Quantidade); "0"));
+                        Unidade: Coalesce(Text(lin.Value.Unidade); "");
+                        Origem: Coalesce(Text(lin.Value.Origem); "");
+                        Status: Coalesce(Text(lin.Value.Status); "");
+                        Sobra: Coalesce(Text(lin.Value.Sobra); "");
+                        ValidadoPor: Coalesce(Text(lin.Value.ValidadoPor); "");
+                        CodAsset: Coalesce(Text(lin.Value.CodAsset); "");
+                        Fabricante: Coalesce(Text(lin.Value.Fabricante); "");
+                        Modelo: Coalesce(Text(lin.Value.Modelo); "");
+                        NumSerie: Coalesce(Text(lin.Value.NumSerie); "");
+                        CodOperacao: Coalesce(Text(lin.Value.CodOperacao); "");
+                        Ano: Value(Coalesce(Text(lin.Value.Ano); "0"));
+                        CM: Value(Coalesce(Text(lin.Value.CM); "0"));
+                        Observacoes: Coalesce(Text(lin.Value.Observacoes); "");
+                        Imobilizado: Coalesce(Text(lin.Value.Imobilizado); "");
+                        Elegivel: Coalesce(Text(lin.Value.Elegivel); "");
+                        Reserva: Coalesce(Text(lin.Value.Reserva); "");
+                        Bay: Coalesce(Text(lin.Value.Bay); "");
+                        Projeto: Coalesce(Text(lin.Value.Projeto); "");
+                        IdItem: Value(Coalesce(Text(lin.Value.IdItem); "0"));
+                        DescricaoTUC: Coalesce(Text(lin.Value.DescricaoTUC); "");
+                        IdUC: Coalesce(Text(lin.Value.IdUC); "");
+                        TI: Value(Coalesce(Text(lin.Value.TI); "0"));
+                        LocalInstalacao: Value(Coalesce(Text(lin.Value.LocalInstalacao); "0"));
+                        ArranjoFisico: Value(Coalesce(Text(lin.Value.ArranjoFisico); "0"));
+                        QuantidadeCampo: Value(Coalesce(Text(lin.Value.QuantidadeCampo); "0"));
+                        Title: Coalesce(Text(lin.Value.Title); "")
+                    }
+                )
+            );;
+            If(
+                varPerfil <> "ESCRITORIO";
+                ClearCollect(
+                    colSubestacoes;
+                    Filter(
+                        colSubestacoes;
+                        CodSE in Filter(
+                            colAlocacoes;
+                            Login = gblUsuario.Login
+                            && Ativo = "Sim"
+                            && CodInventario = varCodCampanha
+                        ).CodSE
+                    )
+                );;
+                ClearCollect(
+                    colInventarioBase;
+                    Filter(
+                        colInventarioBase;
+                        CodSE in Filter(
+                            colAlocacoes;
+                            Login = gblUsuario.Login
+                            && Ativo = "Sim"
+                            && CodInventario = varCodCampanha
+                        ).CodSE
+                    )
+                )
+            );;
+            Patch(
+                colCampanhas;
+                LookUp(colCampanhas; CodInventario = varCodCampanha);
+                {QtdItens: Value(Coalesce(saida.qtditens; "0"))}
+            );;
+            IfError(SaveData(colCampanhas; "cache_Campanhas"); Blank());;
+            IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+            IfError(SaveData(colInventarioBase; "cache_InventarioBase"); Blank());;
+            ClearCollect(colUltimaSinc; {DataHora: Now()});;
+            IfError(SaveData(colUltimaSinc; "cache_UltimaSinc"); Blank());;
+            Set(gblUltimaSincronizacao; Now());;
+            Notify("Dados atualizados com sucesso!"; NotificationType.Success)
+        )
+    );
+    Notify("Sem conexão. Conecte-se para baixar os dados."; NotificationType.Error)
+);;
+Set(varCarregando; false)
+```
+
+# Escritório guarda a campanha inteira. Inventariante só as SEs designadas (e os itens delas).
+
+---
+
+## 7. Tela_SelecionarInventario → btnSair → OnSelect
+
+Apaga o que estiver lá. Cola:
+
+```
+Set(gblUsuario; Blank());;
+Set(varPerfil; Blank());;
+Clear(colSessao);;
+IfError(ClearData("cache_Sessao"); Blank());;
+Clear(colAlocacoes);;
+IfError(ClearData("cache_Alocacoes"); Blank());;
+Reset(inpLogin);;
+Reset(inpSenha);;
+Set(varLoginErro; Blank());;
+Navigate(Tela_Login; ScreenTransition.None)
+```
+
+---
+
+## 8. tmrSessao → OnTimerEnd  (e as cópias tmrSessao_1 nas outras telas)
+
+Apaga o que estiver lá. Cola:
+
+```
+// Só desloga se o SP devolver o slot de verdade e (inativo ou versão diferente).
+// LookUp em branco / erro = mantém logado (não confundir com sinal fraco).
+If(
+    Connection.Connected && !IsBlank(gblUsuario.Login);
+    If(
+        IfError(
+            With(
+                {
+                    u: LookUp(
+                        Inventariantes;
+                        Login = gblUsuario.Login
+                    )
+                };
+                !IsBlank(u.Login)
+                    && (
+                        u.Ativo <> "Sim"
+                        || Coalesce(u.SessaoVersao; 0) <> Coalesce(gblUsuario.SessaoVersao; 0)
+                    )
+            );
+            false
+        );
+        With(
+            {_: true};
+            Set(gblUsuario; Blank());;
+            Set(varPerfil; Blank());;
+            Clear(colSessao);;
+            IfError(ClearData("cache_Sessao"); Blank());;
+            Clear(colAlocacoes);;
+            IfError(ClearData("cache_Alocacoes"); Blank());;
+            Reset(inpLogin);;
+            Reset(inpSenha);;
+            Set(varLoginErro; "Slot alterado. Entra de novo.");
+            Navigate(Tela_Login; ScreenTransition.None)
+        )
+    )
+)
+```
+
+# Se já colou o Timer nas outras telas (Tela_SelecionarSE, Tela_ItensVisita, Tela_EditarItem, Tela_CapturaFoto, Tela_Home), troca o OnTimerEnd em cada uma.
+
+---
+
+# Na tela: inventariante só lista projeto/SE designados e o Baixar dados não traz o resto.
+# Escritório (Perfil = ESCRITORIO na lista Inventariantes) vê e baixa tudo.
+# Slot escritório não usa Tela_Alocacoes — o botão Designar já some no Desktop.

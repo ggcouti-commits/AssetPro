@@ -1,0 +1,630 @@
+# Tela_Login (Mobile)
+#
+# App.StartScreen = Tela_Login. Depois do ok: Navigate(Tela_SelecionarInventario).
+# Validacao: LookUp na lista Inventariantes (sem fluxo).
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Mockup: docs/screens/mockup-login-mobile.html
+# PNG: docs/screens/login-mobile.png · login-mobile-erro.png
+
+## Recorte
+
+# Uma conta M365 no tablet (abre o Power Apps). Quem e Ricardo / Inventariante01
+# sai desta tela. Desktop (escritorio) NAO usa esta tela — ver Tela_Usuarios.
+# Recorte projeto/SE: docs/powerfx/mobile-filtro-alocacao.txt (inventariante = Alocacoes; escritorio = tudo).
+#
+# Studio (YAML 14.09): card = Container5 · Entrar = Button3 · versao = Text30.
+# LOGIN = Text35 · SENHA = Text35_1. ModernTextInput 1.1.1 (Text, nao Value).
+
+---
+
+## Estado erro (controles reais do Studio)
+
+# varLoginErro ja nasce no Button3.OnSelect. Falta mostrar na tela.
+
+### E1. inpLogin → OnChange
+
+```
+Set(varLoginErro; Blank())
+```
+
+### E2. inpLogin → BorderColor
+
+```
+If(IsBlank(varLoginErro); Cor.Border; Cor.Danger)
+```
+
+### E3. inpLogin → ValidationState
+
+```
+If(IsBlank(varLoginErro); ValidationState.None; ValidationState.Error)
+```
+
+# Se ValidationState nao existir neste Modern, pula. BorderColor cobre.
+
+### E4. inpSenha → OnChange
+
+```
+Set(varLoginErro; Blank())
+```
+
+### E5. inpSenha → BorderColor
+
+```
+If(IsBlank(varLoginErro); Cor.Border; Cor.Danger)
+```
+
+### E6. inpSenha → ValidationState
+
+```
+If(IsBlank(varLoginErro); ValidationState.None; ValidationState.Error)
+```
+
+### E7. Container5 → Inserir Texto moderno → lblLoginErro
+
+# Ordem no AutoLayout: Text35, inpLogin, Text35_1, inpSenha, **lblLoginErro**, Button3.
+
+### E8. lblLoginErro → Text
+
+```
+varLoginErro
+```
+
+### E9. lblLoginErro → Color
+
+```
+Cor.Danger
+```
+
+### E10. lblLoginErro → Visible
+
+```
+!IsBlank(varLoginErro)
+```
+
+# Size = 13 | AlignInContainer = Stretch | AutoHeight = true | FontWeight = Normal
+
+### E11. Container5 → Height
+
+```
+If(IsBlank(varLoginErro); 410; 450)
+```
+
+---
+
+## A. SharePoint — lista `Inventariantes`
+
+Site AssetPro. Lista que ja existe. Nao criar `Usuarios`.
+# Ja tem: Title, Nome, Login, Ativo (texto Sim/Nao), Matricula_PIN.
+# Criar na lista se faltar: Senha (texto), UsadoPor (texto), Perfil (texto), CodUsuario (texto),
+# SessaoVersao (número). Escritorio incrementa no Salvar; o tablet compara e desloga.
+
+| Coluna | Tipo | Primeira linha de teste |
+|--------|------|-------------------------|
+| Title | texto (obrigatorio) | `Inventariante01` |
+| Login | texto | `Inventariante01` (igual ao Title) |
+| Nome | texto | (vazio no campo) |
+| UsadoPor | texto | `Ricardo` |
+| Perfil | texto | `INVENTARIANTE` |
+| Ativo | texto | `Sim` |
+| Senha | texto | a que voces definirem |
+| CodUsuario | texto | `USR-001` |
+| SessaoVersao | número | `1` |
+
+Ativo e texto `Sim` / `Nao`, igual Concessionarias. Nao usar Sim/Nao nativo.
+
+Segunda linha opcional: Login `Inventariante02` · UsadoPor `Otavio` · Perfil `INVENTARIANTE` · Ativo `Sim` · CodUsuario `USR-002`.
+
+Escritorio (opcional nesta lista): Login `gustavo` · Nome `Gustavo Coutinho` · Perfil `ESCRITORIO` · UsadoPor vazio.
+
+---
+
+## B. Studio — dados
+
+### 0. App (Mobile) → Dados → Adicionar dados
+
+SharePoint → site AssetPro → marca a lista **Inventariantes**.
+
+# Sem isso o LookUp nem existe.
+# Recorte projeto/SE: marca também **Alocacoes**. Spec: docs/powerfx/mobile-filtro-alocacao.txt
+
+---
+
+## C. Tela_Login — layout
+
+### 1. Tela_Login → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+Cor.PrimaryD60
+```
+
+# Width / Height = App (tela inteira). LoadingSpinnerColor = Cor.Primary.
+
+### 2. cLoginCard (container vertical, centro)
+
+# Inserir → Layout → Conteiner vertical. Renomeia cLoginCard.
+
+```
+LayoutDirection   = LayoutDirection.Vertical
+LayoutGap         = 14
+AlignInContainer  = AlignInContainer.Stretch
+Fill              = Cor.BackgroundStandard
+Radius*           = 16
+Width             = Parent.Width - 56
+X                 = 28
+Y                 = Parent.Height * 0.38
+FillPortions      = 0
+PaddingLeft / Right / Top / Bottom = 20
+DropShadow        = DropShadow.None
+BorderThickness   = 0
+```
+
+### 3. lblLoginMarca → Text  (FORA do card, acima)
+
+Apaga o que estiver la. Cola:
+
+```
+"Infralytics"
+```
+
+# Color = Cor.TextInverted | Size = 22 | FontWeight = FontWeight.Bold | Align = Center
+# Width = Parent.Width | Y = cLoginCard.Y - 90 | Height = 36
+
+### 4. lblLoginSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Inventário em campo"
+```
+
+# Color = ColorFade(Cor.TextInverted; 30%) | Size = 13 | Align = Center
+# Width = Parent.Width | Y = lblLoginMarca.Y + lblLoginMarca.Height | Height = 24
+
+### 5. cLoginLogo (quadrado atras da marca)
+
+```
+Width = 64
+Height = 64
+X = (Parent.Width - Self.Width) / 2
+Y = lblLoginMarca.Y - 76
+Fill = ColorFade(Cor.PrimaryD60; -20%)
+Radius* = 16
+```
+
+# Image Mundo Power do hexagono (o mesmo da Home), IconColor = TCor.TextInverted,
+# Width 34 Height 34, centrado no cLoginLogo.
+# Se ja colou o PNG da marca (Asset Pro), apaga cLoginLogo + lblLoginMarca + lblLoginSub
+# e usa so a imagem centrada acima do card.
+
+### 6. lblLoginCampo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"LOGIN"
+```
+
+# Color = Cor.NeutralL30 | Size = 11 | FontWeight = FontWeight.Bold | AlignInContainer = Stretch
+
+### 7. inpLogin (Entrada de texto classica)
+
+# HintText = "Inventariante01" | Mode = TextMode.SingleLine
+# Height = 48 | AlignInContainer = Stretch | Fill = Cor.NeutralL95
+# BorderThickness = 1 | Radius* = 10 | PaddingLeft = 14 | Size = 15
+# Color = Cor.TextStandard
+
+### 8. inpLogin → BorderColor
+
+Apaga o que estiver la. Cola:
+
+```
+If(IsBlank(varLoginErro); Cor.Border; Cor.Danger)
+```
+
+### 9. inpLogin → OnChange
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varLoginErro; Blank())
+```
+
+### 10. lblSenhaCampo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"SENHA"
+```
+
+# Iguais ao lblLoginCampo.
+
+### 11. inpSenha (Entrada de texto classica)
+
+# Mode = **TextMode.Password** | HintText = "" | resto igual ao inpLogin
+
+### 12. inpSenha → BorderColor
+
+Apaga o que estiver la. Cola:
+
+```
+If(IsBlank(varLoginErro); Cor.Border; Cor.Danger)
+```
+
+### 13. inpSenha → OnChange
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varLoginErro; Blank())
+```
+
+### 14. lblLoginErro → Text
+
+Apaga o que estiver la. Cola:
+
+```
+varLoginErro
+```
+
+# Color = Cor.Danger | Size = 12.5 | AlignInContainer = Stretch
+# Height = 36 | AutoHeight = true
+
+### 15. lblLoginErro → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+!IsBlank(varLoginErro)
+```
+
+### 16. btnEntrar → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Entrar"
+```
+
+### 17. btnEntrar → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    !IsBlank(Trim(inpLogin.Text)) && !IsBlank(inpSenha.Text);
+    Cor.PrimaryD30;
+    Cor.Disabled
+)
+```
+
+### 18. btnEntrar → Color
+
+Apaga o que estiver la. Cola:
+
+```
+Cor.TextInverted
+```
+
+### 19. btnEntrar → DisplayMode
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    !IsBlank(Trim(inpLogin.Text)) && !IsBlank(inpSenha.Text);
+    DisplayMode.Edit;
+    DisplayMode.Disabled
+)
+```
+
+# Height = 50 | AlignInContainer = Stretch | Radius* = 10 | FontWeight = Bold | Size = 15
+# BorderColor = Self.Fill | DisabledFill = Cor.Disabled | DisabledColor = Cor.TextInverted
+
+### 20. btnEntrar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varLoginErro; Blank());;
+If(
+    !Connection.Connected;
+    Set(varLoginErro; "Sem internet. O primeiro acesso precisa de rede.");
+    With(
+        {
+            u: LookUp(
+                Inventariantes;
+                Login = Trim(inpLogin.Text) && Ativo = "Sim"
+            )
+        };
+        If(
+            IsBlank(u) || u.Senha <> inpSenha.Text;
+            Set(varLoginErro; "Login ou senha inválidos.");
+            With(
+                {
+                    sessao:
+                        {
+                            Login: u.Login;
+                            Perfil: u.Perfil;
+                            Nome: Coalesce(u.UsadoPor; u.Nome);
+                            UsadoPor: u.UsadoPor;
+                            CodUsuario: u.CodUsuario;
+                            SessaoVersao: Coalesce(u.SessaoVersao; 0)
+                        }
+                };
+                Set(gblUsuario; sessao);;
+                Set(varPerfil; u.Perfil);;
+                ClearCollect(colSessao; sessao);;
+                IfError(SaveData(colSessao; "cache_Sessao"); Blank());;
+                ClearCollect(
+                    colAlocacoes;
+                    Filter(
+                        Alocacoes;
+                        Login = u.Login && Ativo = "Sim"
+                    )
+                );;
+                IfError(SaveData(colAlocacoes; "cache_Alocacoes"); Blank());;
+                Reset(inpSenha);;
+                Navigate(Tela_SelecionarInventario; ScreenTransition.None)
+            )
+        )
+    )
+)
+```
+
+# Uma mensagem so — nao dizer se o login existe. Senha NAO entra em gblUsuario nem no SaveData.
+# Login = Trim(...) delega. Nao usar Lower() na coluna (quebra delegacao). Digitar Inventariante01 certo.
+
+### 21. lblLoginVer → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"v.1.0.0"
+```
+
+# Color = ColorFade(Cor.TextInverted; 50%) | Size = 11 | Align = Center
+# Width = Parent.Width | Y = Parent.Height - 36 | Height = 20
+
+---
+
+## D. App — porta e sessao
+
+### 22. App → StartScreen
+
+Apaga o que estiver la. Cola:
+
+```
+Tela_Login
+```
+
+# StartScreen NAO le colecao nem variavel do OnStart. Sempre Login.
+# Quem pula o login e o Timer abaixo (apos OnStart carregar cache_Sessao).
+
+### 22b. Tela_Login → inserir Timer → tmrSessaoLogin
+
+# Inserir → Input → Timer.
+
+| Propriedade | Valor |
+|-------------|--------|
+| Duration | `200` |
+| AutoStart | `true` |
+| Repeat | `false` |
+| Visible | `false` |
+
+### 22c. tmrSessaoLogin → OnTimerEnd
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    varSessaoOk || !IsBlank(gblUsuario.Login);
+    Navigate(Tela_SelecionarInventario; ScreenTransition.None)
+)
+```
+
+# OnStart ja fez LoadData + Set(varSessaoOk). Timer so navega.
+# Sair limpa sessao → varSessaoOk falso → fica na Login.
+
+### 23. Tela_Login → OnVisible
+
+Apaga tudo. Deixa em branco (ou `false`).
+
+# Sem Navigate nesta propriedade.
+
+### 24. App.OnStart — TROCA o Set(gblUsuario) antigo (Nome/Email do User)
+
+Apaga o bloco `Set(gblUsuario; { Nome: User().FullName; Email: User().Email })`. Cola:
+
+```
+Set(
+    gblUsuario;
+    {
+        Login: Blank();
+        Perfil: Blank();
+        Nome: Blank();
+        UsadoPor: Blank();
+        CodUsuario: Blank();
+        SessaoVersao: Blank();
+        Email: Blank()
+    }
+);;
+IfError(LoadData(colSessao; "cache_Sessao"; true); Blank());;
+Set(
+    varSessaoOk;
+    CountRows(colSessao) > 0 && !IsBlank(First(colSessao).Login)
+);;
+// Só invalida se o SP devolver slot desativado / SessaoVersao diferente.
+// LookUp em branco ou erro de rede NÃO apaga o cache (campo sem sinal).
+If(
+    varSessaoOk && Connection.Connected;
+    Set(
+        varSessaoOk;
+        IfError(
+            With(
+                {
+                    u: LookUp(
+                        Inventariantes;
+                        Login = First(colSessao).Login
+                    )
+                };
+                IsBlank(u.Login)
+                    || (
+                        u.Ativo = "Sim"
+                        && Coalesce(u.SessaoVersao; 0) = Coalesce(First(colSessao).SessaoVersao; 0)
+                    )
+            );
+            true
+        )
+    )
+);;
+If(
+    varSessaoOk;
+    With(
+        {s: First(colSessao)};
+        Set(gblUsuario; s);;
+        Set(varPerfil; s.Perfil)
+    );
+    CountRows(colSessao) > 0;
+    With(
+        {_: true};
+        Clear(colSessao);;
+        IfError(ClearData("cache_Sessao"); Blank());;
+        Set(gblUsuario; Blank());;
+        Set(varPerfil; Blank())
+    )
+);;
+IfError(LoadData(colAlocacoes; "cache_Alocacoes"; true); Blank());;
+If(
+    varSessaoOk && Connection.Connected;
+    ClearCollect(
+        colAlocacoes;
+        Filter(
+            Alocacoes;
+            Login = First(colSessao).Login && Ativo = "Sim"
+        )
+    );;
+    IfError(SaveData(colAlocacoes; "cache_Alocacoes"); Blank());
+    !varSessaoOk;
+    With(
+        {_: true};
+        Clear(colAlocacoes);;
+        IfError(ClearData("cache_Alocacoes"); Blank())
+    )
+)
+```
+
+# Recorte das galerias: docs/powerfx/mobile-filtro-alocacao.txt
+
+### 25. App.OnStart — perfil antigo APAGA
+
+# O LookUp(Inventariantes; Login = User().Email) nao vale mais: a conta M365 e unica.
+# varPerfil agora sai do login da lista (passos 20 e 24). Enquanto ninguem logar,
+# deixa varPerfil em branco — nao assumir ESCRITORIO.
+
+---
+
+## E. Sair
+
+### 26. Tela_SelecionarInventario → btnSair → OnSelect
+
+# Botao texto "Sair" no cabecalho (ou icone). Nao usa Clear() em gblUsuario — e record.
+
+Apaga o que estiver la. Cola:
+
+```
+Set(gblUsuario; Blank());;
+Set(varPerfil; Blank());;
+Clear(colSessao);;
+IfError(ClearData("cache_Sessao"); Blank());;
+Clear(colAlocacoes);;
+IfError(ClearData("cache_Alocacoes"); Blank());;
+Reset(inpLogin);;
+Reset(inpSenha);;
+Set(varLoginErro; Blank());;
+Navigate(Tela_Login; ScreenTransition.None)
+```
+
+# A conta Microsoft continua no tablet. So limpa o slot nosso.
+
+---
+
+## F. Slot alterado no escritorio → volta pro login (2026-09-17)
+
+# Power Apps NAO empurra o tablet. O Mobile consulta Inventariantes.
+# Escritorio Salvar incrementa SessaoVersao. Tablet compara e desloga.
+# Sem rede: nao chuta (campo offline continua). Na proxima com internet, cai.
+# Navigate NÃO vai no OnVisible (Studio bloqueia). Vai no Timer.
+
+### F0. SharePoint → lista Inventariantes
+
+Coluna número **SessaoVersao**. Sem obrigatoriedade. Linhas velhas podem ficar vazias.
+
+### F1. Tela_SelecionarInventario → inserir Timer → tmrSessao
+
+# Inserir → Input → Timer. Visible = false. Nao precisa de posicao.
+
+Duration = `15000`  
+AutoStart = `true`  
+Repeat = `true`  
+Visible = `false`
+
+### F2. tmrSessao → OnTimerEnd
+
+Apaga o que estiver la. Cola:
+
+```
+// Só desloga se o SP devolver o slot e (inativo ou versão diferente).
+// LookUp em branco / erro = mantém logado.
+If(
+    Connection.Connected && !IsBlank(gblUsuario.Login);
+    If(
+        IfError(
+            With(
+                {
+                    u: LookUp(
+                        Inventariantes;
+                        Login = gblUsuario.Login
+                    )
+                };
+                !IsBlank(u.Login)
+                    && (
+                        u.Ativo <> "Sim"
+                        || Coalesce(u.SessaoVersao; 0) <> Coalesce(gblUsuario.SessaoVersao; 0)
+                    )
+            );
+            false
+        );
+        With(
+            {_: true};
+            Set(gblUsuario; Blank());;
+            Set(varPerfil; Blank());;
+            Clear(colSessao);;
+            IfError(ClearData("cache_Sessao"); Blank());;
+            Clear(colAlocacoes);;
+            IfError(ClearData("cache_Alocacoes"); Blank());;
+            Reset(inpLogin);;
+            Reset(inpSenha);;
+            Set(varLoginErro; "Slot alterado. Entra de novo.");
+            Navigate(Tela_Login; ScreenTransition.None)
+        )
+    )
+)
+```
+
+# Copia este Timer (ctrl+C no tmrSessao) e cola nas outras telas do Mobile
+# DEPOIS do login. Mesmo nome pode virar tmrSessao_1 — nao tem problema,
+# OnTimerEnd e o mesmo. Telas:
+
+#   Tela_SelecionarSE
+#   Tela_ItensVisita
+#   Tela_EditarItem
+#   Tela_CapturaFoto
+
+# NAO cola na Tela_Login (loop). NAO cola no Desktop.
+
+# Sem internet o LookUp nao chuta (falhou / Connection).
+# Excluir o slot no escritorio: LookUp vazio → mesma saida.
+

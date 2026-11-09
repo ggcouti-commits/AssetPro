@@ -1,0 +1,867 @@
+# Fotos da subestação (ambiente) — PT-BR
+# Reusa Tela_CapturaFoto. Sem tela nova.
+# Item continua com teto 5. Ambiente não tem teto.
+
+## Filtro compartilhado (copiar em todo Filter de colFotosCampo nesta tela)
+
+If(
+    varModoFoto = "AMBIENTE";
+    CodInventario = gblInventarioSelecionado.CodInventario
+    && CodSE = varCodSE
+    && Coalesce(TipoFoto; "") = "AMBIENTE";
+    CodInventario = gblInventarioSelecionado.CodInventario
+    && Coalesce(TipoFoto; "") <> "AMBIENTE"
+    && If(
+        !IsBlank(varCodTemp);
+        CodTemp = varCodTemp;
+        CodAsset = varCodRef
+    )
+)
+
+## App.OnStart — schema colFotosCampo (adicionar no registro)
+
+TipoFoto: "";
+
+## Tela_ItensVisita — botão no topo (direita do nome da SE)
+
+# AutoLayout horizontal do cTopoItensVisita:
+#   [Back 60] [título FillPortions=1] [btnFotoSE 56]
+# Height 56 · Width 56 · Radius 12
+
+btnFotoSE.OnSelect:
+Set(varModoFoto; "AMBIENTE");;
+Set(varCodRef; Blank());;
+Set(varCodTemp; Blank());;
+Set(varCodSE; gblSEselecionada.CodSE);;
+Navigate(Tela_CapturaFoto; ScreenTransition.None)
+
+# Badge (label pequeno sobre o ícone), Text:
+CountRows(
+    Filter(
+        colFotosCampo;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+        && Coalesce(TipoFoto; "") = "AMBIENTE"
+    )
+)
+
+# Badge Visible:
+CountRows(
+    Filter(
+        colFotosCampo;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+        && Coalesce(TipoFoto; "") = "AMBIENTE"
+    )
+) > 0
+
+## Câmera do CARD (item) — acrescentar ANTES do Navigate
+
+Set(varModoFoto; "ITEM");;
+
+## Tela_CapturaFoto — título (btnYAML / Text da câmera)
+
+If(varModoFoto = "AMBIENTE"; "FOTOS DA SUBESTAÇÃO"; "FOTOS DO ITEM")
+
+## Text15.Text (contador)
+
+With(
+    {
+        n: CountRows(Filter(colFotosCampo; /* filtro compartilhado */))
+    };
+    If(varModoFoto = "AMBIENTE"; Text(n) & " fotos"; n & "/5")
+)
+
+## Text15.Color
+
+If(
+    varModoFoto <> "AMBIENTE"
+    && CountRows(Filter(colFotosCampo; /* filtro ITEM */)) >= 5;
+    Cor.Delete;
+    Cor.NeutralL30
+)
+
+## Gallery5.Items
+
+Filter(colFotosCampo; /* filtro compartilhado */)
+
+## AddMediaAnexar (so Anexar) — 20.10.2026 noite
+
+# Manha: dois AddMedia (Camera + Anexar). Noite: Fenomeno retirou Tirar foto —
+# no aparelho o Anexar ja pergunta camera ou galeria. AddMediaCamera / Container34 fora.
+# Container34_1.Width = Parent.Width. OnVisible: so Reset(AddMediaAnexar).
+
+## DisplayMode — AddMediaAnexar
+
+If(
+    varSETravada
+    || (
+        varModoFoto <> "AMBIENTE"
+        && CountRows(
+            Filter(
+                colFotosCampo;
+                CodInventario = gblInventarioSelecionado.CodInventario
+                && Coalesce(TipoFoto; "") <> "AMBIENTE"
+                && If(
+                    !IsBlank(varCodTemp);
+                    CodTemp = varCodTemp;
+                    CodAsset = varCodRef
+                )
+            )
+        ) >= 5
+    );
+    DisplayMode.Disabled;
+    DisplayMode.Edit
+)
+
+## AddMediaAnexar.Text / ChangePictureText
+
+If(
+    varSETravada;
+    "Somente visualização";
+    If(
+        varModoFoto <> "AMBIENTE"
+        && CountRows(
+            Filter(
+                colFotosCampo;
+                CodInventario = gblInventarioSelecionado.CodInventario
+                && Coalesce(TipoFoto; "") <> "AMBIENTE"
+                && If(
+                    !IsBlank(varCodTemp);
+                    CodTemp = varCodTemp;
+                    CodAsset = varCodRef
+                )
+            )
+        ) >= 5;
+        "Limite atingido";
+        "Anexar"
+    )
+)
+
+## AddMediaAnexar.UseMobileCamera
+
+false
+
+## AddMediaAnexar.OnChange
+
+If(
+    !varSETravada
+    && !IsBlank(AddMediaAnexar.Media)
+    && (
+        varModoFoto = "AMBIENTE"
+        || CountRows(
+            Filter(
+                colFotosCampo;
+                CodInventario = gblInventarioSelecionado.CodInventario
+                && Coalesce(TipoFoto; "") <> "AMBIENTE"
+                && If(
+                    !IsBlank(varCodTemp);
+                    CodTemp = varCodTemp;
+                    CodAsset = varCodRef
+                )
+            )
+        ) < 5
+    );
+    Collect(
+        colFotosCampo;
+        {
+            CodInventario: gblInventarioSelecionado.CodInventario;
+            CodSE: Coalesce(varCodSE; gblSEselecionada.CodSE);
+            IdFoto: GUID();
+            CodAsset: If(
+                varModoFoto = "AMBIENTE";
+                "";
+                Coalesce(
+                    varCodRef;
+                    If(!IsBlank(varCodTemp); "SOBRA-" & Text(varCodTemp); "")
+                )
+            );
+            CodTemp: If(varModoFoto = "AMBIENTE"; ""; Coalesce(varCodTemp; ""));
+            TipoFoto: If(varModoFoto = "AMBIENTE"; "AMBIENTE"; "ITEM");
+            Foto: AddMediaAnexar.Media;
+            DataCaptura: Now();
+            Sincronizada: false
+        }
+    );;
+    IfError(SaveData(colFotosCampo; "cache_FotosCampo"); Blank())
+);;
+Reset(AddMediaAnexar)
+
+## Layout — Container52 · so Anexar
+
+# Container52 = AutoLayout · um card Container34_1 (AddMediaAnexar) · Width = Parent.Width · Height 90
+# Icone btnYAML_4: X = If(varSETravada; 8; 12)
+# OnVisible: Reset(AddMediaAnexar)
+#
+# Atalho rodape (20.10) — so ITEM (some em AMBIENTE):
+#   Captura → btnFichaItem acima do Concluir → Navigate(Tela_EditarItem)
+# Mockup: docs/screens/mockup-atalho-foto-ficha.html
+
+## ContagemFotosSobras (badge) — 20.10.2026
+
+# Antes so LookUp T: + CodTemp. Sobra nova usa CodAsset SOBRA-… e CodTemp vazio → badge sumia.
+# Text e Visible: Coalesce(LookUp A:CodAsset; LookUp T:CodTemp).
+
+Coalesce(
+    LookUp(
+        colQtdFotosItem;
+        Chave = "A:" & Trim(Coalesce(Text(ThisItem.CodAsset); ""));
+        Qtd
+    );
+    LookUp(
+        colQtdFotosItem;
+        Chave = "T:" & Trim(Coalesce(Text(ThisItem.CodTemp); ""));
+        Qtd
+    )
+)
+
+## Text20 (Limite atingido).Visible
+
+varModoFoto <> "AMBIENTE" && CountRows(Gallery5.AllItems) >= 5
+
+## Overlay "Limite atingido" do botão câmera (se existir).Visible
+
+varModoFoto <> "AMBIENTE" && CountRows(Gallery5.AllItems) >= 5
+
+## Passo a passo — galeria some na sobra (Visible + Items + OnSelect)
+
+# 1. Tela_ItensVisita → câmera da galeria de SOBRAS → OnSelect
+#    Apaga tudo. Cola:
+
+Set(varModoFoto; "ITEM");;
+Set(
+    varCodRef;
+    Coalesce(
+        ThisItem.CodAsset;
+        If(!IsBlank(ThisItem.CodTemp); "SOBRA-" & Text(ThisItem.CodTemp); Blank())
+    )
+);;
+Set(varCodTemp; ThisItem.CodTemp);;
+Set(varCodSE; Coalesce(ThisItem.CodSE; gblSEselecionada.CodSE));;
+Set(varItemFoto; Blank());;
+Navigate(Tela_CapturaFoto; ScreenTransition.None)
+
+# 2. Tela_CapturaFoto → Gallery5 → Visible
+#    Apaga tudo. Cola:
+
+CountRows(Gallery5.AllItems) > 0
+
+# 3. Tela_CapturaFoto → cMsg → Visible
+#    Apaga tudo. Cola:
+
+CountRows(Gallery5.AllItems) = 0
+
+# 4. Tela_CapturaFoto → Label12_5 → Visible (se o controle existir)
+#    Apaga tudo. Cola:
+
+CountRows(Gallery5.AllItems) = 0
+
+# 5. Tela_CapturaFoto → Gallery5 → Items
+#    Apaga tudo. Cola:
+
+If(
+    varModoFoto = "AMBIENTE";
+    Filter(
+        colFotosCampo;
+        CodInventario = gblInventarioSelecionado.CodInventario
+        && CodSE = Coalesce(varCodSE; gblSEselecionada.CodSE)
+        && Coalesce(TipoFoto; "") = "AMBIENTE"
+    );
+    Filter(
+        colFotosCampo;
+        CodInventario = gblInventarioSelecionado.CodInventario
+        && Coalesce(TipoFoto; "") <> "AMBIENTE"
+        && (
+            (!IsBlank(varCodRef) && CodAsset = varCodRef)
+            || (!IsBlank(varCodTemp) && CodTemp = varCodTemp)
+        )
+    )
+)
+
+## Tela_ItensVisita — btnFinalizarSE
+
+# Fonte da verdade: Subestacoes.Status (Pendente / Em campo / Finalizada).
+# Aguard. envio = Status Finalizada + fila !Sincronizada (so local).
+
+btnFinalizarSE.OnSelect:
+Set(varConfirmaFinalizarSE; true)
+
+btnFinalizarSE.Text:
+"Finalizar subestação"
+
+btnFinalizarSE.Visible:
+Coalesce(
+    LookUp(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario
+    ).Status;
+    "Pendente"
+) <> "Finalizada"
+
+# Fonte: Status da SE. Pendente e Finalizada nao finalizam.
+# Em campo = pode finalizar (mesmo com fila vazia — cache perdido / reabertura).
+btnFinalizarSE.DisplayMode:
+If(
+    Coalesce(
+        LookUp(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        ).Status;
+        "Pendente"
+    ) = "Em campo";
+    DisplayMode.Edit;
+    DisplayMode.Disabled
+)
+
+btnReabrirSE.OnSelect:
+Set(varConfirmaReabrirSE; true)
+
+btnReabrirSE.Text:
+"Reabrir subestação"
+
+btnReabrirSE.Visible:
+LookUp(
+    colSubestacoes;
+    CodSE = gblSEselecionada.CodSE
+    && CodInventario = gblInventarioSelecionado.CodInventario
+).Status = "Finalizada"
+
+# Reabrir vale ANTES e DEPOIS do Enviar.
+# Enviar ja sobe so !Sincronizada — nao reenvia o que ja foi.
+
+cConfirmaFinalizarSE.Visible:
+varConfirmaFinalizarSE
+
+btnCancelarFinalizarSE.OnSelect:
+Set(varConfirmaFinalizarSE; false)
+
+btnConfirmarFinalizarSE.OnSelect:
+UpdateIf(
+    colSubestacoes;
+    CodSE = gblSEselecionada.CodSE
+    && CodInventario = gblInventarioSelecionado.CodInventario;
+    {Status: "Finalizada"}
+);;
+IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+Set(
+    gblSEselecionada;
+    First(
+        Filter(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        )
+    )
+);;
+If(
+    Connection.Connected;
+    Patch(
+        Subestacoes;
+        LookUp(
+            Subestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        );
+        {Status: "Finalizada"}
+    )
+);;
+Set(varConfirmaFinalizarSE; false);;
+Set(varSETravada; true);;
+Notify("Subestação " & gblSEselecionada.CodSE & " finalizada."; NotificationType.Success);;
+Navigate(Tela_SelecionarSE)
+
+cConfirmaReabrirSE.Visible:
+varConfirmaReabrirSE
+
+btnCancelarReabrirSE.OnSelect:
+Set(varConfirmaReabrirSE; false)
+
+btnConfirmarReabrirSE.OnSelect:
+UpdateIf(
+    colSubestacoes;
+    CodSE = gblSEselecionada.CodSE
+    && CodInventario = gblInventarioSelecionado.CodInventario;
+    {Status: "Em campo"}
+);;
+IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+Set(
+    gblSEselecionada;
+    First(
+        Filter(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        )
+    )
+);;
+If(
+    Connection.Connected;
+    Patch(
+        Subestacoes;
+        LookUp(
+            Subestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        );
+        {Status: "Em campo"}
+    )
+);;
+Set(varConfirmaReabrirSE; false);;
+Set(varSETravada; false);;
+Notify("Subestação " & gblSEselecionada.CodSE & " reaberta."; NotificationType.Success)
+
+# txtDescReabrirSE.Text:
+# "A SE volta para Em campo. O que já foi enviado permanece. Alterações e itens novos sobem só no próximo envio, depois de finalizar de novo."
+
+## Tela_ItensVisita — trava quando Status = Finalizada
+
+# varSETravada: true = SE finalizada.
+# Continua travado (editar / confirmar / adicionar / excluir):
+#   btnEditarBase, btnConfirmarBase, btnNaoEncontradoBase, Button3_16,
+#   btnEditarSobras, btnDeleteSobras, btnAddItem
+#
+# Fotos: VER e permitido. Adicionar / excluir foto nao.
+# DisplayMode.Edit (sempre) em:
+#   btnFotosAmbiente, btnFotosBase, btnFotosSobras
+# Tela_CapturaFoto: NAO dar Back() quando varSETravada.
+# AddMediaCamera, AddMediaAnexar e lixeira da Gallery5: Disabled se varSETravada.
+
+If(varSETravada; DisplayMode.Disabled; DisplayMode.Edit)
+
+# Cameras (ambiente + card BASE + card SOBRAS) — DisplayMode:
+DisplayMode.Edit
+
+# Tela_CapturaFoto.OnVisible — APAGAR esta linha se existir:
+# If(varSETravada; Back())
+
+# Gallery5 → lixeira (Image6_39 ou o icone de excluir foto) — DisplayMode:
+If(varSETravada; DisplayMode.Disabled; DisplayMode.Edit)
+
+# Tela_ItensVisita.OnVisible — depois de Set(varCarregando; true):
+Set(
+    varSETravada;
+    Coalesce(
+        LookUp(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        ).Status;
+        "Pendente"
+    ) = "Finalizada"
+);;
+
+# Bloco Em campo — colar no FIM do OnSelect de btnConfirmarBase,
+# btnNaoEncontradoBase e btnAddItem (depois do SaveData da fila).
+
+If(
+    Coalesce(
+        LookUp(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        ).Status;
+        "Pendente"
+    ) = "Pendente";
+    UpdateIf(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario;
+        {Status: "Em campo"}
+    );;
+    IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+    Set(
+        gblSEselecionada;
+        First(
+            Filter(
+                colSubestacoes;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        )
+    );;
+    If(
+        Connection.Connected;
+        Patch(
+            Subestacoes;
+            LookUp(
+                Subestacoes;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            );
+            {Status: "Em campo"}
+        )
+    )
+)
+
+## Tela_Home — Text7 (legenda Enviar visita)
+
+# Conta so SE finalizada com rascunho ainda nao sincronizado.
+# Distinct sem !Sincronizada conta item ja enviado.
+
+With(
+    {
+        qtd: CountRows(
+            Distinct(
+                Filter(
+                    colCampoOffline;
+                    !Sincronizada
+                    && CodInventario = gblInventarioSelecionado.CodInventario
+                    && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+                );
+                CodSE
+            )
+        )
+    };
+    If(
+        qtd = 0;
+        "Nenhuma SE pendente";
+        qtd & " " & If(qtd = 1; "SE pendente"; "SEs pendentes")
+    )
+)
+
+## Tela_Home — Text7.Color
+
+If(
+    CountRows(
+        Filter(
+            colCampoOffline;
+            !Sincronizada
+            && CodInventario = gblInventarioSelecionado.CodInventario
+            && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+        )
+    ) = 0;
+    Cor.Success;
+    Cor.DeleteD30
+)
+
+## Tela_Home — Button3_1.OnSelect (so dispara o overlay)
+
+# varCarregando nao pinta se Set(true) e Set(false) estao no mesmo OnSelect.
+# Button3_1 liga o overlay e chama btnEnviarVisitaExec (Visible = false).
+
+If(
+    !Connection.Connected;
+    Notify("Sem conexão. Tente novamente quando estiver com sinal."; NotificationType.Error);
+    If(
+        CountRows(
+            Filter(
+                colCampoOffline;
+                !Sincronizada
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+            )
+        ) = 0
+        && CountRows(
+            Filter(
+                colFotosCampo;
+                !Sincronizada
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+            )
+        ) = 0;
+        Notify("Não há alterações pendentes para enviar."; NotificationType.Information);
+        Set(varCarregando; true);;
+        Select(btnEnviarVisitaExec)
+    )
+)
+
+## Tela_Home — btnEnviarVisitaExec.OnSelect (fila inventario + fotos)
+
+# Fotos SP: Title, TipoFoto (AMBIENTE|ITEM), CodAsset, CodTemp, CodSE,
+# CodInventario, DataCaptura, TiradaPor, FotoCampo (LargeImage).
+# Spec: docs/fotos-campos.md. Sobra sempre grava CodAsset = SOBRA- + CodTemp.
+# Fila de fotos DEPOIS do ForAll do inventario. Sem If dentro de Filter.
+# Pasta na biblioteca Projetos: um Run flxPastaFotosVisita depois do SaveData das fotos.
+# NAO chamar o fluxo por foto. NAO criar pasta no ForAll.
+
+
+If(
+    !Connection.Connected;
+    Notify("Sem conexão. Tente novamente quando estiver com sinal."; NotificationType.Error);
+    ForAll(
+        Filter(
+            colCampoOffline;
+            !Sincronizada
+            && CodInventario = gblInventarioSelecionado.CodInventario
+            && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+        );
+        If(
+            TipoRegistro = "CONFIRMACAO";
+            With(
+                {
+                    codBusca: CodAsset;
+                    linhaAtual: ThisRecord
+                };
+                Patch(
+                    Inventario;
+                    LookUp(Inventario; CodAsset = codBusca);
+                    {
+                        Status: "ADERENTE";
+                        Sobra: linhaAtual.SobraTipo;
+                        ValidadoPor: gblUsuario.Nome;
+                        CodTUC: linhaAtual.CodTUC;
+                        DescricaoTUC: Coalesce(
+                            linhaAtual.DescricaoTUC;
+                            LookUp(colTUC; Value(CodigoTUC) = Value(linhaAtual.CodTUC); DescricaoTUC);
+                            ""
+                        );
+                        IdUC: Coalesce(linhaAtual.IdUC; "");
+                        AtributoA1: linhaAtual.AtributoA1;
+                        AtributoA2: linhaAtual.AtributoA2;
+                        AtributoA3: linhaAtual.AtributoA3;
+                        AtributoA4: linhaAtual.AtributoA4;
+                        AtributoA5: linhaAtual.AtributoA5;
+                        AtributoA6: linhaAtual.AtributoA6;
+                        DescricaoBem: linhaAtual.DescricaoBem;
+                        QuantidadeCampo: linhaAtual.Quantidade;
+                        Reserva: linhaAtual.Reserva;
+                        Fabricante: linhaAtual.Fabricante;
+                        Modelo: linhaAtual.Modelo;
+                        NumSerie: linhaAtual.NumSerie;
+                        CodOperacao: linhaAtual.CodOperacao;
+                        CM: linhaAtual.CM;
+                        Ano: linhaAtual.Ano;
+                        Unidade: linhaAtual.Unidade;
+                        Observacoes: linhaAtual.Observacoes
+                    }
+                );;
+                UpdateIf(
+                    colCampoOffline;
+                    CodSE = linhaAtual.CodSE && CodAsset = linhaAtual.CodAsset;
+                    {Sincronizada: true}
+                )
+            );
+            If(
+                TipoRegistro = "NAO_ENCONTRADO";
+                With(
+                    {
+                        codBusca: CodAsset;
+                        linhaAtual: ThisRecord
+                    };
+                    Patch(
+                        Inventario;
+                        LookUp(Inventario; CodAsset = codBusca);
+                        {
+                            Status: "NÃO_ELEGIVEL";
+                            Sobra: "SOBRA_CONTABIL";
+                            ValidadoPor: gblUsuario.Nome;
+                            Observacoes: linhaAtual.Observacoes;
+                            QuantidadeCampo: 0;
+                            Reserva: linhaAtual.Reserva
+                        }
+                    );;
+                    UpdateIf(
+                        colCampoOffline;
+                        CodSE = linhaAtual.CodSE && CodAsset = linhaAtual.CodAsset;
+                        {Sincronizada: true}
+                    )
+                );
+                With(
+                    {
+                        linhaAtual: ThisRecord;
+                        chaveSobra: If(
+                            !IsBlank(ThisRecord.CodAsset);
+                            ThisRecord.CodAsset;
+                            "SOBRA-" & Text(ThisRecord.CodTemp)
+                        )
+                    };
+                    With(
+                        {
+                            gravado: Patch(
+                                Inventario;
+                                If(
+                                    Coalesce(linhaAtual.IdInventario; 0) > 0;
+                                    LookUp(Inventario; ID = linhaAtual.IdInventario);
+                                    Coalesce(
+                                        LookUp(
+                                            Inventario;
+                                            CodAsset = chaveSobra
+                                            && CodInventario = linhaAtual.CodInventario
+                                        );
+                                        Defaults(Inventario)
+                                    )
+                                );
+                                {
+                                    CodInventario: linhaAtual.CodInventario;
+                                    CodSE: linhaAtual.CodSE;
+                                    NomeSE: linhaAtual.NomeSE;
+                                    CodAsset: chaveSobra;
+                                    CodTUC: linhaAtual.CodTUC;
+                                    DescricaoTUC: Coalesce(
+                                        linhaAtual.DescricaoTUC;
+                                        LookUp(colTUC; Value(CodigoTUC) = Value(linhaAtual.CodTUC); DescricaoTUC);
+                                        ""
+                                    );
+                                    IdUC: Coalesce(linhaAtual.IdUC; "");
+                                    AtributoA1: linhaAtual.AtributoA1;
+                                    AtributoA2: linhaAtual.AtributoA2;
+                                    AtributoA3: linhaAtual.AtributoA3;
+                                    AtributoA4: linhaAtual.AtributoA4;
+                                    AtributoA5: linhaAtual.AtributoA5;
+                                    AtributoA6: linhaAtual.AtributoA6;
+                                    DescricaoBem: linhaAtual.DescricaoBem;
+                                    Quantidade: linhaAtual.Quantidade;
+                                    Fabricante: linhaAtual.Fabricante;
+                                    Modelo: linhaAtual.Modelo;
+                                    NumSerie: linhaAtual.NumSerie;
+                                    CodOperacao: linhaAtual.CodOperacao;
+                                    CM: linhaAtual.CM;
+                                    Ano: linhaAtual.Ano;
+                                    Unidade: linhaAtual.Unidade;
+                                    Origem: "CAMPO";
+                                    Status: "ADERENTE";
+                                    Sobra: linhaAtual.SobraTipo;
+                                    ValidadoPor: gblUsuario.Nome;
+                                    Observacoes: linhaAtual.Observacoes
+                                }
+                            )
+                        };
+                        // 20.10.2026: NAO casar por TUC+DescricaoBem — duas sobras iguais
+                        // (qtde diferente) colavam no envio e compartilhavam CodAsset/fotos.
+                        UpdateIf(
+                            colCampoOffline;
+                            CodSE = linhaAtual.CodSE
+                            && !Sincronizada
+                            && If(
+                                !IsBlank(linhaAtual.CodAsset);
+                                CodAsset = linhaAtual.CodAsset;
+                                !IsBlank(linhaAtual.CodTemp)
+                                && CodTemp = linhaAtual.CodTemp
+                            );
+                            {
+                                Sincronizada: true;
+                                IdInventario: gravado.ID;
+                                CodAsset: chaveSobra
+                            }
+                        )
+                    )
+                )
+            )
+        )
+    );;
+    ForAll(
+        Filter(
+            colFotosCampo;
+            !Sincronizada
+            && CodInventario = gblInventarioSelecionado.CodInventario
+            && CodSE in Filter(colSubestacoes; Status = "Finalizada").CodSE
+        );
+        With(
+            {
+                fotoAtual: ThisRecord;
+                fotoJson: JSON(ThisRecord.Foto; JSONFormat.IncludeBinaryData)
+            };
+            If(
+                !IsBlank(
+                    Patch(
+                        Fotos;
+                        Defaults(Fotos);
+                        {
+                            Title: Coalesce(fotoAtual.TipoFoto; "ITEM") & " | " & Text(fotoAtual.IdFoto);
+                            TipoFoto: Coalesce(fotoAtual.TipoFoto; "ITEM");
+                            CodInventario: fotoAtual.CodInventario;
+                            CodSE: fotoAtual.CodSE;
+                            CodAsset: If(
+                                Coalesce(fotoAtual.TipoFoto; "ITEM") = "AMBIENTE";
+                                "";
+                                Coalesce(
+                                    fotoAtual.CodAsset;
+                                    If(
+                                        !IsBlank(fotoAtual.CodTemp);
+                                        "SOBRA-" & Text(fotoAtual.CodTemp);
+                                        ""
+                                    )
+                                )
+                            );
+                            CodTemp: Coalesce(fotoAtual.CodTemp; "");
+                            DataCaptura: fotoAtual.DataCaptura;
+                            TiradaPor: gblUsuario.Nome;
+                            FotoCampo: {
+                                FileName: Text(fotoAtual.IdFoto) & ".jpg";
+                                Value: fotoAtual.Foto;
+                                Full: fotoJson;
+                                Large: fotoJson;
+                                Medium: fotoJson;
+                                Small: fotoJson
+                            }
+                        }
+                    )
+                );
+                UpdateIf(
+                    colFotosCampo;
+                    IdFoto = fotoAtual.IdFoto;
+                    {Sincronizada: true}
+                )
+            )
+        )
+    );;
+    SaveData(colCampoOffline; "cache_CampoOffline");;
+    IfError(SaveData(colFotosCampo; "cache_FotosCampo"); Blank());;
+    // Offline total 08.11: Local (TI/LI/Arranjo/Coord + gás) sobe só aqui.
+    ForAll(
+        Filter(
+            colSubestacoes;
+            CodInventario = gblInventarioSelecionado.CodInventario
+            && Status = "Finalizada"
+        ) As seFin;
+        IfError(
+            Patch(
+                Subestacoes;
+                If(
+                    Coalesce(seFin.ID; 0) > 0;
+                    LookUp(Subestacoes; ID = seFin.ID);
+                    LookUp(
+                        Subestacoes;
+                        CodSE = seFin.CodSE
+                        && CodInventario = seFin.CodInventario
+                    )
+                );
+                {
+                    Status: "Finalizada";
+                    CoordX: seFin.CoordX;
+                    CoordY: seFin.CoordY;
+                    TI: Coalesce(seFin.TI; 0);
+                    LocalInstalacao: Coalesce(seFin.LocalInstalacao; 0);
+                    ArranjoFisico: Coalesce(seFin.ArranjoFisico; 0);
+                    NomeSE: seFin.NomeSE;
+                    Municipio: seFin.Municipio;
+                    Segmento: seFin.Segmento;
+                    Tramo: seFin.Tramo
+                }
+            );
+            Blank()
+        )
+    );;
+    IfError(
+        flxPastaFotosVisita.Run(gblInventarioSelecionado.CodInventario);
+        Blank()
+    );;
+    With(
+        {
+            cod: gblInventarioSelecionado.CodInventario;
+            todasFinal: CountRows(
+                Filter(
+                    colSubestacoes;
+                    CodInventario = gblInventarioSelecionado.CodInventario
+                    && Status <> "Finalizada"
+                )
+            ) = 0
+        };
+        Patch(
+            'Campanhas ';
+            LookUp('Campanhas '; CodInventario = cod);
+            {Status: If(todasFinal; "Concluído"; "Em andamento")}
+        );;
+        UpdateIf(
+            colCampanhas;
+            CodInventario = cod;
+            {Status: If(todasFinal; "Concluído"; "Em andamento")}
+        );;
+        IfError(SaveData(colCampanhas; "cache_Campanhas"); Blank())
+    );;
+    Notify("Alterações enviadas com sucesso!"; NotificationType.Success)
+);;
+
+Set(varCarregando; false)

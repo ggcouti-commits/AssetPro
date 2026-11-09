@@ -1,0 +1,117 @@
+# Tela_Home → btnEntrar → OnSelect (App Inventariantes)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+#
+# Studio: Tela_Home → btnEntrar → OnSelect → apaga → cola o bloco.
+# Sem SaveData / Connection / varForcarOnline.
+# OnStart ja carregou colCampanhas / colSubestacoes / colInventarioBase.
+# Aqui: valida slot, carrega Alocacoes, recorta se inventariante, abre galeria.
+
+Set(varLoginErro; Blank());;
+With(
+    {
+        u: LookUp(
+            Inventariantes;
+            Login = Trim(inpLogin.Text) && Ativo = "Sim"
+        )
+    };
+    If(
+        IsBlank(u) || u.Senha <> inpSenha.Text;
+        Set(varLoginErro; "Login ou senha inválidos.");
+        With(
+            {
+                sessao:
+                    {
+                        Login: u.Login;
+                        Perfil: u.Perfil;
+                        Nome: Coalesce(u.UsadoPor; u.Nome);
+                        UsadoPor: u.UsadoPor;
+                        CodUsuario: u.CodUsuario;
+                        SessaoVersao: Coalesce(u.SessaoVersao; 0)
+                    }
+            };
+            Set(gblUsuario; sessao);;
+            Set(varPerfil; u.Perfil);;
+            Set(varSessaoOk; true);;
+            ClearCollect(colSessao; sessao);;
+            ClearCollect(
+                colAlocacoes;
+                ForAll(
+                    Filter(
+                        Alocacoes;
+                        Login = u.Login && Ativo = "Sim"
+                    ) As a;
+                    {
+                        Login: Text(a.Login);
+                        CodInventario: Text(a.CodInventario);
+                        CodSE: Text(a.CodSE);
+                        Ativo: Text(a.Ativo)
+                    }
+                )
+            );;
+            // Escritorio: mantem o que o OnStart carregou.
+            // Inventariante (ou perfil vazio): so o designado em Alocacoes.
+            If(
+                !(varPerfil = "ESCRITORIO");
+                ClearCollect(
+                    colCampanhas;
+                    Filter(
+                        colCampanhas;
+                        !IsBlank(
+                            LookUp(
+                                colAlocacoes;
+                                CodInventario = CodInventario
+                            )
+                        )
+                    )
+                );;
+                ClearCollect(
+                    colSubestacoes;
+                    Filter(
+                        colSubestacoes;
+                        !IsBlank(
+                            LookUp(
+                                colAlocacoes;
+                                CodInventario = CodInventario
+                                && CodSE = CodSE
+                            )
+                        )
+                    )
+                );;
+                ForAll(
+                    colCampanhas As camp;
+                    Patch(
+                        colCampanhas;
+                        LookUp(colCampanhas; CodInventario = camp.CodInventario);
+                        {
+                            QtdSEs: CountRows(
+                                Filter(
+                                    colSubestacoes;
+                                    CodInventario = camp.CodInventario
+                                )
+                            );
+                            QtdItens: CountRows(
+                                Filter(
+                                    colInventarioBase;
+                                    CodInventario = camp.CodInventario
+                                    && !IsBlank(
+                                        LookUp(
+                                            colAlocacoes;
+                                            CodInventario = camp.CodInventario
+                                            && CodSE = CodSE
+                                        )
+                                    )
+                                )
+                            )
+                        }
+                    )
+                )
+            );;
+            Set(gblInventarioSelecionado; Blank());;
+            Set(gblSEselecionada; Blank());;
+            Set(varInvPasso; 1);;
+            Set(varInvFiltroSE; "Todas");;
+            Reset(inpSenha);;
+            Navigate(Tela_Inventarios; ScreenTransition.None)
+        )
+    )
+)

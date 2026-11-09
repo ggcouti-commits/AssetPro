@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mobile — botão Rede</title>
+<style>
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif; background:#E8ECF0; padding:24px; color:#1a1a1a}
+  h1{font-size:20px; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; max-width:860px; line-height:1.5; margin-bottom:18px}
+  .row{display:flex; gap:28px; align-items:flex-start}
+  .cap{font-size:11px; font-weight:700; letter-spacing:1px; color:#348FFD; margin-bottom:8px}
+  .phone{width:390px; height:780px; background:#F4F6F8; border:1px solid #E1E5EA; border-radius:22px; overflow:hidden; display:flex; flex-direction:column}
+  .hd{background:#123B6E; color:#fff; padding:16px 16px 14px}
+  .hdtop{display:flex; justify-content:space-between; align-items:flex-start}
+  .hdt{font-size:16px; font-weight:700}
+  .hds{font-size:12px; opacity:.85; margin-top:3px}
+  .swap{font-size:12px; font-weight:700; background:rgba(255,255,255,.14); border-radius:8px; padding:6px 8px}
+  .off{font-size:11px; opacity:.8; margin-top:4px; text-align:right}
+  .body{padding:12px; display:flex; flex-direction:column; gap:10px; flex:1}
+  .banner{background:#FFF4D6; border-radius:12px; padding:12px; display:flex; justify-content:space-between; align-items:center}
+  .bt{font-size:13px; font-weight:700; color:#8A5A00}
+  .bs{font-size:11px; color:#8A5A00; margin-top:2px}
+  .bpill{background:#fff; border-radius:8px; font-size:12px; font-weight:700; padding:6px 10px; color:#8A5A00}
+  .pair{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .tile{background:#fff; border:1px solid #E6EAEF; border-radius:14px; padding:14px 12px; min-height:92px}
+  .tile b{display:block; margin-top:8px; font-size:14px; color:#163E72}
+  .tile span{display:block; margin-top:2px; font-size:11px; color:#6B7683}
+  .ico{font-size:18px}
+  .on{outline:3px solid #2E9B4A; outline-offset:0}
+  .sec{font-size:11px; font-weight:700; letter-spacing:.6px; color:#6B7683; margin-top:6px}
+  .empty{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#9AA3AD; gap:8px}
+  .bag{font-size:42px; opacity:.35}
+  .card{background:#fff; border:1px solid #E6EAEF; border-radius:14px; padding:12px 14px}
+  .cn{font-size:15px; font-weight:700; color:#163E72}
+  .cm{font-size:12px; color:#6B7683; margin-top:3px}
+  .chips{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap}
+  .chip{font-size:11px; font-weight:700; background:#EAF3FF; color:#1B4C86; border-radius:999px; padding:3px 8px}
+  .back{font-size:13px; font-weight:700; margin-bottom:2px}
+</style>
+</head>
+<body>
+  <h1>O botão que está parado abre os projetos de rede.</h1>
+  <p class="lead">Levantamento continua a subestação. A lista de baixo continua as visitas da campanha selecionada. Rede é outra campanha: o toque abre os projetos dela.</p>
+  <div class="row">
+    <div>
+      <div class="cap">1 · HOME</div>
+      <div class="phone" id="home">
+        <div class="hd">
+          <div class="hdtop">
+            <div><div class="hdt">Distribuição de Energia</div><div class="hds">Elétrica Jan 2027 · Em andamento</div></div>
+            <div><div class="swap">Trocar</div><div class="off">Desconectado</div></div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="banner"><div><div class="bt">Nenhum dado baixado ainda</div><div class="bs">Toque em Baixar dados para começar</div></div><div class="bpill">Botão</div></div>
+          <div class="pair">
+            <div class="tile"><div class="ico">☁</div><b>Baixar dados</b></div>
+            <div class="tile"><div class="ico">☁</div><b>Enviar visita</b><span>Nenhuma visita pendente</span></div>
+          </div>
+          <div class="pair">
+            <div class="tile"><div class="ico">📍</div><b>Levantamento</b><span>Escolher SE e registrar itens</span></div>
+            <div class="tile on"><div class="ico">🗄</div><b>Rede</b><span>Projetos de rede</span></div>
+          </div>
+          <div class="sec">VISITAS DESTE INVENTÁRIO</div>
+          <div class="empty"><div class="bag">👜</div><div>Nenhuma SE encontrada</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cap">2 · DEPOIS DO TOQUE</div>
+      <div class="phone" id="lista">
+        <div class="hd">
+          <div class="back">← Rede</div>
+          <div class="hdt">Projetos de rede</div>
+          <div class="hds">Campanha Rede · Jan 2027</div>
+        </div>
+        <div class="body">
+          <div class="card"><div class="cn">PRJ-1042</div><div class="cm">Alimentador Norte</div><div class="chips"><span class="chip">5 postes</span><span class="chip">3 trafos</span><span class="chip">4 chaves</span></div></div>
+          <div class="card"><div class="cn">PRJ-1048</div><div class="cm">Ramal da praça</div><div class="chips"><span class="chip">4 trafos</span></div></div>
+          <div class="card"><div class="cn">PRJ-1101</div><div class="cm">Extensão rural</div><div class="chips"><span class="chip">5 postes</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

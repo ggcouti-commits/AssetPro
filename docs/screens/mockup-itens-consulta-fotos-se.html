@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Fotos da SE — overlay</title>
+<style>
+  :root{--navy:#123B6E;--navy3:#1B4C86;--page:#F1F3F5;--card:#FFF;--border:#E1E5EA;--title:#1B3E6F;--label:#6B7683;--text:#2A3138;--primary:#348FFD}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#E8ECF0;font-family:"Segoe UI",system-ui,Arial,sans-serif;padding:24px}
+  .tag{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:1.1px;margin-bottom:8px}
+  h1{font-size:18px;color:#1a1a1a;margin-bottom:14px}
+  .app{width:1280px;height:720px;position:relative;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--page)}
+  .sb{width:240px;height:100%;background:var(--navy);color:#fff;padding:14px 12px;position:absolute;left:0;top:0}
+  .brand{font-size:14px;font-weight:700;padding:8px;margin-bottom:12px}
+  .ni{height:40px;border-radius:8px;padding:0 12px;display:flex;align-items:center;font-size:13px;font-weight:600;color:#E8F0FA;margin-bottom:6px}
+  .ni.on{background:var(--navy3)}
+  .main{margin-left:240px;height:100%;background:#F1F3F5}
+  .top{height:66px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;font-weight:700;color:var(--title);font-size:20px}
+  .scrim{position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center}
+  .panel{width:72%;height:82%;background:#fff;border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 16px 40px rgba(10,29,51,.28)}
+  .phd{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .pt{font-size:16px;font-weight:700;color:var(--title)}
+  .ps{font-size:12px;color:var(--label);margin-top:2px}
+  .x{width:32px;height:32px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--label);font-size:20px;background:#fff}
+  .grid{padding:16px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;overflow:auto;flex:1;align-content:start}
+  .pc{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--page)}
+  .ph{aspect-ratio:4/3;background:linear-gradient(145deg,#C5D0DC,#9AADC0)}
+  .pcfoot{padding:7px 8px 8px;font-size:11px;font-weight:700;color:var(--title)}
+</style>
+</head>
+<body>
+  <div class="tag">cFotosSE · varFotosSE = true · só TipoFoto = AMBIENTE</div>
+  <h1>Overlay Fotos da SE — mesma tela, só leitura</h1>
+  <div class="app">
+    <aside class="sb">
+      <div class="brand">⚡ Asset Pro</div>
+      <div class="ni on">Home</div><div class="ni">Importar / Exportar</div><div class="ni">Inventários</div>
+    </aside>
+    <section class="main"><div class="top">SE-0142 — Sub. Est. Fortaleza Norte</div></section>
+    <div class="scrim">
+      <div class="panel">
+        <div class="phd">
+          <div>
+            <div class="pt">Fotos da SE</div>
+            <div class="ps">SE-0142 · 3 fotos de ambiente · somente visualização</div>
+          </div>
+          <div class="x">×</div>
+        </div>
+        <div class="grid">
+          <div class="pc"><div class="ph"></div><div class="pcfoot">27/08/2026</div></div>
+          <div class="pc"><div class="ph"></div><div class="pcfoot">27/08/2026</div></div>
+          <div class="pc"><div class="ph"></div><div class="pcfoot">28/08/2026</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

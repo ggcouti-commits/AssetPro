@@ -1,0 +1,14 @@
+---
+description: Pendência Tela_EditarItem — persistir CM (centro modular)
+alwaysApply: true
+---
+
+# Pendência — Centro modular (`CM`)
+
+O card `cCardCM` / `drpCM` **já está no Studio**. Persistência até o SharePoint foi aplicada no Studio (2026-09-03).
+
+- SharePoint: `Inventario.CM` (número 0–9). Catálogo: `colCentroModular` no `App.OnStart` (planilha 11.09 — sigla **EQP** no 1, **CRB** no 7; **sem** texto de composição).
+- CM MCPSE é **do equipamento**. **Não** usar `Subestacoes.CM` / `gblSEselecionada.CM`. Arranjo físico e local de instalação são da **SE**.
+- Spec: `docs/inventario-campos.md` · catálogos: `docs/powerfx/catalogos-mcpse.txt` · ata: `docs/reunioes/2026-09-08-andre.md`
+
+**Studio (rótulo curto):** colar o `ClearCollect(colCentroModular; …)` novo no `App.OnStart` e `lblCMDesc.Visible` = `false`.

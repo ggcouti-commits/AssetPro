@@ -1,0 +1,14 @@
+---
+description: Pendência — código de sobra na coluna Imobilizado (Desktop consulta)
+alwaysApply: true
+---
+
+# Pendência — código de sobra no lugar do Imobilizado (Desktop)
+
+Decisão 19.10.2026 (Fenômeno). Print: lista SOBRAS em `Tela_ItensConsulta` — coluna **IMOBILIZADO** vazia nas sobras físicas.
+
+- **Onde:** Desktop → `Tela_ItensConsulta` (filtro SOBRAS / chip “Sobra física”).
+- **Hoje:** coluna Imobilizado mostra só `Imobilizado` → sobra fica em branco.
+- **Fazer:** na sobra, mostrar o **código de sobra** (`CodAsset`, padrão `SOBRA-{CodSE}-{nn}`) no lugar do Imobilizado. Item de base continua com `Imobilizado` (ou o que já usa hoje).
+- Spec: `docs/powerfx/Tela_ItensConsulta-formulas.txt` · código sobra: `docs/fotos-campos.md`.
+- Não montar agora.

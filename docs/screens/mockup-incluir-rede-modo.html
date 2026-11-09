@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Incluir rede — com base ou sem base</title>
+<style>
+  :root{--navy:#12315F;--navy2:#1A3E78;--page:#F3F5F8;--border:#E3E7EE;--title:#1B3E6F;--label:#7A8494;--blue:#2F6FE0}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{margin:0;background:#E8ECF0;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+  .app{width:1280px;height:760px;display:flex;background:var(--page);position:relative;overflow:hidden}
+  .sb{width:196px;background:var(--navy);color:#fff;display:flex;flex-direction:column;padding:16px 12px 12px}
+  .logo{font-weight:700;font-size:18px;padding:6px 8px 18px}
+  .logo span{font-weight:500;opacity:.85}
+  .ni{height:40px;border-radius:8px;display:flex;align-items:center;padding:0 12px;font-weight:650;color:#E7EEF8;margin-bottom:4px}
+  .ni.on{background:var(--navy2)}
+  .foot{margin-top:auto;display:flex;background:rgba(255,255,255,.12);border-radius:16px;padding:3px}
+  .foot b{flex:1;text-align:center;font-size:12px;padding:6px 0;border-radius:14px}
+  .foot .on{background:var(--blue)}
+  .main{flex:1;min-width:0}
+  .mask{position:absolute;inset:0;background:rgba(18,49,95,.45);display:flex;align-items:center;justify-content:center}
+  .dlg{width:680px;background:#fff;border-radius:14px;box-shadow:0 18px 48px rgba(18,49,95,.25)}
+  .hd{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:12px}
+  .dt{font-size:18px;font-weight:700;color:var(--title)}
+  .ds2{font-size:12.5px;color:var(--label);margin-top:3px;line-height:1.4}
+  .x{width:32px;height:32px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 32px;color:var(--title)}
+  .bd{padding:16px 18px 8px;display:flex;flex-direction:column;gap:14px}
+  .fl{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--label)}
+  .lock{margin-top:6px;border:1px solid var(--border);border-radius:10px;background:#F4F6F8;padding:12px 14px}
+  .nm{font-size:15px;font-weight:700;color:var(--title)}
+  .im{font-size:12px;color:var(--label);margin-top:4px}
+  .seg{display:flex;background:#EEF1F6;border-radius:10px;padding:4px;gap:4px}
+  .seg b{flex:1;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--label);font-size:14px;font-weight:700}
+  .seg .on{background:var(--navy);color:#fff}
+  .file{border:1.5px dashed #B7C6DC;border-radius:12px;background:#F7FAFF;padding:14px;display:flex;align-items:center;gap:12px}
+  .badge{width:42px;height:42px;border-radius:10px;background:#E7F0FF;color:var(--navy);font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center}
+  .fn{font-weight:700;color:var(--title);font-size:14px}
+  .fm{font-size:12px;color:var(--label);margin-top:3px}
+  .trocar{margin-left:auto;height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--navy);color:var(--navy);background:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center}
+  .note{background:#F4F8FC;border:1px solid #C5D4E6;border-radius:10px;padding:12px 14px;font-size:13px;color:var(--title);line-height:1.45}
+  .note b{display:block;margin-bottom:4px}
+  .qtd{margin-top:6px;display:flex;align-items:center;gap:8px}
+  .step{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--title);background:#fff}
+  .num{width:64px;height:36px;border:1px solid var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--title);background:#fff}
+  .qh{font-size:13px;color:var(--label);font-weight:650}
+  .ft{padding:12px 18px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+  .ghost,.pri{height:36px;padding:0 14px;border-radius:8px;font-weight:700;font-size:13px;display:flex;align-items:center}
+  .ghost{border:1px solid var(--border);background:#fff;color:var(--title)}
+  .pri{background:var(--navy);color:#fff}
+</style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sb">
+      <div class="logo">asset<span>experts</span></div>
+      <div class="ni">Home</div>
+      <div class="ni on">Importar / Exportar</div>
+      <div class="ni">Conferência</div>
+      <div class="ni">Inventários</div>
+      <div class="ni">Usuários</div>
+      <div class="foot"><b class="on">Light</b><b>Dark</b></div>
+    </aside>
+    <section class="main"></section>
+    <div class="mask"><div class="dlg">
+      <div class="hd">
+        <div>
+          <div class="dt">Incluir rede</div>
+          <div class="ds2">Campanha já escolhida. A rede entra nela. As subestações desta campanha ficam como estão.</div>
+        </div>
+        <div class="x">✕</div>
+      </div>
+      <div class="bd">
+        <div>
+          <div class="fl">CAMPANHA</div>
+          <div class="lock">
+            <div class="nm">Companhia Estadual de Distribuição de Energia Elétrica Jan 2027</div>
+            <div class="im">outubro 2026 · já tem Rede 01 · Em andamento</div>
+          </div>
+        </div>
+        <div>
+          <div class="fl">COMO A REDE ENTRA</div>
+          <div class="seg" id="seg"></div>
+        </div>
+        <div id="corpo"></div>
+      </div>
+      <div class="ft" id="ft"></div>
+    </div></div>
+  </div>
+<script>
+  const q = new URLSearchParams(location.search).get("estado") || "combase";
+  const com = q !== "sembase";
+  document.getElementById("seg").innerHTML = com
+    ? "<b class='on'>Com base</b><b>Sem base</b>"
+    : "<b>Com base</b><b class='on'>Sem base</b>";
+  document.getElementById("corpo").innerHTML = com
+    ? `<div class="file"><div class="badge">XLSX</div><div><div class="fn">Base Rede Jan 2027.xlsx</div><div class="fm">Os projetos e os itens desta planilha entram nesta campanha.</div></div><div class="trocar">Trocar</div></div>`
+    : `<div>
+         <div class="fl">QUANTOS INVENTARIANTES FAZEM A REDE</div>
+         <div class="qtd"><div class="step">−</div><div class="num">2</div><div class="step">+</div><div class="qh">inventariantes</div></div>
+         <div class="note"><b>Já existe Rede 01. Entram Rede 02 e Rede 03.</b>A pessoa de cada uma é escolhida depois, na alocação. O equipamento entra na visita, como sobra, e a coordenada fica no item.</div>
+       </div>`;
+  document.getElementById("ft").innerHTML = com
+    ? `<div class="ghost">Voltar</div><div class="pri">Incluir nesta campanha</div>`
+    : `<div class="ghost">Voltar</div><div class="pri">Confirmar sem base</div>`;
+</script>
+</body>
+</html>

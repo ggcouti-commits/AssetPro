@@ -1,0 +1,34 @@
+---
+description: Passo a passo colável no Studio e no Automate, com cada caixa e cada clique
+alwaysApply: true
+---
+
+# Passo a passo — Studio e Automate
+
+Fenômeno cola no Power Apps Studio e no Power Automate. Toda explicação e todo passo a passo saem super detalhados. Nunca entregue só o conceito, o “porquê” isolado, um bloco solto, ou “apaga a regra e cola a fórmula” sem dizer em qual caixa.
+
+## Power Apps
+
+1. **Tela** (ex.: `Tela_CapturaFoto`)
+2. **Controle** (nome exato, ex.: `Gallery5`)
+3. **Propriedade** (ex.: `Items`, `Visible`, `OnSelect`)
+4. **Ação:** apagar o que está lá e colar o bloco
+5. Fórmula completa, locale PT-BR (`;` e `;;`)
+
+Um controle = um passo numerado. Se forem 3 propriedades, são 3 passos. Não agrupe “troca estes três” sem listar cada um.
+
+## Power Automate
+
+Cada ação = um passo. Dentro do passo, cada campo é uma linha: nome do campo na tela, o que apagar, o que colar.
+
+Condição (esquerda / operador / direita) nunca vira uma fórmula só. Escreve as três caixas:
+
+- Caixa da **esquerda:** apaga o que está, aba **Expressão**, cola isto.
+- Lista do **meio:** troca o operador para este item.
+- Caixa da **direita:** apaga o que está e cola isto.
+
+**Executar após:** diz qual ação desmarcar e qual marcar, e se é só **com êxito**.
+
+Não manda “cola no fx” sem dizer se é a caixa da esquerda, a da direita, o URI, o Id ou o conteúdo do arquivo.
+
+Depois dos passos, uma linha do que deve acontecer na tela ou no run. O “porquê” só no final, curto.

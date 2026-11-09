@@ -1,0 +1,17 @@
+---
+description: PRIORIDADE MÁXIMA (2ª) — criar SE com flag Linha (coord item, sem popup Local)
+alwaysApply: true
+---
+
+# Pendência MÁXIMA (2ª) — criar subestação: Linha ou não
+
+Relato 20.10.2026 (Fenômeno). **Corrigir amanhã — prioridade máxima, abaixo do filtro SE mobile.**
+
+- **O quê:** ao **criar subestação**, perguntar / setar se é **Linha** ou não.
+- **Linha** = estruturas de poste/torre que levam a linha entre uma SE e outra (não é a SE do pátio).
+- **Quando for Linha** — mesmo esquema da **Rede**:
+  - coordenada **individual no item** (`Inventario.CoordX` / `CoordY`), não na SE;
+  - **não** abrir o popup Local ao entrar na visita.
+- **Quando não for Linha** — comportamento atual da SE (popup Local, coordenada na `Subestacoes`).
+- Encaixa na pendência de **criar subestação no projeto** (13.10); esta marca o comportamento Linha.
+- Não montar hoje — anotar só.

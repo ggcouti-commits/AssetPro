@@ -1,0 +1,143 @@
+# Catálogos MCPSE — App.OnStart (mobile e desktop)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Fonte: docs/mcpse/Tabela-TI-CM-LI.xlsx (11.09.2026) · docs/mcpse/catalogos-aneel.md
+#
+# Estaticos. NAO criar lista SharePoint. Sem SaveData.
+# Cole DEPOIS de colUnidadeMedida (mobile e desktop).
+#
+# Inventario.CM                = colCentroModular.Codigo (0-9)
+# Subestacoes.ArranjoFisico    = colArranjoFisico.Codigo (1-5)
+# Subestacoes.LocalInstalacao  = colLocalInstalacao.Codigo (0-4)
+# Subestacoes.TI               = colTipoInstalacao.Codigo
+#
+# Resumo = coluna "CAMPO RESUMO PARA APLICATIVO" da planilha.
+# CM na tela: codigo — nome curto (reuniao 08.09). Resumo e o chip compacto.
+# TI: colecao pronta para LookUp. NAO criar dropdown na visita ate quem preenche.
+#
+# Nao confundir Inventario.CM com Subestacoes.CM (campo legado da SE).
+
+## 1. colCentroModular — equipamento
+
+# ItemDisplayText do drpCM: ThisItem.Codigo & " — " & ThisItem.Nome
+
+ClearCollect(
+    colCentroModular;
+    {Codigo: 0; Sigla: "MIG"; Resumo: "0 - MIG"; Nome: "Infraestrutura geral"};
+    {Codigo: 1; Sigla: "EQP"; Resumo: "1 EQP"; Nome: "Equipamentos"};
+    {Codigo: 2; Sigla: "EL"; Resumo: "2 - EL"; Nome: "Entrada de linha"};
+    {Codigo: 3; Sigla: "IB"; Resumo: "3 - IB"; Nome: "Interligação de barra"};
+    {Codigo: 4; Sigla: "CT"; Resumo: "4 - CT"; Nome: "Conexão de trafo"};
+    {Codigo: 5; Sigla: "CCP"; Resumo: "5 - CCP"; Nome: "Conexão de banco"};
+    {Codigo: 6; Sigla: "CRL"; Resumo: "6 - CRL"; Nome: "Conexão de reator de linha"};
+    {Codigo: 7; Sigla: "CRB"; Resumo: "7 - CRB"; Nome: "Conexão de reator de barra"};
+    {Codigo: 8; Sigla: "CC"; Resumo: "8 - CC"; Nome: "Conexão de compensador"};
+    {Codigo: 9; Sigla: "CCA"; Resumo: "9 - CCA"; Nome: "Conexão de circuito/alimentador"}
+);;
+
+## 2. colArranjoFisico — subestacao
+
+# Nao veio na xlsx 11.09. Catálogo 08.09.
+# ItemDisplayText: ThisItem.Codigo & " — " & ThisItem.Sigla
+
+ClearCollect(
+    colArranjoFisico;
+    {Codigo: 1; Sigla: "BS"; Nome: "Barra simples"};
+    {Codigo: 2; Sigla: "BD"; Nome: "Barra dupla"};
+    {Codigo: 3; Sigla: "BDDD"; Nome: "Barra dupla e disjuntor duplo"};
+    {Codigo: 4; Sigla: "BPT"; Nome: "Barra principal e de transferência"};
+    {Codigo: 5; Sigla: "DJM"; Nome: "Disjuntor e meio"}
+);;
+
+## 3. colLocalInstalacao — subestacao
+
+# Distribuicao = sempre 0 (RD).
+# ItemDisplayText: ThisItem.Codigo & " — " & ThisItem.Sigla
+
+ClearCollect(
+    colLocalInstalacao;
+    {Codigo: 0; Sigla: "RD"; Resumo: "0-RD"; Nome: "Distribuição"};
+    {Codigo: 1; Sigla: "DIT-RPC"; Resumo: "1-DIT-RPC"; Nome: "DIT — RBSE / interesse restrito"};
+    {Codigo: 2; Sigla: "RBSE"; Resumo: "2-RBSE"; Nome: "Rede Básica — sistema existente"};
+    {Codigo: 3; Sigla: "RBNI"; Resumo: "3-RBNI"; Nome: "Rede Básica — novas instalações"};
+    {Codigo: 4; Sigla: "DIT - RCDM"; Resumo: "4-DIT - RCDM"; Nome: "DIT — RBNI"}
+);;
+
+## 4. colTipoInstalacao — local (Subestacoes.TI)
+
+# LookUp: LookUp(colTipoInstalacao; Codigo = ThisItem.TI; Resumo)
+# NAO ligar dropdown na visita ate Andre fechar quem preenche.
+
+ClearCollect(
+    colTipoInstalacao;
+    {Codigo: 10; Sigla: "HID"; Resumo: "10-HID"; Nome: "Hidroelétrica"};
+    {Codigo: 11; Sigla: "TER"; Resumo: "11-TER"; Nome: "Térmica a combustão — óleo/gás/diesel"};
+    {Codigo: 12; Sigla: "TER"; Resumo: "12-TER"; Nome: "Térmica a vapor — carvão"};
+    {Codigo: 13; Sigla: "TER"; Resumo: "13-TER"; Nome: "Térmica a vapor — gás"};
+    {Codigo: 14; Sigla: "TER"; Resumo: "14-TER"; Nome: "Térmica a vapor — diesel/querosene/óleo"};
+    {Codigo: 15; Sigla: "TER"; Resumo: "15-TER"; Nome: "Térmica a vapor — biomassa"};
+    {Codigo: 16; Sigla: "TER"; Resumo: "16-TER"; Nome: "Térmica a vapor — nuclear"};
+    {Codigo: 17; Sigla: "SOL"; Resumo: "17-SOL"; Nome: "Solar"};
+    {Codigo: 18; Sigla: "EOL"; Resumo: "18-EOL"; Nome: "Eólica"};
+    {Codigo: 19; Sigla: "OUT"; Resumo: "19-OUT"; Nome: "Outras"};
+    {Codigo: 20; Sigla: "DIT"; Resumo: "20-DIT"; Nome: "SE < 230 kV (DIT)"};
+    {Codigo: 21; Sigla: "DIT"; Resumo: "21-DIT"; Nome: "SE ≥ 230 kV e < 345 kV"};
+    {Codigo: 22; Sigla: "DIT"; Resumo: "22-DIT"; Nome: "SE ≥ 345 kV e < 500 kV"};
+    {Codigo: 23; Sigla: "DIT"; Resumo: "23-DIT"; Nome: "SE ≥ 500 kV"};
+    {Codigo: 24; Sigla: "DIT"; Resumo: "24-DIT"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 25; Sigla: "DIT"; Resumo: "25-DIT"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 26; Sigla: "DIT"; Resumo: "26-DIT"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 27; Sigla: "DIT"; Resumo: "27-DIT"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 28; Sigla: "DIT"; Resumo: "28-DIT"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 29; Sigla: "DIT"; Resumo: "29-DIT"; Nome: "Transmissão de interesse restrito (SE ou linha)"};
+    {Codigo: 30; Sigla: "SDU"; Resumo: "30-SDU"; Nome: "SE urbana ≤ 13,8 kV"};
+    {Codigo: 31; Sigla: "SDU"; Resumo: "31-SDU"; Nome: "SE urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 32; Sigla: "SDU"; Resumo: "32-SDU"; Nome: "SE urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 33; Sigla: "SDU"; Resumo: "33-SDU"; Nome: "SE urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 34; Sigla: "SDU"; Resumo: "34-SDU"; Nome: "SE urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 35; Sigla: "LAU"; Resumo: "35-LAU"; Nome: "Linha de distribuição urbana ≤ 13,8 kV"};
+    {Codigo: 36; Sigla: "LAU"; Resumo: "36-LAU"; Nome: "Linha de distribuição urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 37; Sigla: "LAU"; Resumo: "37-LAU"; Nome: "Linha de distribuição urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 38; Sigla: "LAU"; Resumo: "38-LAU"; Nome: "Linha de distribuição urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 39; Sigla: "LAU"; Resumo: "39-LAU"; Nome: "Linha de distribuição urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 40; Sigla: "RAU"; Resumo: "40-RAU"; Nome: "Rede aérea urbana"};
+    {Codigo: 41; Sigla: "RAR"; Resumo: "41-RAR"; Nome: "Rede aérea rural"};
+    {Codigo: 42; Sigla: "RSU"; Resumo: "42-RSU"; Nome: "Rede subterrânea urbana"};
+    {Codigo: 43; Sigla: "RSR"; Resumo: "43-RSR"; Nome: "Rede subterrânea rural"};
+    {Codigo: 44; Sigla: "RSA"; Resumo: "44-RSA"; Nome: "Rede submersa"};
+    {Codigo: 50; Sigla: "SDR"; Resumo: "50-SDR"; Nome: "SE rural ≤ 13,8 kV"};
+    {Codigo: 51; Sigla: "SDR"; Resumo: "51-SDR"; Nome: "SE rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 52; Sigla: "SDR"; Resumo: "52-SDR"; Nome: "SE rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 53; Sigla: "SDR"; Resumo: "53-SDR"; Nome: "SE rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 54; Sigla: "SDR"; Resumo: "54-SDR"; Nome: "SE rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 55; Sigla: "LDR"; Resumo: "55-LDR"; Nome: "Linha de distribuição rural ≤ 13,8 kV"};
+    {Codigo: 56; Sigla: "LDR"; Resumo: "56-LDR"; Nome: "Linha de distribuição rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 57; Sigla: "LDR"; Resumo: "57-LDR"; Nome: "Linha de distribuição rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 58; Sigla: "LDR"; Resumo: "58-LDR"; Nome: "Linha de distribuição rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 59; Sigla: "LDR"; Resumo: "59-LDR"; Nome: "Linha de distribuição rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 60; Sigla: "LSS"; Resumo: "60-LSS"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 61; Sigla: "LSS"; Resumo: "61-LSS"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 62; Sigla: "LSS"; Resumo: "62-LSS"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 63; Sigla: "LSS"; Resumo: "63-LSS"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 64; Sigla: "LSS"; Resumo: "64-LSS"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 65; Sigla: "LSS"; Resumo: "65-LSS"; Nome: "Linha de distribuição ≤ 13,8 kV"};
+    {Codigo: 66; Sigla: "LSS"; Resumo: "66-LSS"; Nome: "Linha de distribuição > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 67; Sigla: "LSS"; Resumo: "67-LSS"; Nome: "Linha de distribuição > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 68; Sigla: "LSS"; Resumo: "68-LSS"; Nome: "Linha de distribuição > 69 kV e ≤ 138 kV"};
+    {Codigo: 69; Sigla: "LSS"; Resumo: "69-LSS"; Nome: "Linha de distribuição > 138 kV e ≤ 230 kV"};
+    {Codigo: 70; Sigla: "TER"; Resumo: "70-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. central"};
+    {Codigo: 71; Sigla: "EQP"; Resumo: "71-EQP"; Nome: "Equipamento geral — adm. central"};
+    {Codigo: 72; Sigla: "EQP"; Resumo: "72-EQP"; Nome: "Sistema de comunicação — adm. central"};
+    {Codigo: 80; Sigla: "TER"; Resumo: "80-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. específica"};
+    {Codigo: 81; Sigla: "EQP"; Resumo: "81-EQP"; Nome: "Equipamento geral — adm. específica"};
+    {Codigo: 82; Sigla: "EQP"; Resumo: "82-EQP"; Nome: "Sistema de comunicação — adm. específica"};
+    {Codigo: 90; Sigla: "TER"; Resumo: "90-TER"; Nome: "Terrenos/benfeitorias fora de outras ODI"};
+    {Codigo: 91; Sigla: "TEL"; Resumo: "91-TEL"; Nome: "Equipamento geral fora de ODI específicas"};
+    {Codigo: 92; Sigla: "TEL"; Resumo: "92-TEL"; Nome: "Telecom, telecontrole, proteção e supervisão"};
+    {Codigo: 93; Sigla: "SMU"; Resumo: "93-SMU"; Nome: "Sistema de medição urbana (fora de usina/SE)"};
+    {Codigo: 94; Sigla: "AUX"; Resumo: "94-AUX"; Nome: "Serviços auxiliares gerais"};
+    {Codigo: 95; Sigla: "OUT"; Resumo: "95-OUT"; Nome: "Apoio operacional (usina e SE)"};
+    {Codigo: 96; Sigla: "SMR"; Resumo: "96-SMR"; Nome: "Sistema de medição rural (fora de usina/SE)"};
+    {Codigo: 97; Sigla: "OUT"; Resumo: "97-OUT"; Nome: "Sistema de despacho de carga"};
+    {Codigo: 98; Sigla: "RES"; Resumo: "98-RES"; Nome: "Reserva imobilizada"};
+    {Codigo: 99; Sigla: "INT"; Resumo: "99-INT"; Nome: "Intangível"}
+);;

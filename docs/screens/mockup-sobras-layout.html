@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tela_ItensVisita — onde colocar as sobras físicas</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy2:#1B4C86; --track:#0E2E55; --green:#3BAA48;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA; --title:#1B3E6F;
+    --label:#6B7683; --strip:#EBF4FF; --okbg:#DFF3E3; --oktx:#2E7D32;
+    --warnbg:#FDF0DC; --warntx:#8A5300; --warn:#F9C000; --primary:#348FFD;
+    --dangertx:#B3261E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{width:1024px}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; background:#FAFBFC; color:#1a1a1a}
+  .slide{width:1024px; height:576px; padding:26px 30px; display:flex; gap:34px; align-items:flex-start; border-bottom:1px solid #EDEFF2; overflow:hidden}
+  .notes{flex:1; min-width:0; padding-top:2px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  .kicker.bad{color:var(--dangertx)}
+  h2{font-size:23px; font-weight:650; margin-bottom:12px; line-height:1.2}
+  .p{font-size:13.5px; color:#3d444e; line-height:1.62; margin-bottom:11px; max-width:600px}
+  .p b{font-weight:650; color:#1a1a1a}
+  .fx{font-family:"Cascadia Mono",Consolas,monospace; font-size:12px; background:#F2F4F7; border:1px solid var(--border); border-radius:6px; padding:9px 11px; color:#26303d; line-height:1.6; max-width:600px; white-space:pre}
+  .verdict{margin-top:14px; font-size:13px; font-weight:650; color:#1a1a1a; display:flex; gap:8px; align-items:baseline}
+  .verdict s{text-decoration:none; color:var(--primary)}
+  .verdict.bad s{color:var(--dangertx)}
+
+  .phone{width:328px; flex:0 0 328px; border:1px solid var(--border); border-radius:15px; overflow:hidden; background:var(--page); position:relative; height:524px}
+  .hd{background:var(--navy); padding:9px 11px; display:flex; align-items:center; gap:9px}
+  .hdt{color:#fff; font-size:13px; font-weight:700}
+  .hd2{background:var(--navy2); padding:5px 11px; color:#fff; font-size:9.5px}
+  .pg{background:var(--track); padding:6px 11px}
+  .pgt{display:flex; justify-content:space-between; color:#fff; font-size:9px; font-weight:700}
+  .bar{height:6px; background:rgba(255,255,255,.18); border-radius:4px; margin-top:4px}
+  .bar > i{display:block; width:60%; height:100%; background:var(--green); border-radius:4px}
+  .sec{padding:8px 11px 5px; font-size:9.5px; font-weight:700; color:var(--label); letter-spacing:.7px}
+  .list{padding:0 9px 10px; display:flex; flex-direction:column; gap:8px}
+
+  .item{display:flex; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden}
+  .stripe{width:5px; flex:0 0 auto}
+  .body{flex:1; min-width:0; padding:8px 9px; display:flex; flex-direction:column; gap:6px}
+  .t{font-size:10.5px; font-weight:700; color:var(--title); line-height:1.32}
+  .qtd{display:flex; align-items:stretch; gap:10px; background:var(--strip); border-radius:8px; padding:4px 8px}
+  .qk{font-size:7.5px; font-weight:700; color:var(--label); letter-spacing:.4px}
+  .qv{font-size:11px; font-weight:700; color:var(--title)}
+  .vsep{width:1px; background:var(--border)}
+  .amber{color:var(--warntx)}
+  .foot{display:flex; justify-content:space-between; align-items:center}
+  .pill{font-size:9px; font-weight:700; padding:3px 8px; border-radius:999px; white-space:nowrap}
+  .ok{background:var(--okbg); color:var(--oktx)}
+  .sob{background:var(--warnbg); color:var(--warntx)}
+  .icons{display:flex; gap:5px}
+  .ib{width:30px; height:24px; border:1px solid var(--border); border-radius:7px; background:#fff; display:flex; align-items:center; justify-content:center}
+  .push{margin-left:auto; display:flex; align-items:center}
+
+  .innerscroll{position:relative; overflow:hidden}
+  .sbar{position:absolute; right:3px; top:6px; width:4px; background:#AEB6C0; border-radius:3px}
+  .clip{position:absolute; left:0; right:0; bottom:0; height:22px; background:linear-gradient(to bottom, rgba(241,243,245,0), rgba(241,243,245,1))}
+  .cut{border-top:1px dashed #B0B8C2; border-bottom:1px dashed #B0B8C2}
+
+  .divrow{display:flex; align-items:center; gap:9px; padding:5px 2px 1px}
+  .divrow span{font-size:9px; font-weight:700; color:var(--label); letter-spacing:.7px; white-space:nowrap}
+  .divrow i{flex:1; height:1px; background:var(--border)}
+
+  .chips{display:flex; gap:7px; padding:8px 11px 3px}
+  .chip{height:28px; padding:0 13px; border-radius:999px; display:flex; align-items:center; font-size:10.5px; font-weight:700; border:1px solid var(--border); background:#fff; color:var(--label)}
+  .chip.on{background:var(--navy); border-color:var(--navy); color:#fff}
+
+  .fab{position:absolute; right:11px; bottom:11px; display:flex; align-items:center; gap:7px; height:38px; padding:0 16px; border-radius:999px; background:var(--navy); color:#fff; font-size:11.5px; font-weight:700}
+  .twin{display:flex; gap:12px; flex:0 0 auto}
+  .twin .phone{width:232px; flex:0 0 232px}
+  .twin .hdt{font-size:10.5px}
+  .twin .t{font-size:9.5px}
+  .slide.wide .p, .slide.wide .fx{max-width:100%}
+  .slide.wide .fx{font-size:10.5px}
+  .slide.wide h2{font-size:21px}
+  .slide.wide .p{font-size:12.5px}
+</style>
+</head>
+<body><div id="app"></div>
+<script>
+const CAM = `<svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100.1 310.6 96 302 96h-92c-8.6 0-16.3 4.1-21.9 10.6l-26.6 42.1c-5.6 6.5-12.9 11.3-21.5 11.3H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg>`;
+const PEN = `<svg width="15" height="15" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M364.1 125.3L87 403l-23 45 45-23 277.8-277.1-22.7-22.6z"/><path d="M420.7 68.7l-22.6 22.6 22.6 22.6 22.6-22.6a16 16 0 000-22.6 16 16 0 00-22.6 0z"/></svg>`;
+const TRASH = `<svg width="14" height="14" viewBox="0 0 512 512" fill="none" stroke="#B3261E" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"><path d="M112 112l20 320c1 18.5 14.4 32 32 32h184c17.7 0 30.9-13.5 32-32l20-320"/><line x1="80" y1="112" x2="432" y2="112"/><path d="M192 112V72a24 24 0 0124-24h80a24 24 0 0124 24v40"/><line x1="256" y1="176" x2="256" y2="400"/></svg>`;
+const PLUS = `<svg width="14" height="14" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round"><line x1="256" y1="112" x2="256" y2="400"/><line x1="400" y1="256" x2="112" y2="256"/></svg>`;
+const BACK = `<svg width="17" height="17" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>`;
+
+const BASE = [
+  {cod:"570.01", desc:"TRANSFORMADOR DE FORÇA TRIPOLAR 5,0/6,25MVA 34,5/13,8KV", base:1, contado:1},
+  {cod:"210.03", desc:"DISJUNTOR TRIPOLAR 13,8KV 630A SF6 10KA", base:3, contado:3},
+  {cod:"160.15", desc:"CHAVE INTERRUPTORA SOB CARGA TRIPOLAR 13,8KV 400A AUTO", base:3, contado:5}
+];
+const SOBRAS = [
+  {cod:"165.02", desc:"TRANSFORMADOR DE POTENCIAL INDUTIVO 13,8KV", qtd:"2 UN"},
+  {cod:"415.01", desc:"BANCO DE BATERIAS 125VCC 100AH", qtd:"1 UN"},
+  {cod:"320.07", desc:"PAINEL DE COMANDO E PROTEÇÃO 220VCA", qtd:"3 UN"},
+  {cod:"180.04", desc:"PARA-RAIOS DE ÓXIDO METÁLICO 15KV", qtd:"6 UN"}
+];
+
+function baseCard(it){
+  const div = it.contado !== it.base;
+  return `<div class="item"><div class="stripe" style="background:var(--green)"></div><div class="body">
+    <div class="t">${it.cod} - ${it.desc}</div>
+    <div class="qtd">
+      <div><div class="qk">BASE</div><div class="qv">${it.base} UN</div></div><div class="vsep"></div>
+      <div><div class="qk">CONTADO</div><div class="qv ${div?'amber':''}">${it.contado} UN</div></div>
+      ${div?`<div class="push"><span class="pill sob">+${it.contado-it.base}</span></div>`:``}
+    </div>
+    <div class="foot"><span class="pill ok">Confirmado</span>
+      <div class="icons"><div class="ib">${CAM}</div><div class="ib">${PEN}</div></div></div>
+  </div></div>`;
+}
+function sobraCard(s){
+  return `<div class="item"><div class="stripe" style="background:var(--warn)"></div><div class="body">
+    <div class="t">${s.cod} - ${s.desc}</div>
+    <div class="qtd"><div><div class="qk">QUANTIDADE</div><div class="qv">${s.qtd}</div></div>
+      <div class="push"><span class="pill sob">SOBRA FÍSICA</span></div></div>
+    <div class="foot"><div class="icons"><div class="ib">${TRASH}</div></div>
+      <div class="icons"><div class="ib">${CAM}</div><div class="ib">${PEN}</div></div></div>
+  </div></div>`;
+}
+const head = `<div class="hd">${BACK}<div class="hdt">SE-005 - Sub. Est. Litoral</div></div>
+  <div class="hd2">Neoenergia Pernambuco Ago 2026 - Agosto 2026</div>
+  <div class="pg"><div class="pgt"><span>3 de 5 itens revisados</span><span>60%</span></div><div class="bar"><i></i></div></div>`;
+
+const phoneA = `<div class="phone">${head}
+  <div class="sec">ITENS DA BASE</div>
+  <div class="innerscroll cut" style="height:150px"><div class="list">${baseCard(BASE[0])}${baseCard(BASE[1])}</div>
+    <div class="sbar" style="height:60px"></div><div class="clip"></div></div>
+  <div class="sec">SOBRAS FÍSICAS</div>
+  <div class="innerscroll cut" style="height:148px"><div class="list">${SOBRAS.slice(0,3).map(sobraCard).join('')}</div>
+    <div class="sbar" style="height:46px"></div><div class="clip"></div></div>
+  <div class="fab">${PLUS} Adicionar item</div></div>`;
+
+const phoneB = `<div class="phone">${head}
+  <div class="sec">ITENS DA BASE</div>
+  <div class="list">${BASE.slice(0,2).map(baseCard).join('')}
+    <div class="divrow"><span>SOBRAS FÍSICAS</span><i></i></div>
+    ${SOBRAS.slice(0,2).map(sobraCard).join('')}</div>
+  <div class="fab">${PLUS} Adicionar item</div></div>`;
+
+const phoneC1 = `<div class="phone">${head}
+  <div class="chips"><div class="chip on">BASE (5)</div><div class="chip">SOBRAS (4)</div></div>
+  <div class="list">${BASE.map(baseCard).join('')}</div>
+  <div class="fab">${PLUS} Adicionar item</div></div>`;
+
+const phoneC2 = `<div class="phone">${head}
+  <div class="chips"><div class="chip">BASE (5)</div><div class="chip on">SOBRAS (4)</div></div>
+  <div class="list">${SOBRAS.map(sobraCard).join('')}</div>
+  <div class="fab">${PLUS} Adicionar item</div></div>`;
+
+document.getElementById('app').innerHTML = `
+<div class="slide">
+  ${phoneA}
+  <div class="notes">
+    <div class="kicker bad">DESENHO A — DUAS GALERIAS EMPILHADAS</div>
+    <h2>Duas áreas de rolagem na mesma tela</h2>
+    <p class="p">É o que eu tinha te passado. Container vertical no Power Apps não rola — só galeria rola. Então cada galeria rola <b>por dentro</b> do próprio retângulo, enquanto a tela rola por fora. As linhas tracejadas marcam onde o conteúdo é cortado.</p>
+    <p class="p">Na prática, com três sobras a segunda lista já não cabe no <b>Min(qtd * 200; 600)</b> que eu tinha proposto, e o técnico passa a ter dois alvos de rolagem sobrepostos. No celular, o dedo às vezes move a lista de dentro, às vezes a de fora.</p>
+    <div class="fx">Height: Min(CountRows(...) * 200; 600)   // teto arbitrário
+FillPortions: 0                          // não cresce junto</div>
+    <div class="verdict bad"><s>Veredito</s> descartar — o defeito é estrutural, não de ajuste de altura.</div>
+  </div>
+</div>
+
+<div class="slide">
+  ${phoneB}
+  <div class="notes">
+    <div class="kicker">DESENHO B — LISTA ÚNICA, SOBRAS NO FIM</div>
+    <h2>Uma rolagem só, com custo de fórmula</h2>
+    <p class="p">A sobra entra no fluxo natural de revisão: o técnico desce a lista e encontra o que adicionou logo depois dos itens da base, sem toque nenhum a mais.</p>
+    <p class="p">O preço é que Power Fx não tem união de tabelas. Para a lista continuar <b>viva</b> — atualizando quando alguém confirma um item — o caminho é o truque do Ungroup, com as duas coleções projetadas no mesmo conjunto exato de colunas e o mesmo tipo em cada uma.</p>
+    <div class="fx">Ungroup(
+    Table({lista: baseProjetada}; {lista: sobrasProjetadas});
+    "lista"
+)</div>
+    <p class="p" style="margin-top:11px">Some a isso um template com três estados de altura (pendente 250, confirmado 180, sobra 190) e o fato de que <b>cada coluna nova em colCampoOffline quebra a projeção</b> até você ajustar as duas pontas.</p>
+    <div class="verdict"><s>Veredito</s> melhor UX em SE pequena; a mais frágil de manter.</div>
+  </div>
+</div>
+
+<div class="slide wide">
+  <div class="twin">${phoneC1}${phoneC2}</div>
+  <div class="notes">
+    <div class="kicker">DESENHO C — CHIPS BASE / SOBRAS</div>
+    <h2>Duas galerias no mesmo espaço</h2>
+    <p class="p">As duas ocupam o mesmo retângulo e alternam por <b>Visible</b>. Cada uma mantém o schema e o template natural dela: a aba BASE é exatamente a tela de hoje, sem tocar no card.</p>
+    <div class="fx">// chipBase.OnSelect
+Set(varAbaItens; "BASE")
+
+galItensBase.Visible: varAbaItens = "BASE"
+galSobras.Visible:    varAbaItens = "SOBRAS"
+
+chipSobras.Text:
+    "SOBRAS (" & CountRows(galSobras.AllItems) & ")"</div>
+    <p class="p" style="margin-top:11px">Só uma rola por vez e ela usa a altura inteira, então 4 ou 40 sobras não mudam o layout. O contador no chip resolve a descoberta — o técnico vê que existem sobras sem procurar.</p>
+    <p class="p">O custo é um toque para sair do fluxo de revisão e conferir o que foi adicionado.</p>
+    <div class="verdict"><s>Veredito</s> aguenta SE de 5 e de 500 itens com a mesma fórmula.</div>
+  </div>
+</div>`;
+</script>
+</body>
+</html>

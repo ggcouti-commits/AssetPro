@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Incluir rede — lista de campanhas</title>
+<style>
+  :root{--navy:#12315F;--navy2:#1A3E78;--page:#F3F5F8;--border:#E3E7EE;--title:#1B3E6F;--label:#7A8494;--blue:#2F6FE0;--green:#1F9D55}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{margin:0;background:#E8ECF0;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+  .app{width:1280px;height:760px;display:flex;background:var(--page);position:relative;overflow:hidden}
+  .sb{width:196px;background:var(--navy);color:#fff;display:flex;flex-direction:column;padding:16px 12px 12px}
+  .logo{font-weight:700;font-size:18px;padding:6px 8px 18px}
+  .logo span{font-weight:500;opacity:.85}
+  .ni{height:40px;border-radius:8px;display:flex;align-items:center;padding:0 12px;font-weight:650;color:#E7EEF8;margin-bottom:4px}
+  .ni.on{background:var(--navy2)}
+  .foot{margin-top:auto;display:flex;background:rgba(255,255,255,.12);border-radius:16px;padding:3px}
+  .foot b{flex:1;text-align:center;font-size:12px;padding:6px 0;border-radius:14px}
+  .foot .on{background:var(--blue)}
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .top{height:64px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 18px}
+  .tt{font-size:22px;font-weight:700;color:#223}
+  .ts{font-size:12px;color:var(--label)}
+  .body{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .kpi{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .k{font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--label)}
+  .kv{font-size:28px;font-weight:700;color:var(--blue);margin-top:2px}
+  .ks{font-size:12px;color:var(--label)}
+  .split{display:grid;grid-template-columns:1fr 1.15fr;gap:12px}
+  .panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+  .ph{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#243044;margin-bottom:10px}
+  .ph span{font-weight:500;color:var(--label);font-size:12px}
+  .drop{height:250px;border:1.5px dashed #C5D4EA;border-radius:12px;background:#F7FAFF;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px}
+  .plus{width:48px;height:48px;border-radius:12px;background:#D9E8FF;color:var(--blue);font-size:26px;display:flex;align-items:center;justify-content:center}
+  .dn{font-size:18px;font-weight:700;color:#243044;margin-top:10px}
+  .ds{font-size:12px;color:var(--label);margin-top:6px;max-width:280px;line-height:1.4}
+  .btns{display:flex;gap:8px;margin-top:14px}
+  .nb{height:36px;padding:0 14px;border-radius:8px;background:var(--navy);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center}
+  .nb.alt{background:#fff;color:var(--navy);border:1.5px solid var(--navy);outline:3px solid #2E9B4A}
+  .row{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:#FBFCFE;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .name{font-size:14px;font-weight:700;color:#243044}
+  .meta{font-size:12px;color:var(--label);margin-top:3px}
+  .st{height:24px;padding:0 10px;border-radius:999px;background:#E7F0FF;color:#2A62C5;font-size:12px;font-weight:700;display:inline-flex;align-items:center}
+  .ex{color:#E23B3B;font-size:13px;font-weight:700}
+  .right{display:flex;align-items:center;gap:8px}
+  .go{height:32px;padding:0 12px;border-radius:8px;background:var(--green);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center}
+  .ghost{height:32px;padding:0 12px;border-radius:8px;background:#EEF1F5;color:#8A93A0;font-size:13px;font-weight:700;display:flex;align-items:center}
+  .blue{height:32px;padding:0 12px;border-radius:8px;background:var(--blue);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center}
+  .mask{position:absolute;inset:0;background:rgba(18,49,95,.45);display:flex;align-items:center;justify-content:center}
+  .dlg{width:640px;background:#fff;border-radius:14px;box-shadow:0 18px 48px rgba(18,49,95,.25)}
+  .hd{padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+  .dt{font-size:18px;font-weight:700;color:var(--title)}
+  .ds2{font-size:12.5px;color:var(--label);margin-top:3px}
+  .x{width:32px;height:32px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center}
+  .bd{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+  .item{border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px;background:#fff}
+  .item:first-child{border-color:var(--navy);background:#F7FAFF}
+  .nm{font-size:14px;font-weight:700;color:var(--title);flex:1}
+  .im{font-size:12px;color:var(--label);margin-top:3px}
+  .pick{height:32px;padding:0 12px;border-radius:8px;background:var(--navy);color:#fff;font-size:12.5px;font-weight:700;display:flex;align-items:center}
+  .ft{padding:12px 18px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end}
+  .cancel{height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--border);font-weight:700;font-size:13px;display:flex;align-items:center;color:var(--title)}
+</style>
+</head>
+<body>
+  <div class="app" id="painel">
+    <aside class="sb">
+      <div class="logo">asset<span>experts</span></div>
+      <div class="ni">Home</div>
+      <div class="ni on">Importar / Exportar</div>
+      <div class="ni">Conferência</div>
+      <div class="ni">Inventários</div>
+      <div class="ni">Usuários</div>
+      <div class="foot"><b class="on">Light</b><b>Dark</b></div>
+    </aside>
+    <section class="main">
+      <header class="top"><div><div class="tt">Importar/Exportar</div><div class="ts">Importar planilha e exportar SEs finalizadas</div></div></header>
+      <div class="body">
+        <div class="kpis">
+          <div class="kpi"><div class="k">ENTRADA</div><div class="kv">2</div><div class="ks">campanhas no sistema</div></div>
+          <div class="kpi"><div class="k">SAÍDA PRONTA</div><div class="kv" style="color:var(--green)">3</div><div class="ks">SEs finalizadas · podem baixar agora</div></div>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <div class="ph">Importar</div>
+            <div class="drop">
+              <div class="plus">+</div>
+              <div class="dn">Novo projeto</div>
+              <div class="ds">Cria a campanha. Incluir rede escolhe uma campanha que já existe.</div>
+              <div class="btns"><div class="nb">Novo projeto</div><div class="nb alt">Incluir rede</div></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph">Exportar <span>Os cards não ganham botão</span></div>
+            <div class="row"><div><div class="name">Companhia Estadual Jan 2027</div><div class="meta">outubro 2026 · 12 instalações</div><div class="st" style="margin-top:8px">Em andamento</div></div><div><div class="ex" style="text-align:right">Excluir</div><div class="right" style="margin-top:8px"><div class="ghost">Sem saída</div><div class="go">Baixar</div></div></div></div>
+            <div class="row"><div><div class="name">Neoenergia Brasil Out 2026</div><div class="meta">outubro 2026 · 4 instalações</div><div class="st" style="margin-top:8px">Em andamento</div></div><div><div class="ex" style="text-align:right">Excluir</div><div class="right" style="margin-top:8px"><div class="blue">Atualizar</div><div class="go">Baixar</div></div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="app" id="lista" style="margin-top:0">
+    <aside class="sb">
+      <div class="logo">asset<span>experts</span></div>
+      <div class="ni on">Importar / Exportar</div>
+    </aside>
+    <section class="main"></section>
+    <div class="mask"><div class="dlg">
+      <div class="hd"><div><div class="dt">Incluir rede</div><div class="ds2">Campanhas em andamento ou pendentes, mesmo as que já têm rede.</div></div><div class="x">✕</div></div>
+      <div class="bd">
+        <div class="item"><div><div class="nm">Companhia Estadual de Distribuição de Energia Elétrica Jan 2027</div><div class="im">outubro 2026 · já tem Rede 01 · Em andamento</div></div><div class="pick">Escolher</div></div>
+        <div class="item"><div><div class="nm">Neoenergia Brasil Out 2026</div><div class="im">outubro 2026 · 4 instalações · Em andamento</div></div><div class="pick">Escolher</div></div>
+      </div>
+      <div class="ft"><div class="cancel">Cancelar</div></div>
+    </div></div>
+  </div>
+<script>
+  const q = new URLSearchParams(location.search).get("estado");
+  if (q === "painel") document.getElementById("lista").style.display = "none";
+  if (q === "lista") document.getElementById("painel").style.display = "none";
+</script>
+</body>
+</html>

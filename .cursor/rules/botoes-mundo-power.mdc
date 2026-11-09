@@ -1,0 +1,16 @@
+---
+description: Botões do app — preferir Mundo Power (Image + SVG), não o botão clássico
+alwaysApply: true
+---
+
+# Botões — Mundo Power
+
+Decisão 10.10.2026 (Fenômeno).
+
+No Desktop e no mobile, botão de ação (confirmar, cancelar, voltar, fechar, escolher, novo) é o **Mundo Power**: controle `Image`, ícone Ionic no `IconSVG`, texto no `IconText`.
+
+- Copiar um botão que já existe no app (por exemplo `btnCancelarListaRede` ou `btnFecharListaRede`) e trocar o SVG, o texto e as cores.
+- Cor de tela: `Cor.*` no Fill, BorderColor, HoverFill, HoverBorderColor, PressedFill, PressedBorderColor.
+- Cor do ícone e da letra, dentro do SVG: `TCor.*` (`IconColor` e `TextColor`).
+- **X** de fechar: o mesmo modelo do `btnFecharListaRede` (ícone só, sem texto).
+- Botão clássico (`Classic/Button`) só quando o Fenômeno pedir, como o par **Com base** / **Sem base**.

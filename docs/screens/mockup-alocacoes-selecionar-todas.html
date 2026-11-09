@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Tela_Alocacoes · Selecionar todas</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1; --sel:#E8F1FB;
+    --okbg:#C6E5C5; --oktx:#2D752C;
+    --pendbg:#EBEAEA; --pendtx:#706F6E;
+    --danger:#F1416C; --dangerbg:#FDECEC;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px 22px 36px}
+  body.shot{padding:0; background:#fff}
+  body.shot .doc, body.shot .cap, body.shot .app:not(.show){display:none}
+
+  .doc .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:26px 0 6px}
+  .doc .kicker:first-child{margin-top:0}
+  .doc h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .doc .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1100px; margin-bottom:16px}
+  .doc .lead b{color:#1a1a1a}
+  .cap{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase; margin:0 0 8px}
+
+  .app{
+    width:1280px; height:720px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page);
+  }
+  body.shot .app.show{border:0; border-radius:0}
+
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni.on{background:var(--navy3); color:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{height:66px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 20px 0 22px; gap:10px}
+  .back{width:34px; height:34px; border-radius:8px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--title)}
+  .tt{font-size:20px; font-weight:700; color:var(--title)}
+  .ts{font-size:12px; color:var(--label); margin-top:2px}
+
+  .body{padding:16px 20px; display:grid; grid-template-columns:260px 1fr 260px; gap:14px; min-height:0; flex:1}
+  .col{background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; display:flex; flex-direction:column}
+  .colh{padding:12px 14px 10px; border-bottom:1px solid #EDF0F3}
+  .colht{font-size:13px; font-weight:700; color:var(--title)}
+  .colhs{font-size:11.5px; color:var(--label); margin-top:2px}
+  .row{padding:13px 14px; border-bottom:1px solid #EDF0F3; display:flex; justify-content:space-between; align-items:center; gap:10px}
+  .row.sel{background:var(--sel); box-shadow:inset 3px 0 0 var(--navy)}
+  .rname{font-size:14px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:12px; color:var(--label); margin-top:2px}
+  .chip{height:21px; padding:0 9px; border-radius:999px; font-size:10px; font-weight:700; display:inline-flex; align-items:center}
+  .c-run{background:#D6E8FF; color:#1B4C86}
+  .c-ok{background:var(--okbg); color:var(--oktx)}
+  .x{width:28px; height:28px; border-radius:8px; border:1px solid #F5C2C7; color:var(--danger); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; background:#FFF6F7}
+
+  .sewrap{padding:0 10px 10px; display:flex; flex-direction:column; gap:10px; overflow:auto}
+  .se{
+    height:90px; border:1px solid var(--border); border-radius:15px;
+    display:flex; align-items:center; gap:8px; padding:0 10px 0 0;
+    box-shadow:0 2px 8px rgba(18,59,110,.08); background:#fff; position:relative;
+  }
+  .se.pick{background:var(--sel); border-color:var(--primaryD30)}
+  .se.mine{border-color:var(--primaryD30)}
+  .se.busy{border-color:#F5C2C7; background:#FFF9F9}
+  .bar{width:15px; align-self:stretch; border-radius:15px 0 0 15px; background:var(--primaryD30); flex:0 0 15px}
+  .bar.off{background:transparent}
+  .bar.busy{background:#F5C2C7}
+  .secod{font-size:15px; font-weight:700; color:var(--primaryD30); width:88px; flex:0 0 88px; padding-left:6px}
+  .sen{flex:1; min-width:0}
+  .sename{font-size:15px; font-weight:700; color:var(--primaryD30)}
+  .sem{font-size:12px; color:var(--label); margin-top:2px; font-weight:600}
+  .add{
+    height:40px; width:132px; border-radius:10px; font-size:13px; font-weight:700;
+    background:var(--primaryD30); color:#fff; display:flex; align-items:center; justify-content:center; gap:6px; flex:0 0 132px;
+  }
+  .add.off{background:#fff; color:var(--pendtx); border:1px solid var(--border)}
+  .add.busy{background:#fff; color:var(--danger); border:1px solid #F5C2C7}
+
+  .actions{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+  .b{
+    height:36px; padding:0 12px; border-radius:8px; font-size:12px; font-weight:700;
+    display:inline-flex; align-items:center; gap:6px; border:1px solid var(--primary);
+    background:#fff; color:var(--primaryD30);
+  }
+  .b.ghost{background:var(--pendbg); color:var(--pendtx); border-color:transparent}
+  .b.pri{background:var(--primaryD30); color:#fff; border-color:var(--primaryD30)}
+
+  .zoom{
+    width:1280px; background:#fff; border:1px solid var(--border); border-radius:12px;
+    padding:22px 24px 26px;
+  }
+  body.shot .zoom.show{border:0; border-radius:0; width:1280px; min-height:720px}
+  .zh{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:16px}
+  .zt{font-size:18px; font-weight:700; color:var(--title)}
+  .zs{font-size:13px; color:var(--label); margin-top:3px}
+  .note{margin-top:16px; font-size:12.5px; color:var(--label); line-height:1.5; max-width:980px}
+</style>
+</head>
+<body>
+<div class="doc">
+  <div class="kicker">DESKTOP · TELA_ALOCACOES · 18.09</div>
+  <h1>Botão no cabeçalho. Clique no card marca uma.</h1>
+  <p class="lead">Checkbox por linha briga com o <b>Adicionar</b> de 150px que você já tem. <b>Selecionar todas (N)</b> é o pedido do João (~300). Ocupada não entra. <b>Designar N</b> só aparece com seleção.</p>
+</div>
+
+<div class="cap">1 · depois de Selecionar todas — livres azuis, ocupada de fora</div>
+<div class="app" id="depois">
+  <aside class="sb">
+    <div class="brand">
+      <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/></svg></div>
+      <div class="brandname">Infralytics</div>
+    </div>
+    <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+    <nav class="nav">
+      <div class="ni">Home</div>
+      <div class="ni">Projetos</div>
+      <div class="ni">Inventários</div>
+      <div class="ni">Importar / Exportar</div>
+      <div class="ni on">Usuários</div>
+    </nav>
+    <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+  </aside>
+  <section class="main">
+    <header class="top">
+      <div class="back">←</div>
+      <div>
+        <div class="tt">Designar instalações</div>
+        <div class="ts">Ricardo · Inventariante01</div>
+      </div>
+    </header>
+    <div class="body">
+      <div class="col">
+        <div class="colh">
+          <div class="colht">Projeto</div>
+          <div class="colhs">Campanhas ativas</div>
+        </div>
+        <div class="row sel">
+          <div>
+            <div class="rname">Coelba Dez 2026</div>
+            <div class="rmeta">INV-018 · 12 instalações</div>
+          </div>
+          <span class="chip c-run">Em andamento</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="rname">Neoenergia PE</div>
+            <div class="rmeta">INV-012 · 4 instalações</div>
+          </div>
+          <span class="chip c-ok">Finalizada</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="colh">
+          <div class="colht">Instalações do projeto</div>
+          <div class="colhs">Coelba Dez 2026 · 3 selecionadas</div>
+          <div class="actions">
+            <div class="b">Selecionar todas (3)</div>
+            <div class="b ghost">Limpar</div>
+            <div class="b pri">Designar 3 instalações</div>
+          </div>
+        </div>
+        <div class="sewrap">
+          <div class="se pick">
+            <div class="bar"></div>
+            <div class="secod">SE-001</div>
+            <div class="sen"><div class="sename">SE Asa Sul</div><div class="sem">138 kV · Pendente</div></div>
+            <div class="add">+ Adicionar</div>
+          </div>
+          <div class="se pick">
+            <div class="bar"></div>
+            <div class="secod">SE-002</div>
+            <div class="sen"><div class="sename">SE Brazlândia</div><div class="sem">138 kV · Pendente</div></div>
+            <div class="add">+ Adicionar</div>
+          </div>
+          <div class="se busy">
+            <div class="bar busy"></div>
+            <div class="secod">SE-003</div>
+            <div class="sen"><div class="sename">SE Taguatinga</div><div class="sem">69 kV · Otavio</div></div>
+            <div class="add busy">Ocupada</div>
+          </div>
+          <div class="se pick">
+            <div class="bar"></div>
+            <div class="secod">SE-004</div>
+            <div class="sen"><div class="sename">SE Gama</div><div class="sem">13,8 kV · Pendente</div></div>
+            <div class="add">+ Adicionar</div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="colh">
+          <div class="colht">Já designadas a Ricardo</div>
+          <div class="colhs">1 instalação</div>
+        </div>
+        <div class="sewrap">
+          <div class="se mine">
+            <div class="bar"></div>
+            <div class="sen" style="padding-left:8px"><div class="sename">SE-009 · Ceilândia</div><div class="sem">Coelba Dez 2026</div></div>
+            <div class="x">×</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="doc" style="margin-top:28px"></div>
+<div class="cap">2 · zoom do cabeçalho + card (é isto que cola no Studio)</div>
+<div class="zoom" id="zoom">
+  <div class="zh">
+    <div>
+      <div class="zt">Instalações do projeto</div>
+      <div class="zs">Coelba Dez 2026 · 3 selecionadas</div>
+    </div>
+    <div class="actions" style="margin:0">
+      <div class="b">Selecionar todas (3)</div>
+      <div class="b ghost">Limpar</div>
+      <div class="b pri">Designar 3 instalações</div>
+    </div>
+  </div>
+  <div class="sewrap" style="padding:0; max-width:720px">
+    <div class="se pick">
+      <div class="bar"></div>
+      <div class="secod">SE-001</div>
+      <div class="sen"><div class="sename">SE Asa Sul</div><div class="sem">138 kV · Pendente</div></div>
+      <div class="add">+ Adicionar</div>
+    </div>
+    <div class="se pick">
+      <div class="bar"></div>
+      <div class="secod">SE-002</div>
+      <div class="sen"><div class="sename">SE Brazlândia</div><div class="sem">138 kV · Pendente</div></div>
+      <div class="add">+ Adicionar</div>
+    </div>
+    <div class="se busy">
+      <div class="bar busy"></div>
+      <div class="secod">SE-003</div>
+      <div class="sen"><div class="sename">SE Taguatinga</div><div class="sem">69 kV · Otavio</div></div>
+      <div class="add busy">Ocupada</div>
+    </div>
+  </div>
+  <p class="note">Livre selecionada = fundo <b>Cor.PrimaryL90</b> + barra. Ocupada fica vermelha e fora da conta. O + Adicionar continua designando uma na hora. Sem checkbox no card.</p>
+</div>
+
+<script>
+  var q = location.search;
+  if (q.indexOf("shot=depois") >= 0) { document.body.classList.add("shot"); document.getElementById("depois").classList.add("show"); }
+  if (q.indexOf("shot=zoom") >= 0) { document.body.classList.add("shot"); document.getElementById("zoom").classList.add("show"); }
+</script>
+</body>
+</html>

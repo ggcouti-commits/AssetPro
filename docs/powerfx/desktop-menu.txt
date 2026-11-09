@@ -1,0 +1,164 @@
+# Desktop — cmpMenuV1 (Studio 2026-09-04)
+# Fonte do menu: App.Formulas → TabelaMenu.
+# Front: item campanhas mostra "Projetos". Key e Navigate nao mudam.
+# Cores: CoresLight / CoresDark / TextCores* iguais ao mobile.
+# Locale PT-BR no Studio: ; nos argumentos | ;; entre instrucoes.
+
+## Regra de perfil
+
+| `varPerfil` | Menu | StartScreen (apos OnStart) |
+|-------------|------|----------------------------|
+| `ESCRITORIO` | `TabelaMenu` inteira | `Tela_Campanhas` |
+| `INVENTARIANTE` | **So** item `Key = "inventarios"` | `Tela_Inventarios` |
+
+Desktop e so escritorio: `varPerfil = "ESCRITORIO"` no OnStart (conta M365 unica). Campo autentica na `Tela_Login` do Mobile (lista `Inventariantes`). CRUD dos slots: `Tela_Usuarios`. Ver `AppDesktop-OnStart.txt`.
+
+Mockups: inventariante so ve **Inventarios** — `docs/screens/mockup-inventario-desktop.png`, `mockup-inventario-fluxo.html`.
+
+---
+
+## Passo a passo — Studio
+
+### 1. `App` → `OnStart`
+
+Perfil fica `ESCRITORIO` em `docs/powerfx/AppDesktop-OnStart.txt`. Sem redirect para Inventarios.
+
+### 2. `cmpMenuV1_1` (em cada tela que usa o menu) → propriedade **DataSource**
+
+Apaga `TabelaMenu`. Cola:
+
+```
+If(
+    varPerfil = "INVENTARIANTE";
+    Filter(TabelaMenu; Key = "inventarios");
+    TabelaMenu
+)
+```
+
+**Resultado:** inventariante ve um unico item no menu lateral.
+
+### 3. cmpMenuV1_1 → OnSelect
+
+Incluir (ou conferir) o case **inventarios** — coleta de dados, **nao** consulta Subestacoes:
+
+```
+Switch(
+    varMenuKey;
+    "home"; Navigate(Tela_Home; ScreenTransition.None);
+    "exportar"; Navigate(Tela_Exportar; ScreenTransition.None);
+    "campanhas"; Navigate(Tela_Campanhas; ScreenTransition.None);
+    "conferencia"; Navigate(Tela_Conferência; ScreenTransition.None);
+    "inventarios"; Navigate(Tela_Inventarios; ScreenTransition.None);
+    "cadastros"; Navigate(Tela_Cadastros; ScreenTransition.None);
+    "concessionarias"; Navigate(Tela_Cadastros; ScreenTransition.None);
+    "usuarios"; Navigate(Tela_Usuarios; ScreenTransition.None)
+)
+```
+
+### 4. (Opcional) Subtitulo do usuario no menu
+
+Se o componente expuser rotulo de perfil, usar algo como:
+
+```
+If(varPerfil = "INVENTARIANTE"; "inventariante"; "escritório")
+```
+
+---
+
+## Pendente relacionado (nao e menu)
+
+- [x] Login proprio — lista `Inventariantes` + `Tela_Login` (Mobile) + `Tela_Usuarios` (Desktop)
+- [x] `Alocacoes`: campanhas / SEs designadas ao slot — `Tela_Alocacoes`
+- [ ] `Tela_Inventarios`: filtrar pelo que estiver em `Alocacoes`
+
+---
+
+## cmpMenuV1_1 — YAML de referencia (Studio en-US)
+
+- cmpMenuV1_1:
+    Control: CanvasComponent
+    ComponentName: cmpMenuV1
+    Properties:
+      AccessSimulatorRule: =true
+      AppVersion: ="1.0.0"
+      BackgroundColor: =TCor.BackgroundTop
+      BackgroundColorSelected: =TCor.Primary
+      ButtonHeight: =40
+      ButtonHeightSUB: =30
+      ButtonRadius: =0
+      ButtonSpace: =10
+      DataSource: =If(varPerfil = "INVENTARIANTE", Filter(TabelaMenu, Key = "inventarios"), TabelaMenu)
+      EmailUser: =User().Email
+      Fill: =Cor.Transparent
+      Height: =Max(App.Height, App.MinScreenHeight)
+      HoverFill: =TCor.TransparentLight
+      IconColor: =TCor.TextInverted
+      IconColorSelected: =TCor.TextInverted
+      Info: |-
+        ="
+        > Em relação ao componente de Power Apps
+
+        Este componente foi desenvolvido por Daniel Petrin (Mundo Power) e é de uso exclusivo dos alunos da Comunidade Mundo Power.
+
+        Versão 1.0.0
+        Publicada em 25/01/2024
+
+        www.mundopower.com.br
+
+        > Em relação ao licenciamento dos ícones:
+
+        The MIT License (MIT)
+
+        Copyright (c) 2015-present Ionic (http://ionic.io/)
+
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the 'Software'), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+
+        "
+      LightDarkModeColors: |-
+        =//PROPERTIES USED IN LIGHT AND DARK BUTTONS
+
+        If(varDark,
+            {
+                TextColor:TCor.TextInverted,
+                SelectedTextColor:TCor.TextInverted,
+                SelectedColor:Cor.Primary,
+                HoverSelectedColor:Cor.TransparentPrimaryLight,
+                BackgroundColor:Cor.BackgroundScreen
+            }
+            ,
+            {
+                TextColor:TCor.TextInverted,
+                SelectedTextColor:TCor.TextInverted,
+                SelectedColor:Cor.Primary,
+                HoverSelectedColor:Cor.PrimaryD30,
+                BackgroundColor:Cor.PrimaryD80
+            }
+        )
+      MarginExt: |+
+        ="20,10,20,20"
+      MenuBorderRadius: ="10,10,10,10"
+      OnSelect: |-
+        =Switch(
+            varMenuKey,
+            "home", Navigate(Tela_Home, ScreenTransition.None),
+            "campanhas", Navigate(Tela_Campanhas, ScreenTransition.None),
+            "conferencia", Navigate(Tela_Conferencia, ScreenTransition.None),
+            "inventarios", Navigate(Tela_Inventarios, ScreenTransition.None)
+        )
+      PaddingH: =0
+      PaddingIconLeft: =15
+      Shadow: =
+      ShowUser: =true
+      TextColor: =TCor.TextInverted
+      TextColorSelected: =TCor.TextInverted
+      Width: =If(Self.ExpandedMenu,Self.WidthMenuExpanded,Self.WidthMenuClosed + Self.PaddingH)+cmpMenuV1_1.MarginH
+      WidthMenuClosed: =55
+      WidthMenuExpanded: =240
+
+# SVG Inventarios (Ionicons 5) — clipboard:
+# <path d='M368,48H356.59a8,8,0,0,1-7.44-5.08A42.18,42.18,0,0,0,309.87,16H202.13a42.18,42.18,0,0,0-39.28,26.92A8,8,0,0,1,155.41,48H144a64,64,0,0,0-64,64V432a64,64,0,0,0,64,64H368a64,64,0,0,0,64-64V112A64,64,0,0,0,368,48Zm-48.13,64H192.13a16,16,0,0,1,0-32H319.87a16,16,0,0,1,0,32Z'></svg>

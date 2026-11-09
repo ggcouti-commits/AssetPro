@@ -1,0 +1,294 @@
+# Cores — App.Formulas (Desktop = Mobile)
+# Locale PT-BR: ;
+#
+# NUNCA RGBA hex solto.
+# Controle: Cor.*  |  SVG/hex: TCor.*
+# OnStart: Set(Cor; CoresLight);; Set(TCor; TextCoresLight);;
+#
+# Os quatro blocos têm as MESMAS chaves (inclui SuccessD30/L* e Danger).
+# Sem isso o toggle de tema quebra.
+
+## App → Formulas — bloco completo (apaga e cola)
+
+CoresLight=
+    {
+        BackgroundInput: ColorValue("#ffffff");
+        BackgroundInputHover: ColorValue("#EBF4FF");
+        BackgroundScreen: ColorValue("#EBEAEA");
+        BackgroundStandard: ColorValue("#ffffff");
+        BackgroundTop: ColorValue("#153965");
+        Border: ColorValue("#C2C1C1");
+        Cancel: ColorValue("#ADADAC");
+        Custom1: ColorValue("#ffffff");
+        Custom2: ColorValue("#ffffff");
+        Custom3: ColorValue("#ffffff");
+        Danger: ColorValue("#C23934");
+        Delete: ColorValue("#F1416C");
+        DeleteD30: ColorValue("#A92E4C");
+        DeleteD60: ColorValue("#762035");
+        Disabled: ColorValue("#EBEAEA");
+        DisabledButton: ColorValue("#EBEAEA");
+        DisabledText: ColorValue("#ADADAC");
+        GallerySeparator: ColorValue("#F5F5F5");
+        Neutral: ColorValue("#323130");
+        NeutralD30: ColorValue("#232222");
+        NeutralD60: ColorValue("#141413");
+        NeutralD90: ColorValue("#050505");
+        NeutralL30: ColorValue("#706F6E");
+        NeutralL60: ColorValue("#ADADAC");
+        NeutralL70: ColorValue("#C2C1C1");
+        NeutralL90: ColorValue("#EBEAEA");
+        NeutralL95: ColorValue("#F5F5F5");
+        Primary: ColorValue("#348FFD");
+        PrimaryD30: ColorValue("#2464B1");
+        PrimaryD60: ColorValue("#153965");
+        PrimaryD80: ColorValue("#0A1D33");
+        PrimaryD90: ColorValue("#050E19");
+        PrimaryL30: ColorValue("#71B1FE");
+        PrimaryL60: ColorValue("#AED2FE");
+        PrimaryL90: ColorValue("#EBF4FF");
+        Secondary: ColorValue("#7C4DFF");
+        Success: ColorValue("#40A73F");
+        SuccessD30: ColorValue("#2D752C");
+        SuccessL30: ColorValue("#79C179");
+        SuccessL70: ColorValue("#C6E5C5");
+        SuccessL90: ColorValue("#ECF6EC");
+        TextInverted: ColorValue("#ffffff");
+        TextStandard: ColorValue("#323130");
+        TransparentBlack: ColorValue("#000000DF");
+        Transparent: ColorValue("#00000000");
+        TransparentLight: ColorValue("#EBEAEA33");
+        TransparentPrimaryDark: ColorValue("#0A1D33E6");
+        TransparentPrimaryLight: ColorValue("#71B1FE1A");
+        TransparentPrimaryMed: ColorValue("#71B1FEB3");
+        TransparentWhite: ColorValue("#ffffffDF");
+        Warning: ColorValue("#F9C000");
+        WarningD30: ColorValue("#AE8600");
+        WarningD60: ColorValue("#7A5E00");
+        White: ColorValue("#ffffff")
+    };;
+
+CoresDark=
+    {
+        BackgroundInput: ColorValue("#2E3036");
+        BackgroundInputHover: ColorValue("#33353A");
+        BackgroundScreen: ColorValue("#131518");
+        BackgroundStandard: ColorValue("#212329");
+        BackgroundTop: ColorValue("#212329");
+        Border: ColorValue("#2E3036");
+        Cancel: ColorValue("#2E3036");
+        Custom1: ColorValue("#ffffff");
+        Custom2: ColorValue("#ffffff");
+        Custom3: ColorValue("#ffffff");
+        Danger: ColorValue("#C23934");
+        Delete: ColorValue("#F1416C");
+        DeleteD30: ColorValue("#A92E4C");
+        DeleteD60: ColorValue("#762035");
+        Disabled: ColorValue("#595A5F");
+        DisabledButton: ColorValue("#00000000");
+        DisabledText: ColorValue("#A6A7A9");
+        GallerySeparator: ColorValue("#2E3036");
+        Neutral: ColorValue("#D7D7D8");
+        NeutralD30: ColorValue("#E9E9EA");
+        NeutralD60: ColorValue("#F4F4F4");
+        NeutralD90: ColorValue("#FFFFFF");
+        NeutralL30: ColorValue("#646569");
+        NeutralL60: ColorValue("#4D4F54");
+        NeutralL70: ColorValue("#424449");
+        NeutralL90: ColorValue("#37393E");
+        NeutralL95: ColorValue("#2E3036");
+        Primary: ColorValue("#348FFD");
+        PrimaryD30: ColorValue("#2464B1");
+        PrimaryD60: ColorValue("#212329");
+        PrimaryD80: ColorValue("#212329");
+        PrimaryD90: ColorValue("#212329");
+        PrimaryL30: ColorValue("#71B1FE");
+        PrimaryL60: ColorValue("#494B50");
+        PrimaryL90: ColorValue("#33353A");
+        Secondary: ColorValue("#7C4DFF");
+        Success: ColorValue("#40A73F");
+        SuccessD30: ColorValue("#79C179");
+        SuccessL30: ColorValue("#4E7A4D");
+        SuccessL70: ColorValue("#2E4030");
+        SuccessL90: ColorValue("#28312A");
+        TextInverted: ColorValue("#ffffff");
+        TextStandard: ColorValue("#D7D7D8");
+        TransparentBlack: ColorValue("#000000DF");
+        Transparent: ColorValue("#00000000");
+        TransparentLight: ColorValue("#37393E33");
+        TransparentPrimaryDark: ColorValue("#37393E33");
+        TransparentPrimaryLight: ColorValue("#37393E33");
+        TransparentPrimaryMed: ColorValue("#37393E33");
+        TransparentWhite: ColorValue("#000000DF");
+        Warning: ColorValue("#F9C000");
+        WarningD30: ColorValue("#AE8600");
+        WarningD60: ColorValue("#7A5E00");
+        White: ColorValue("#ffffff")
+    };;
+
+TextCoresLight=
+    {
+        BackgroundInput: "#ffffff";
+        BackgroundInputHover: "#EBF4FF";
+        BackgroundScreen: "#EBEAEA";
+        BackgroundStandard: "#ffffff";
+        BackgroundTop: "#153965";
+        Border: "#C2C1C1";
+        Cancel: "#ADADAC";
+        Custom1: "#ffffff";
+        Custom2: "#ffffff";
+        Custom3: "#ffffff";
+        Danger: "#C23934";
+        Delete: "#F1416C";
+        DeleteD30: "#A92E4C";
+        DeleteD60: "#762035";
+        Disabled: "#EBEAEA";
+        DisabledButton: "#EBEAEA";
+        DisabledText: "#ADADAC";
+        GallerySeparator: "#F5F5F5";
+        Neutral: "#323130";
+        NeutralD30: "#232222";
+        NeutralD60: "#141413";
+        NeutralD90: "#050505";
+        NeutralL30: "#706F6E";
+        NeutralL60: "#ADADAC";
+        NeutralL70: "#C2C1C1";
+        NeutralL90: "#EBEAEA";
+        NeutralL95: "#F5F5F5";
+        Primary: "#348FFD";
+        PrimaryD30: "#2464B1";
+        PrimaryD60: "#153965";
+        PrimaryD80: "#0A1D33";
+        PrimaryD90: "#050E19";
+        PrimaryL30: "#71B1FE";
+        PrimaryL60: "#AED2FE";
+        PrimaryL90: "#EBF4FF";
+        Secondary: "#7C4DFF";
+        Success: "#40A73F";
+        SuccessD30: "#2D752C";
+        SuccessL30: "#79C179";
+        SuccessL70: "#C6E5C5";
+        SuccessL90: "#ECF6EC";
+        TextInverted: "#ffffff";
+        TextStandard: "#323130";
+        TransparentBlack: "#000000DF";
+        Transparent: "#00000000";
+        TransparentLight: "#EBEAEA33";
+        TransparentPrimaryDark: "#0A1D33E6";
+        TransparentPrimaryLight: "#71B1FE1A";
+        TransparentPrimaryMed: "#71B1FEB3";
+        TransparentWhite: "#ffffffDF";
+        Warning: "#F9C000";
+        WarningD30: "#AE8600";
+        WarningD60: "#7A5E00";
+        White: "#ffffff"
+    };;
+
+TextCoresDark=
+    {
+        BackgroundInput: "#2E3036";
+        BackgroundInputHover: "#33353A";
+        BackgroundScreen: "#131518";
+        BackgroundStandard: "#212329";
+        BackgroundTop: "#212329";
+        Border: "#2E3036";
+        Cancel: "#2E3036";
+        Custom1: "#ffffff";
+        Custom2: "#ffffff";
+        Custom3: "#ffffff";
+        Danger: "#C23934";
+        Delete: "#F1416C";
+        DeleteD30: "#A92E4C";
+        DeleteD60: "#762035";
+        Disabled: "#595A5F";
+        DisabledButton: "#00000000";
+        DisabledText: "#A6A7A9";
+        GallerySeparator: "#2E3036";
+        Neutral: "#D7D7D8";
+        NeutralD30: "#E9E9EA";
+        NeutralD60: "#F4F4F4";
+        NeutralD90: "#FFFFFF";
+        NeutralL30: "#646569";
+        NeutralL60: "#4D4F54";
+        NeutralL70: "#424449";
+        NeutralL90: "#37393E";
+        NeutralL95: "#2E3036";
+        Primary: "#348FFD";
+        PrimaryD30: "#2464B1";
+        PrimaryD60: "#212329";
+        PrimaryD80: "#212329";
+        PrimaryD90: "#212329";
+        PrimaryL30: "#71B1FE";
+        PrimaryL60: "#494B50";
+        PrimaryL90: "#33353A";
+        Secondary: "#7C4DFF";
+        Success: "#40A73F";
+        SuccessD30: "#79C179";
+        SuccessL30: "#4E7A4D";
+        SuccessL70: "#2E4030";
+        SuccessL90: "#28312A";
+        TextInverted: "#ffffff";
+        TextStandard: "#D7D7D8";
+        TransparentBlack: "#000000DF";
+        Transparent: "#00000000";
+        TransparentLight: "#37393E33";
+        TransparentPrimaryDark: "#37393E33";
+        TransparentPrimaryLight: "#37393E33";
+        TransparentPrimaryMed: "#37393E33";
+        TransparentWhite: "#000000DF";
+        Warning: "#F9C000";
+        WarningD30: "#AE8600";
+        WarningD60: "#7A5E00";
+        White: "#ffffff"
+    };;
+
+Metadados={EspessuraBordaBotao: "1"};;
+
+## Status — regra de produto
+
+# Em andamento / Em campo  = azul  (Primary)
+# Concluido / Finalizada   = verde (Success)
+# Pendente                 = cinza (Neutral)
+#
+# NAO usar o Switch antigo da Tela_SelecionarInventario (estava invertido).
+# Chip das campanhas no Mobile: Tela_SelecionarInventario → Gallery2 → Button3_13
+# (Fill e Color). Pendente cai no default Neutral — nao usar Cor.Warning.
+
+## Chip Fill
+
+Switch(
+    ThisItem.Status;
+    "Em andamento"; Cor.PrimaryL90;
+    "Em campo"; Cor.PrimaryL90;
+    "Concluído"; Cor.SuccessL70;
+    "Finalizada"; Cor.SuccessL70;
+    Cor.NeutralL90
+)
+
+## Chip Color (texto)
+
+Switch(
+    ThisItem.Status;
+    "Em andamento"; Cor.PrimaryD30;
+    "Em campo"; Cor.PrimaryD30;
+    "Concluído"; Cor.SuccessD30;
+    "Finalizada"; Cor.SuccessD30;
+    Cor.NeutralL30
+)
+
+## Home Desktop — mapa
+
+# Titulo / meta:              Cor.NeutralL30
+# Nome / numero padrao:       Cor.PrimaryD60
+# Link Ver todas:             Cor.Primary
+# Card Fill:                  Cor.BackgroundStandard
+# Borda:                      Cor.Border
+# KPI em campo:               Cor.PrimaryD30
+# KPI finalizadas:            Cor.Success
+# KPI pendentes:              Cor.NeutralL30
+# Barra trilha:               Cor.NeutralL90
+# Barra preenchida:           Cor.Success
+# Barra vazia:                Cor.NeutralL60
+# Mini em campo:              Cor.PrimaryD30
+# Mini finalizadas:           Cor.Success
+# Mini pendentes:             Cor.NeutralL30

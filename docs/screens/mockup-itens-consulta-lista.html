@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Itens — lista Imobilizado / TUC / Descrição / Qtd</title>
+<style>
+  :root{--navy:#123B6E;--navy3:#1B4C86;--page:#F1F3F5;--card:#FFF;--border:#E1E5EA;--title:#1B3E6F;--label:#6B7683;--text:#2A3138;--primary:#348FFD;--green:#3BAA48;--pendbg:#EEF0F3;--pendtx:#6B7683}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#E8ECF0;font-family:"Segoe UI",system-ui,Arial,sans-serif;padding:24px}
+  .tag{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:1.1px;margin-bottom:8px}
+  h1{font-size:18px;color:#1a1a1a;margin-bottom:14px}
+  .app{width:1280px;height:720px;display:flex;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--page)}
+  .sb{width:240px;background:var(--navy);color:#fff;padding:14px 12px;display:flex;flex-direction:column}
+  .brand{font-size:14px;font-weight:700;padding:8px;margin-bottom:12px}
+  .user{font-size:11px;color:#C9DCF2;margin-bottom:16px;padding:0 8px}
+  .user b{display:block;color:#fff;font-size:12px;margin-bottom:2px}
+  .ni{height:40px;border-radius:8px;padding:0 12px;display:flex;align-items:center;font-size:13px;font-weight:600;color:#E8F0FA;margin-bottom:6px}
+  .ni.on{background:var(--navy3)}
+  .main{flex:1;display:flex;flex-direction:column;min-width:0}
+  .top{height:66px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 22px}
+  .topt{display:flex;align-items:center;gap:10px}
+  .back{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center}
+  .toptitle{font-size:20px;font-weight:700;color:var(--title)}
+  .topsub{font-size:12px;color:var(--label);margin-top:2px}
+  .btnfoto{height:34px;padding:0 12px;border-radius:8px;border:1px solid #C5D4E6;background:#fff;font-size:12px;font-weight:700;color:var(--navy)}
+  .body{padding:14px 20px;flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+  .ctx{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+  .ctxname{font-size:14px;font-weight:700;color:var(--title)}
+  .ctxmeta{font-size:12px;color:var(--label);margin-top:2px}
+  .bar{height:6px;width:220px;background:#E6EAEE;border-radius:3px}
+  .bar i{display:block;height:100%;width:0;background:var(--green);border-radius:3px}
+  .barfoot{display:flex;justify-content:space-between;font-size:11px;color:var(--label);margin-top:4px}
+  .tools{display:flex;gap:8px;align-items:center}
+  .search{flex:1;height:34px;border:1px solid var(--border);border-radius:9px;background:#fff;display:flex;align-items:center;padding:0 12px;color:#9AA3AE;font-size:13px}
+  .tab{height:28px;padding:0 11px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid var(--border);display:flex;align-items:center;color:var(--label);background:#fff}
+  .tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .gal{flex:1;border:1px solid var(--border);border-radius:12px;background:#fff;padding:0;overflow:auto}
+  .hd,.row{display:grid;grid-template-columns:160px 80px 1fr 90px 90px 52px 88px;gap:8px;align-items:center;padding:10px 16px}
+  .hd{background:#F7F8FA;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--label);letter-spacing:.4px;text-transform:uppercase}
+  .row{border-bottom:1px solid var(--border);min-height:48px;font-size:13px;color:var(--text)}
+  .row:hover{background:#F4F8FF}
+  .imo{font-weight:700;color:var(--title)}
+  .tuc{font-weight:700;color:var(--title)}
+  .desc{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .qtd{font-weight:700}
+  .muted{color:var(--label)}
+  .foto{font-size:11px;font-weight:700;color:var(--primary);white-space:nowrap}
+  .foto.zero{color:var(--label)}
+  .st{justify-self:end;font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--pendbg);color:var(--pendtx);width:max-content}
+</style>
+</head>
+<body>
+  <div class="tag">Tela_ItensConsulta · galeria em linha · ordem: Imobilizado → TUC.A1 → Descrição → Qtd base → Qtd campo</div>
+  <h1>Lista de itens da SE</h1>
+  <div class="app">
+    <aside class="sb">
+      <div class="brand">⚡ Asset Pro</div>
+      <div class="user"><b>Gustavo Coutinho</b>escritório</div>
+      <div class="ni on">Home</div>
+      <div class="ni">Importar / Exportar</div>
+      <div class="ni">Conferência</div>
+      <div class="ni">Inventários</div>
+      <div class="ni">Cadastros</div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div class="topt">
+          <div class="back">←</div>
+          <div>
+            <div class="toptitle">7SEGU001 — SE U 138KV GUARA II CONSTR</div>
+            <div class="topsub">Neoenergia Brasília Set 2026 · Brasília · 138 kV</div>
+          </div>
+        </div>
+        <div class="btnfoto">Fotos da SE (0)</div>
+      </header>
+      <div class="body">
+        <div class="ctx">
+          <div>
+            <div class="ctxname">Itens dessa instalação</div>
+            <div class="ctxmeta">0 de 234 itens revisados</div>
+          </div>
+          <div>
+            <div class="bar"><i></i></div>
+            <div class="barfoot"><span>0%</span></div>
+          </div>
+        </div>
+        <div class="tools">
+          <div class="search">🔍 Buscar item, TUC ou código</div>
+          <div class="tab on">BASE (234)</div>
+          <div class="tab">SOBRAS (0)</div>
+        </div>
+        <div class="gal">
+          <div class="hd">
+            <div>Imobilizado</div>
+            <div>TUC.A1</div>
+            <div>Descrição do bem</div>
+            <div>Qtd base</div>
+            <div>Qtd campo</div>
+            <div>Fotos</div>
+            <div></div>
+          </div>
+          <div class="row">
+            <div class="imo">100000000521-0</div>
+            <div class="tuc">400.01</div>
+            <div class="desc">BACIA CONTENCAO TRAFO - 3,5 M X 2,5 M</div>
+            <div class="qtd">1,0 UN</div>
+            <div class="qtd muted">—</div>
+            <div class="foto">📷 2</div>
+            <div class="st">Pendente</div>
+          </div>
+          <div class="row">
+            <div class="imo">100000000522-0</div>
+            <div class="tuc">400.01</div>
+            <div class="desc">BACIA CONTENCAO TRAFO - 3,5 M X 2,5 M</div>
+            <div class="qtd">1,0 UN</div>
+            <div class="qtd muted">—</div>
+            <div class="foto zero">📷 0</div>
+            <div class="st">Pendente</div>
+          </div>
+          <div class="row">
+            <div class="imo">100000000497-0</div>
+            <div class="tuc">570.01</div>
+            <div class="desc">TRAFO POT 25/33,3MVA 138/13-13KV DYN1 OM</div>
+            <div class="qtd">1,0 UN</div>
+            <div class="qtd muted">—</div>
+            <div class="foto">📷 3</div>
+            <div class="st">Pendente</div>
+          </div>
+          <div class="row">
+            <div class="imo">100000000498-0</div>
+            <div class="tuc">570.01</div>
+            <div class="desc">RELE REGULADOR TENSAO TRAFO FORCA</div>
+            <div class="qtd">1,0 UN</div>
+            <div class="qtd muted">—</div>
+            <div class="foto zero">📷 0</div>
+            <div class="st">Pendente</div>
+          </div>
+          <div class="row">
+            <div class="imo">100000000530-0</div>
+            <div class="tuc">210.03</div>
+            <div class="desc">DISJUNTOR TRIPOLAR 145 KV</div>
+            <div class="qtd">1,0 UN</div>
+            <div class="qtd muted">—</div>
+            <div class="foto">📷 1</div>
+            <div class="st">Pendente</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

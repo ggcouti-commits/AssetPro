@@ -1,0 +1,539 @@
+# App.OnStart (Mobile)
+#
+# Slot (Inventariantes) + recorte Alocacoes. Nao usa User().Email.
+# StartScreen e OUTRA propriedade — nao cola Navigate aqui.
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+
+## App → OnStart
+
+Apaga o que estiver la. Cola:
+
+```
+//Definindo padrão de cores inicial
+Set(varDark; false);;
+Set(Cor; CoresLight);;
+Set(TCor; TextCoresLight);;
+
+Set(varCarregando; true);;
+
+Set(gblFiltroStatus; "Todos");;
+Set(gblFiltroStatusSE; "Todas");;
+
+// Coleção do Centro Modular
+
+ClearCollect(
+    colCentroModular;
+    {Codigo: 0; Sigla: "MIG"; Resumo: "0 - MIG"; Nome: "Infraestrutura geral"};
+    {Codigo: 1; Sigla: "EQP"; Resumo: "1 EQP"; Nome: "Equipamentos"};
+    {Codigo: 2; Sigla: "EL"; Resumo: "2 - EL"; Nome: "Entrada de linha"};
+    {Codigo: 3; Sigla: "IB"; Resumo: "3 - IB"; Nome: "Interligação de barra"};
+    {Codigo: 4; Sigla: "CT"; Resumo: "4 - CT"; Nome: "Conexão de trafo"};
+    {Codigo: 5; Sigla: "CCP"; Resumo: "5 - CCP"; Nome: "Conexão de banco"};
+    {Codigo: 6; Sigla: "CRL"; Resumo: "6 - CRL"; Nome: "Conexão de reator de linha"};
+    {Codigo: 7; Sigla: "CRB"; Resumo: "7 - CRB"; Nome: "Conexão de reator de barra"};
+    {Codigo: 8; Sigla: "CC"; Resumo: "8 - CC"; Nome: "Conexão de compensador"};
+    {Codigo: 9; Sigla: "CCA"; Resumo: "9 - CCA"; Nome: "Conexão de circuito/alimentador"}
+);;
+
+ClearCollect(
+    colArranjoFisico;
+    {Codigo: 1; Sigla: "BS"; Nome: "Barra simples"};
+    {Codigo: 2; Sigla: "BD"; Nome: "Barra dupla"};
+    {Codigo: 3; Sigla: "BDDD"; Nome: "Barra dupla e disjuntor duplo"};
+    {Codigo: 4; Sigla: "BPT"; Nome: "Barra principal e de transferência"};
+    {Codigo: 5; Sigla: "DJM"; Nome: "Disjuntor e meio"}
+);;
+
+ClearCollect(
+    colLocalInstalacao;
+    {Codigo: 0; Sigla: "RD"; Resumo: "0-RD"; Nome: "Distribuição"};
+    {Codigo: 1; Sigla: "DIT-RPC"; Resumo: "1-DIT-RPC"; Nome: "DIT — RBSE / interesse restrito"};
+    {Codigo: 2; Sigla: "RBSE"; Resumo: "2-RBSE"; Nome: "Rede Básica — sistema existente"};
+    {Codigo: 3; Sigla: "RBNI"; Resumo: "3-RBNI"; Nome: "Rede Básica — novas instalações"};
+    {Codigo: 4; Sigla: "DIT - RCDM"; Resumo: "4-DIT - RCDM"; Nome: "DIT — RBNI"}
+);;
+
+ClearCollect(
+    colTipoInstalacao;
+    {Codigo: 10; Sigla: "HID"; Resumo: "10-HID"; Nome: "Hidroelétrica"};
+    {Codigo: 11; Sigla: "TER"; Resumo: "11-TER"; Nome: "Térmica a combustão — óleo/gás/diesel"};
+    {Codigo: 12; Sigla: "TER"; Resumo: "12-TER"; Nome: "Térmica a vapor — carvão"};
+    {Codigo: 13; Sigla: "TER"; Resumo: "13-TER"; Nome: "Térmica a vapor — gás"};
+    {Codigo: 14; Sigla: "TER"; Resumo: "14-TER"; Nome: "Térmica a vapor — diesel/querosene/óleo"};
+    {Codigo: 15; Sigla: "TER"; Resumo: "15-TER"; Nome: "Térmica a vapor — biomassa"};
+    {Codigo: 16; Sigla: "TER"; Resumo: "16-TER"; Nome: "Térmica a vapor — nuclear"};
+    {Codigo: 17; Sigla: "SOL"; Resumo: "17-SOL"; Nome: "Solar"};
+    {Codigo: 18; Sigla: "EOL"; Resumo: "18-EOL"; Nome: "Eólica"};
+    {Codigo: 19; Sigla: "OUT"; Resumo: "19-OUT"; Nome: "Outras"};
+    {Codigo: 20; Sigla: "DIT"; Resumo: "20-DIT"; Nome: "SE < 230 kV (DIT)"};
+    {Codigo: 21; Sigla: "DIT"; Resumo: "21-DIT"; Nome: "SE ≥ 230 kV e < 345 kV"};
+    {Codigo: 22; Sigla: "DIT"; Resumo: "22-DIT"; Nome: "SE ≥ 345 kV e < 500 kV"};
+    {Codigo: 23; Sigla: "DIT"; Resumo: "23-DIT"; Nome: "SE ≥ 500 kV"};
+    {Codigo: 24; Sigla: "DIT"; Resumo: "24-DIT"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 25; Sigla: "DIT"; Resumo: "25-DIT"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 26; Sigla: "DIT"; Resumo: "26-DIT"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 27; Sigla: "DIT"; Resumo: "27-DIT"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 28; Sigla: "DIT"; Resumo: "28-DIT"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 29; Sigla: "DIT"; Resumo: "29-DIT"; Nome: "Transmissão de interesse restrito (SE ou linha)"};
+    {Codigo: 30; Sigla: "SDU"; Resumo: "30-SDU"; Nome: "SE urbana ≤ 13,8 kV"};
+    {Codigo: 31; Sigla: "SDU"; Resumo: "31-SDU"; Nome: "SE urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 32; Sigla: "SDU"; Resumo: "32-SDU"; Nome: "SE urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 33; Sigla: "SDU"; Resumo: "33-SDU"; Nome: "SE urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 34; Sigla: "SDU"; Resumo: "34-SDU"; Nome: "SE urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 35; Sigla: "LAU"; Resumo: "35-LAU"; Nome: "Linha de distribuição urbana ≤ 13,8 kV"};
+    {Codigo: 36; Sigla: "LAU"; Resumo: "36-LAU"; Nome: "Linha de distribuição urbana > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 37; Sigla: "LAU"; Resumo: "37-LAU"; Nome: "Linha de distribuição urbana > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 38; Sigla: "LAU"; Resumo: "38-LAU"; Nome: "Linha de distribuição urbana > 69 kV e ≤ 138 kV"};
+    {Codigo: 39; Sigla: "LAU"; Resumo: "39-LAU"; Nome: "Linha de distribuição urbana > 138 kV e ≤ 230 kV"};
+    {Codigo: 40; Sigla: "RAU"; Resumo: "40-RAU"; Nome: "Rede aérea urbana"};
+    {Codigo: 41; Sigla: "RAR"; Resumo: "41-RAR"; Nome: "Rede aérea rural"};
+    {Codigo: 42; Sigla: "RSU"; Resumo: "42-RSU"; Nome: "Rede subterrânea urbana"};
+    {Codigo: 43; Sigla: "RSR"; Resumo: "43-RSR"; Nome: "Rede subterrânea rural"};
+    {Codigo: 44; Sigla: "RSA"; Resumo: "44-RSA"; Nome: "Rede submersa"};
+    {Codigo: 50; Sigla: "SDR"; Resumo: "50-SDR"; Nome: "SE rural ≤ 13,8 kV"};
+    {Codigo: 51; Sigla: "SDR"; Resumo: "51-SDR"; Nome: "SE rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 52; Sigla: "SDR"; Resumo: "52-SDR"; Nome: "SE rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 53; Sigla: "SDR"; Resumo: "53-SDR"; Nome: "SE rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 54; Sigla: "SDR"; Resumo: "54-SDR"; Nome: "SE rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 55; Sigla: "LDR"; Resumo: "55-LDR"; Nome: "Linha de distribuição rural ≤ 13,8 kV"};
+    {Codigo: 56; Sigla: "LDR"; Resumo: "56-LDR"; Nome: "Linha de distribuição rural > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 57; Sigla: "LDR"; Resumo: "57-LDR"; Nome: "Linha de distribuição rural > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 58; Sigla: "LDR"; Resumo: "58-LDR"; Nome: "Linha de distribuição rural > 69 kV e ≤ 138 kV"};
+    {Codigo: 59; Sigla: "LDR"; Resumo: "59-LDR"; Nome: "Linha de distribuição rural > 138 kV e ≤ 230 kV"};
+    {Codigo: 60; Sigla: "LSS"; Resumo: "60-LSS"; Nome: "LT < 138 kV (DIT)"};
+    {Codigo: 61; Sigla: "LSS"; Resumo: "61-LSS"; Nome: "LT ≥ 138 kV e < 230 kV (DIT)"};
+    {Codigo: 62; Sigla: "LSS"; Resumo: "62-LSS"; Nome: "LT ≥ 230 kV e < 345 kV"};
+    {Codigo: 63; Sigla: "LSS"; Resumo: "63-LSS"; Nome: "LT ≥ 345 kV e < 500 kV"};
+    {Codigo: 64; Sigla: "LSS"; Resumo: "64-LSS"; Nome: "LT ≥ 500 kV"};
+    {Codigo: 65; Sigla: "LSS"; Resumo: "65-LSS"; Nome: "Linha de distribuição ≤ 13,8 kV"};
+    {Codigo: 66; Sigla: "LSS"; Resumo: "66-LSS"; Nome: "Linha de distribuição > 13,8 kV e ≤ 34,5 kV"};
+    {Codigo: 67; Sigla: "LSS"; Resumo: "67-LSS"; Nome: "Linha de distribuição > 34,5 kV e ≤ 69 kV"};
+    {Codigo: 68; Sigla: "LSS"; Resumo: "68-LSS"; Nome: "Linha de distribuição > 69 kV e ≤ 138 kV"};
+    {Codigo: 69; Sigla: "LSS"; Resumo: "69-LSS"; Nome: "Linha de distribuição > 138 kV e ≤ 230 kV"};
+    {Codigo: 70; Sigla: "TER"; Resumo: "70-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. central"};
+    {Codigo: 71; Sigla: "EQP"; Resumo: "71-EQP"; Nome: "Equipamento geral — adm. central"};
+    {Codigo: 72; Sigla: "EQP"; Resumo: "72-EQP"; Nome: "Sistema de comunicação — adm. central"};
+    {Codigo: 80; Sigla: "TER"; Resumo: "80-TER"; Nome: "Terrenos, edificações e benfeitorias — adm. específica"};
+    {Codigo: 81; Sigla: "EQP"; Resumo: "81-EQP"; Nome: "Equipamento geral — adm. específica"};
+    {Codigo: 82; Sigla: "EQP"; Resumo: "82-EQP"; Nome: "Sistema de comunicação — adm. específica"};
+    {Codigo: 90; Sigla: "TER"; Resumo: "90-TER"; Nome: "Terrenos/benfeitorias fora de outras ODI"};
+    {Codigo: 91; Sigla: "TEL"; Resumo: "91-TEL"; Nome: "Equipamento geral fora de ODI específicas"};
+    {Codigo: 92; Sigla: "TEL"; Resumo: "92-TEL"; Nome: "Telecom, telecontrole, proteção e supervisão"};
+    {Codigo: 93; Sigla: "SMU"; Resumo: "93-SMU"; Nome: "Sistema de medição urbana (fora de usina/SE)"};
+    {Codigo: 94; Sigla: "AUX"; Resumo: "94-AUX"; Nome: "Serviços auxiliares gerais"};
+    {Codigo: 95; Sigla: "OUT"; Resumo: "95-OUT"; Nome: "Apoio operacional (usina e SE)"};
+    {Codigo: 96; Sigla: "SMR"; Resumo: "96-SMR"; Nome: "Sistema de medição rural (fora de usina/SE)"};
+    {Codigo: 97; Sigla: "OUT"; Resumo: "97-OUT"; Nome: "Sistema de despacho de carga"};
+    {Codigo: 98; Sigla: "RES"; Resumo: "98-RES"; Nome: "Reserva imobilizada"};
+    {Codigo: 99; Sigla: "INT"; Resumo: "99-INT"; Nome: "Intangível"}
+);;
+
+// ── 1. STATUS DE CONEXÃO ────────────────────────────────────────────────
+Set(gblConectado; Connection.Connected);;
+
+// ── 2. SESSÃO DO SLOT (lista Inventariantes) — nao usar User() ───────────
+Set(
+    gblUsuario;
+    {
+        Login: Blank();
+        Perfil: Blank();
+        Nome: Blank();
+        UsadoPor: Blank();
+        CodUsuario: Blank();
+        SessaoVersao: Blank();
+        Email: Blank()
+    }
+);;
+Set(varPerfil; Blank());;
+IfError(LoadData(colSessao; "cache_Sessao"; true); Blank());;
+Set(
+    varSessaoOk;
+    CountRows(colSessao) > 0 && !IsBlank(First(colSessao).Login)
+);;
+// Sessão fica no aparelho. Só invalida se o SharePoint devolver o slot
+// desativado ou com SessaoVersao diferente. LookUp em branco / erro de rede
+// NÃO apaga o cache (sinal fraco na SE não pode forçar login de novo).
+If(
+    varSessaoOk && Connection.Connected;
+    Set(
+        varSessaoOk;
+        IfError(
+            With(
+                {
+                    u: LookUp(
+                        Inventariantes;
+                        Login = First(colSessao).Login
+                    )
+                };
+                IsBlank(u.Login)
+                    || (
+                        u.Ativo = "Sim"
+                        && Coalesce(u.SessaoVersao; 0) = Coalesce(First(colSessao).SessaoVersao; 0)
+                    )
+            );
+            true
+        )
+    )
+);;
+If(
+    varSessaoOk;
+    With(
+        {s: First(colSessao)};
+        Set(gblUsuario; s);;
+        Set(varPerfil; s.Perfil)
+    );
+    CountRows(colSessao) > 0;
+    With(
+        {_: true};
+        Clear(colSessao);;
+        IfError(ClearData("cache_Sessao"); Blank());;
+        Set(gblUsuario; Blank());;
+        Set(varPerfil; Blank())
+    )
+);;
+
+IfError(LoadData(colAlocacoes; "cache_Alocacoes"; true); Blank());;
+If(
+    varSessaoOk && Connection.Connected;
+    ClearCollect(
+        colAlocacoes;
+        Filter(
+            Alocacoes;
+            Login = First(colSessao).Login && Ativo = "Sim"
+        )
+    );;
+    IfError(SaveData(colAlocacoes; "cache_Alocacoes"); Blank());
+    !varSessaoOk;
+    With(
+        {_: true};
+        Clear(colAlocacoes);;
+        IfError(ClearData("cache_Alocacoes"); Blank())
+    )
+);;
+
+ClearCollect(
+    colUnidadeMedida;
+    {Unidade: "UN"; Rotulo: "UN - Unidade"};
+    {Unidade: "PC"; Rotulo: "PC - Peça"};
+    {Unidade: "M"; Rotulo: "M - Metro"};
+    {Unidade: "M2"; Rotulo: "M² - Metro quadrado"};
+    {Unidade: "KG"; Rotulo: "KG - Quilograma"}
+);;
+
+// ── 3. TABELAS MESTRES ───────────────────────────────────────────────────
+ClearCollect(colTUC; TabelaTUC);;
+SaveData(colTUC; "cache_TUC");;
+
+ClearCollect(colAtributosBruto; TabelaAtributos);;
+SaveData(colAtributosBruto; "cache_Atributos");;
+
+ClearCollect(colLookup; TabelasUnificadas);;
+SaveData(colLookup; "cache_Lookup");;
+
+ClearCollect(colTabelasCatalogo; TabelasCatalogo);;
+SaveData(colTabelasCatalogo; "cache_TabelasCatalogo");;
+
+// ── 3.1 CATÁLOGO SIMPLES + ATRIBUTOS (sem join de TipoEntrada) ───────────
+ClearCollect(
+    colTabelasFaixa;
+    Distinct(
+        Filter(colLookup; LimiteSuperior > 0);
+        TabelaOrigem
+    )
+);;
+
+ClearCollect(
+    colCatSimples;
+    ForAll(
+        colTabelasCatalogo As c;
+        {
+            TabelaOrigem: Trim(c.TabelaOrigem);
+            TipoEntrada: Upper(Trim(Coalesce(Text(c.TipoEntrada); "LISTA")));
+            Unidade: Coalesce(c.Unidade; "");
+            UnidadeAlt: Coalesce(c.UnidadeAlt; "");
+            FatorConv: Coalesce(Value(c.FatorConv); 1);
+            CasasDecimais: Coalesce(Value(c.CasasDecimais); 2)
+        }
+    )
+);;
+
+Clear(colAtributos);;
+ForAll(
+    colAtributosBruto As reg;
+    Collect(
+        colAtributos;
+        {
+            CodTUC: reg.CodTUC;
+            NomenclaturaAtributo: reg.NomenclaturaAtributo;
+            DescricaoAtributo: reg.DescricaoAtributo;
+            ChaveTabela: Trim(reg.ChaveTabela);
+            TabelaOrigem: Trim(reg.ChaveTabela);
+            TipoEntrada: "LISTA";
+            Unidade: "";
+            CasasDecimais: 2
+        }
+    )
+);;
+
+// ── 4. CONCESSIONÁRIAS ───────────────────────────────────────────────────
+ClearCollect(colConcessionarias; Filter(Concessionarias; Ativo = "Sim"));;
+SaveData(colConcessionarias; "cache_Concessionarias");;
+
+// ── 5. CAMPANHAS — QtdItens so no Baixar dados ───────────────────────────
+ClearCollect(
+    colCampanhas;
+    AddColumns(
+        Filter('Campanhas '; Ativo = "Sim");
+        QtdSEs;
+        With(
+            {cod: ThisRecord.CodInventario};
+            CountRows(Filter(Subestacoes; CodInventario = cod))
+        );
+        QtdItens;
+        0
+    )
+);;
+SaveData(colCampanhas; "cache_Campanhas");;
+
+// ── 6. DADOS OPERACIONAIS PESADOS — schema + cache local ─────────────────
+ClearCollect(
+    colSubestacoes;
+    {
+        ID: 0;
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        SubODI: "";
+        Regional: "";
+        Municipio: "";
+        UF: "";
+        TI: 0;
+        CM: 0;
+        Status: ""
+    }
+);;
+Clear(colSubestacoes);;
+LoadData(colSubestacoes; "cache_Subestacoes"; true);;
+
+ClearCollect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QtdeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Clear(colInventarioBase);;
+LoadData(colInventarioBase; "cache_InventarioBase"; true);;
+
+// ── 7. FILA DE CAMPO OFFLINE — schema + cache local ───────────────────────
+ClearCollect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "";
+        CodTemp: "";
+        SobraTipo: "";
+        Sincronizada: false;
+        IdInventario: 0;
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA2: "";
+        ValorA3: "";
+        ValorA4: "";
+        ValorA5: "";
+        ValorA6: "";
+        DescricaoBem: "";
+        Quantidade: 0;
+        QtdeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Clear(colCampoOffline);;
+LoadData(colCampoOffline; "cache_CampoOffline"; true);;
+
+ClearCollect(
+    colFotosCampo;
+    {
+        CodSE: "";
+        CodInventario: "";
+        IdFoto: "";
+        CodAsset: "";
+        CodTemp: "";
+        TipoFoto: "";
+        Foto: SampleImage;
+        DataCaptura: Now();
+        Sincronizada: false
+    }
+);;
+Clear(colFotosCampo);;
+LoadData(colFotosCampo; "cache_FotosCampo"; true);;
+
+ClearCollect(
+    colSEsFinalizadas;
+    {
+        CodSE: "";
+        CodInventario: "";
+        DataFinalizacao: Now()
+    }
+);;
+Clear(colSEsFinalizadas);;
+LoadData(colSEsFinalizadas; "cache_SEsFinalizadas"; true);;
+
+// ── 8. ÚLTIMA SINCRONIZAÇÃO — schema + cache local ────────────────────────
+ClearCollect(colUltimaSinc; {DataHora: Now()});;
+Clear(colUltimaSinc);;
+LoadData(colUltimaSinc; "cache_UltimaSinc"; true);;
+
+Set(
+    gblUltimaSincronizacao;
+    If(
+        CountRows(colUltimaSinc) > 0;
+        First(colUltimaSinc).DataHora;
+        Blank()
+    )
+);;
+
+// ── 9. RECUPERAR ÚLTIMO INVENTÁRIO SELECIONADO (sessão persistente) ──────
+ClearCollect(
+    colInventarioAtivo;
+    {
+        CodInventario: "";
+        NomeInventario: "";
+        Periodo: "";
+        Setor: "";
+        Ativo: ""
+    }
+);;
+Clear(colInventarioAtivo);;
+LoadData(colInventarioAtivo; "cache_InventarioAtivo"; true);;
+
+If(
+    CountRows(colInventarioAtivo) > 0;
+    Set(gblInventarioSelecionado; First(colInventarioAtivo));
+    Set(gblInventarioSelecionado; Blank())
+);;
+
+// ── 10. VARIÁVEIS GLOBAIS DE CONTROLE ─────────────────────────────────────
+Set(gblFiltroStatus; "Todos");;
+Set(gblSEselecionada; First(colSubestacoes));;
+Set(gblSEselecionada; Blank());;
+Set(gblTipoBemSelecionado; First(colTUC));;
+Set(gblTipoBemSelecionado; Blank());;
+Set(gblVersaoApp; "1.0.0");;
+
+ClearCollect(
+    colAtributosCampo;
+    {
+        IdRegistro: "";
+        CodInventario: "";
+        CodAsset: "";
+        CodAtributo: "";
+        Valor: "";
+        Ordem: 0
+    }
+);;
+Clear(colAtributosCampo);;
+LoadData(colAtributosCampo; "cache_AtributosCampo"; true);;
+
+Set(varItemFoto; Last(colInventarioBase));;
+Remove(colInventarioBase; Last(colInventarioBase));;
+Set(varItemFoto; Blank());;
+
+Set(varRegistroAtual; Last(colCampoOffline));;
+Remove(colCampoOffline; Last(colCampoOffline));;
+Set(varRegistroAtual; Blank());;
+
+Set(varCarregando; false)
+```
+
+# Sem User().FullName. Sem navegar no OnStart.
+# QtdItens = 0 ate o Baixar dados (nao conta Inventario no start).
+# Se SessaoVersao ficar vermelho: coluna na lista Inventariantes + Dados → Atualizar.
+
+## App → StartScreen
+
+Apaga o que estiver la. Cola:
+
+```
+Tela_Login
+```
+
+# StartScreen NAO le colecao nem variavel do OnStart (aviso do Studio).
+# Sempre abre Login. O Timer `tmrSessaoLogin` na Tela_Login pula se a sessao ok.
+# Spec do Timer: docs/powerfx/Tela_Login-formulas.txt (passo StartScreen + timer).

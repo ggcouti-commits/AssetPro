@@ -1,0 +1,227 @@
+Reunião com Gustavo Coutinho-20260831_142442-Gravação de Reunião
+31 de agosto de 2026, 05:24PM
+29m 41s
+Gustavo Coutinho começou a transcrição
+Gustavo Coutinho   0:03Até agora, como eu tive a mudança, acabei não conseguindo mexer muito nessas últimas semanas, mas até agora eu finalizei a parte do inventariante, que é a parte do da pessoa que está em campo. Então, quando ela abrir, lógico, vai ter. Não fiz ainda, mas vai ter uma tela de login. É quando o cara abrir, é.quando o cara abrir o aplicativo vai ter só as os inventários que a gente designou no caso seria um só né é um por vez os inventários que foram designados para ele ali aí o cara entra no inventárioVai ter aqui, vai estar com quantas subestações tem também designadas para mim, se quiser, se quiser, a gente designa por subestação ou tipo assim, o cara tem acesso a todas as subestações do inventário aí e o cara entra só na aí. Isso é questão da gente alinhar depois, mas eu acho melhor ele ver só o que a gente designar.Enfim, I.
+André   0:54Eu posso te cortar antes de você começar? Então, beleza, eu entendi. Mas aí, eu vou voltar uma casa só, tá? Aqui ele já está aí. Mas, por exemplo, digamos que você fechou, montou toda a programação que você vai explicar ainda como é que funciona e tudo mais. Está feito.
+Gustavo Coutinho   0:57Pode, claro.Vamos lá, vamos lá.
+André   1:14É o passo antes, como eu vou colocar isso vai ser é um é um aplicativo, é um é.
+Gustavo Coutinho   1:21Não, não é, então é que eu ainda não fiz, eu não vai ser um aplicativo também, eu não fiz a parte do desktop ainda, mas eu já tenho toda ela estruturada, já tenho toda ela estruturada, eu só não coloquei em.
+André   1:23É uma página.Um aplicativo.Uh-huh.Stop.
+Gustavo Coutinho   1:36Then, no, no, não criei.não não criar aplicação né mas é qual que é a minha ideia isso a gente pode até ir fazendo junto tá Dedé fazendo eu vou te mandando mensagem a gente vai se comunicando é o cara né o cara pega lá o direto do SAPPega a planilha, pega a base de dados, é através de um CSV ou XLSXLS, vai lá, é coloca esse aplicativo, esse arquivo no aplicativo e ele já estrutura todo toda a.
+André   2:11A base.
+Gustavo Coutinho   2:12Toda a base do aplicativo.Yeah, see.
+André   2:16Mas aí para o cara, digamos assim, vamos falar assim, vamos lá, o Ricardo, Ricardo, você vai fazer um inventário agora, na semana que vem, vou usar CDN na Energia Pernambuco. Aí eu vou falar para ele assim, eu vou mandar um arquivo para ele, um arquivo ez, sei lá, um arquivozinho falar, instala isso aqui no tablet que está contigo aí.Aí ele vai lá e vai estar lá, é isso?
+Gustavo Coutinho   2:37é o para falar a verdade é vai ser um
+André   2:40Ou ele vai entrar num, ou ele vai, ou ele vai ter que ter um acesso à internet, entrar numa página, por exemplo, entrar numa versão em WWE.
+Gustavo Coutinho   2:45Não é um aplicativozinho que vai passar para ele, dá para instalar no celular dele se ele quiser, ou num tablet que você mandar para ele, está?
+André   2:48É um aplicativo, é um aplicativo.Yeah.ou no tablet.Aham, beleza, aí ele instala lá, aí você vai ter o login, aí a gente vai designar um login e senha para ele, Ricardo 123, senha 123, aí que ele vai acessar. Aí sim, depois disso, é isso que eu estou tentando entender, é o aplicativo, então ele põe lá, aí esse aplicativo para ele fazer.
+Gustavo Coutinho   3:13Tá.
+André   3:17A atividade C que você vai mostrar aqui, ele precisa ter acesso à internet ou pode ser offline?
+Gustavo Coutinho   3:22Então, num primeiro momento, é isso que eu ia te mostrar agora, tá? Aí o cara vem aqui, num primeiro momento, para ele conseguir acessar os dados, ele tem que ter internet. Aí vamos lá, vou pegar essa aqui, beleza, ele é o do Ceará. O que é que ele faz?
+André   3:25Stop.Claro, pode baixar.
+Gustavo Coutinho   3:38Ele vem aqui, oh, baixa os dados.
+André   3:40Aham.
+Gustavo Coutinho   3:41Quando ele baixar os dados.é vai vir aqui todas as subestações designadas a ele né do do inventário aí vai mostrar aqui aqui mostrou quatro né Depois disso pronto tá baixado
+André   3:48Certo.Tá aí para operacionalizar isso não precisa de rede.
+Gustavo Coutinho   3:56Aí o que é que?Não precisa de rede, não precisa de rede. Aí o cara vem, quando ele começar, vamos por essa aqui.
+André   4:00Stop.
+Gustavo Coutinho   4:06Oh, então aqui essa aqui tem pouco, deixa eu ver uma que tem um pouquinho mais, acho que essa aqui.tem poucoessa essa aqui tem um pouquinho mais aí tá aqui o inventário o cara foi lá confirmou Ah tá certinho é isso aqui mesmo confirmou belezaconfirmou tá aqui confirmado aqui ele vai tirar as fotos do equipamento entra tirar foto
+André   4:32Uh-huh.
+Gustavo Coutinho   4:34document.mas é por uma forma de tênis de corrida aquiCorrida treino.Note.Ó, subiu. E lógico que vai ser com a câmera do tablet ou celular. É que aqui, como a gente está no como a gente está no computador, aí está abrindo a opção de eu adicionar. Aí eu vou botar mais uma foto aqui.
+André   4:53Claro, claro, do que ele tiver.Stop.
+Gustavo Coutinho   5:03Beleza, tem duas fotos, né?
+André   5:05I conclues.
+Gustavo Coutinho   5:07aqui ó já vai vir de um contadorzinho eu botei essa câmera aqui também para pessoa tirar as fotos do ambiente você sempre fala ó Gustavo tira foto da subestação vai tirando foto do ambiente tira foto de longe tira foto é aquelas fotos gerais exatamente o cara vem aqui também ó
+André   5:11Ah.visão geral
+Gustavo Coutinho   5:24Fotos da subestaçãoÉ o.e vamos por essa aliUma também, mais uma, aqui eu vou por três.
+André   5:42E essas fotos não tem limite, o cara vai tirando se ele quiser tirar 6, 7, 8, vai pondo.
+Gustavo Coutinho   5:44Aqui, aqui é sem limites, 2 equipamentos eu achei viável limitar 5. Se você quiser a gente consegue aumentar ou diminuir isso. Aí aqui ó, tá vendo? Já apareceu 3 aqui no computadorzinho.
+André   5:47Ah.Ah, tá bom.Mhm.Oh.
+Gustavo Coutinho   6:00Vamos ver o disjuntor aqui, não, mas espera aí, o disjuntor está errado, a descrição não é 82,5, é 72,5. E aí a gente vem aqui na situação de campo, ele está em campo, ele não foi encontrado.
+André   6:12Entra dentro do dado.
+Gustavo Coutinho   6:16Isso aqui vai gerar para a gente se ele está OK, se ele é ou se ele é uma sobra contábil. Exatamente, né? Ele é um disjuntor, também está errado a descrição, é uma classe de tensão superior a 69 e ele é 72,5.
+André   6:17Stop.Sobra contábil.
+Gustavo Coutinho   6:3772, assim aqui já vai sair o código do o código do manual, entendeu? E se ele é KV, e aqui você decide se ele está em volts ou se ele está em volts ou KV, entendeu?
+André   6:41Manual.Oh.Tá.
+Gustavo Coutinho   6:52Corrente nominal 800, vamos supor que é um de 800. Aqui já saiu o código do manual também, tipo de isolamento, ele é a seco no.
+André   6:58Stop.SF6 põe no 4 ali ó que é o que é o que é o é pra ficar mais é isso é o que tem, tá bom.
+Gustavo Coutinho   7:04vamos lá 4 aqui tava errado também e aqui ó tá vendo que aqui ó base base Isso é o que tá na base para o cara saber o que tá que tá diferente se fosse igual é por exemplo se eu botar aqui 82,5
+André   7:09Why do I sit back?Mhm.Yeah.
+Gustavo Coutinho   7:21não 82 inputÉ que eu é que eu acho que não está casando. Quando eu subi uns dados, não casou código com.o código código do manual com a descrição do campo de 72,5 voltar para cá
+André   7:42Põe, põe 138 aí em vez de 72.Bye.
+Gustavo Coutinho   7:49138.
+André   7:50Beleza, tá? É porque é por isso que está casando agora, 82 é 138. Beleza, mas pode trocar, pode deixar 72. Era só para ver o seu código.
+Gustavo Coutinho   7:53Ah tá, tá beleza, tá top, top.Ah, mas beleza.
+André   8:00É porque tava isso, beleza.
+Gustavo Coutinho   8:01Aí, ó, essa tela deu trabalho, cara, isso aqui para fazer isso, todo esse processo do manual validar aqui, Mano, isso deu um trabalho, velho.
+André   8:11E aí está por tipo de esse, porque assim aí uma dúvida, Gustavo, provavelmente vai estar cada tipo de tipo de toque, cada tipo de unidade de cadastro, a tabela, o a um, por exemplo, para a chave é uma coisa, o a um mesmo campo a um para a chave vai ser um código.
+Gustavo Coutinho   8:20Sim.
+André   8:27Se eu colocar disjuntor, vai ser outro, então ele está referendado por tipo de unidade de cadastro. Isso, tá?
+Gustavo Coutinho   8:28Yeah.Sim, perfeito. Isso aí eu vou, eu vou entrar em outro aqui na edição de outra para ter essa noção. Local de instalação externo.
+André   8:34Uh-huh.Ah.Então aí, se o cara selecionou a TUC, o A1, o A6, vai estar todo referendado a TUC, ele vai mudar do tipo de unidade de cadastro, ele muda um pra um. Tá, beleza.
+Gustavo Coutinho   8:46É isso, ele é dinâmico, perfeito. Ele é dinâmico, tá? Capacidade de interrupção 3,1,5.
+André   8:53Tá bom?
+Gustavo Coutinho   8:54Oh, aí, dados técnicos.
+André   8:55Aí tem os dados que ele vai levantar, beleza, fabricante, modelo.
+Gustavo Coutinho   8:59FGK 7898 pronto, é o modelo, número de série.
+André   9:01Oh.Tá, qual que é o número 100, 1234, vai?
+Gustavo Coutinho   9:051234 ano 2021
+André   9:07Beleza.Tá bom?
+Gustavo Coutinho   9:10Código de operação DJ 02, observações.
+André   9:10Aí o código de operação, isso código de operação é importante na subestação é, tá?Aí o cara põe qualquer coisa.
+Gustavo Coutinho   9:18disjuntor está em perfeita só para condiçõesE aí aqui, salve aí, beleza?
+André   9:25Solve.
+Gustavo Coutinho   9:32aqui está aparecendo esse erro porque esse erro é de gravação no cache que no caso isso é no celular não é no na no mobile não tem essa gravação de cache né então beleza aí já confirmou esse disjuntor tripolar
+André   9:32I evite.Yeah.Mm-hmm.Quando aparecer esse verde embaixo, confirmado é que o cara inventariou, confirmado é que passou dado já, tá?
+Gustavo Coutinho   9:49É, aí o cara chegou lá, ó, esse aqui não existe. Puta, não existe mano, e agora? O cara vem, ó, ele pode por aqui direto no encontrado ou ele vem aqui no encontrado e coloca observação. É engenheiro.
+André   9:59Uh-huh.É, queimou, vai, sei lá, bem, queimou.
+Gustavo Coutinho   10:21Equipamento em móvel está no almoxarifado.
+André   10:30Solve.
+Gustavo Coutinho   10:32Alguém?aí tá salvo né aí achei esse vamos supor que a gente achou esse também esse não sei se tu viu lá a gente consegue mudar a quantidade também né se eu ver aqui ó putz lá não foi não não foram 8 que eu achei
+André   10:35Beleza.Oh.
+Gustavo Coutinho   10:50Foram dois só, aí se eu salvar aqui, aqui vai indicar ó.Só achei 2, na base são 8, mas eu achei 2. E aqui diz também, a quantidade é menor. Se for a mais, se eu mudar isso aqui para 10.
+André   10:59A.F.
+Gustavo Coutinho   11:07Face salvar.Mais 2, entendeu, né?
+André   11:12Tá, e deixa eu te falar. E a extração disso? Por exemplo, esses que a gente mexe quantidade, ele vai abrir em 2 linhas, como é que vai ser? Ele vai ou vai ter uma coluna dizendo de diferenças quantitativas?
+Gustavo Coutinho   11:23Dá pra gente criar uma coluna ali diferente de quantitativo, tá?
+André   11:25Tá porque, por exemplo, eu mando uma base para vocês, vou montar a base que eu baseado lá no ativo mobilizado de serviço. Então eu montei uma base e aí.
+Gustavo Coutinho   11:29That.
+André   11:35Quando vocês fazem abertura, às vezes a gente faz abertura depois no mexendo no Excel, né? Então, digamos assim, vamos usar esse exemplo. São 6 chaves. A gente sabe que elas são mono, então elas vão ser ABCABC. Então 3 chaves vão estar num código de operação e mais 3 no outro código de operação. Mas como elas são bem de massa, elas estão tudo mobilizadas na mesma linha.
+Gustavo Coutinho   11:41Perfect.Certo.
+André   11:55Aí o cara levantou lá, então ele pegou e falou, peguei 3. Nesse caso, essas outras 3 aqui, não encontrei. Então eu já vi ele que ele vai dar-3, beleza. Mas na extração, aqui no aplicativo, mas na extração também se atentar como? Vai sair isso, tipo coluna original e coluna modificada ou ela quebrinha.
+Gustavo Coutinho   12:14Cara isso eu vou ter que parar para analisar Dedé tem que parar para analisar essa outro motivo que eu
+André   12:17Tá, é uma coisa que seria a se pensar, entendeu? Porque a partir do momento que a gente abre o campo para trocar quantidade, peguei parte, parte não ou desmembrar, deveria, ou quando o cara vai abrindo, colocar uma segunda coluna.
+Gustavo Coutinho   12:32Tá beleza, perfeito, perfeito. É um dos motivos que eu, um dos motivos que eu quis gravar, gravar nossa.
+André   12:35De repente sai a extração, de repente sai a extração, a extração com a coluna, por exemplo, se eu passar uma base para vocês com as quantidades, por exemplo, nesse caso a chave com 6, por mais que o cara altere aquela coluna sempre sair.
+Gustavo Coutinho   12:47Yeah.
+André   12:50Como foi um dado original 6, ele tem que sair 6, entendeu? Por mais que o cara altere aqui naquela coluna, não mexe, vai mexendo do lado que a gente sabe que.
+Gustavo Coutinho   12:53Perfeito.Tá, não, dá, dá, dá pra criar uma segunda coluna aí.
+André   12:59Entendeu? Porque na hora que eu recebi a base do cara, eu faço um menos o outro. OPA, tem diferenças de quantidades. O que que é? Aí já dá para se atentar, entendeu? Ou foi coisa que o cara colocou a mais ou coisa que o cara colocou a menos, entendeu? Sem eu ter que fazer proc, trazer na outra base.
+Gustavo Coutinho   13:08Tá, beleza.É fazendo pra todo mundo precisa ter o trabalho de tu fazer a comparação. O aplicativo já faz essa comparação, né?
+André   13:18É porque senão eu tenho que comparar quando vem a base e às vezes acaba passando, entendeu? Às vezes acaba passando. Foi algo até que o Bruno me alertou na última que a gente fez. Eu não sei se foi, não me lembro agora se foi você, se foi o Ricardo. A gente mexeu na quantidade.
+Gustavo Coutinho   13:21Perfeito, não dá, dá, vamos, vamos, vamos.
+André   13:32Justamente de massa e aí não estava batendo. E aí ficamos na dúvida. A gente acabou abrindo uma linha, colocando aquele cara como sobra, mas deu diferente quantidade de alguns itens que eu acabei não batendo. Então, se já vem um default, essa quantidade que foi inserida originalmente para o cara mexer, por mais que ele mexa aqui no aplicativo, sai numa outra coluna. Então eu já tenho o confronto.
+Gustavo Coutinho   13:43Tá.
+André   13:51O próprio arquivo.
+Gustavo Coutinho   13:53Não, beleza, vamos criar esse campo então. Aí aqui, a puta, tem um item lá, achei um item que não está na listagem. Achei um item que não está na listagem. Adicionar item é a sobra física. Quando adiciona, novo item, sobra física.
+André   14:00Sobra física.A.
+Gustavo Coutinho   14:09O que é que vai ser a vai ser um trafo a por exemplo aqui DD vamos supor que é só um item de armazenagem única coisa que vai aparecer aqui é o a um tá vendo né
+André   14:17Tá, ele só vai aparecer o que pede de formal. O resto é _000.
+Gustavo Coutinho   14:20É o resto, o resto lá no na base vai cadastrar como tudo 00 o resto dos atributos, né?
+André   14:26Yeah.Na hora que extrair essa, mas na hora que extrai ele já vai completar esse fez a extração para o Excel, para o SV, ele já vai completar.
+Gustavo Coutinho   14:33Já completa, já completa, já fica completo, não precisa mexer em nada. A ideia do aplicativo é.
+André   14:38Então, aqui, Gustavo, deixa eu te interromper. Então, digamos assim, eu tenho esse aplicativo, já tá lá. Aí eu não tenho base, não recebi nada. Estou indo para fazer do zero, que é o meu, a minha finalidade é unitização. A gente vai unitizar, então quando a gente vai unitizar.
+Gustavo Coutinho   14:41Beleza.
+André   14:53Eu não tenho uma base, digamos que eu não tenho uma base preliminar. Eu estou indo pro lugar e eu não tenho uma base de ponto de partida. Vai ser tudo nesse aqui. Adicionar, o cara vai adicionando o traço, pá, chave, ele vai fazendo conforme ele vai avançando ali a gente faz. Vou pegar a entrada de linha, vou começar da maior para menor, então peguei uma entrada de linha lá, primeiro elemento que eu vou encontrar para-raio, eu vou lá, põe 123 para-raio.Ah, o TP, 3 TP, chave, duas chaves, o disjuntor, injuntor, mais duas chaves, 4, fechou. Aí agora eu vou conexão ao trafo. Aí ele aqui, nesse adicionar aqui, ele já vai criando e vai fazendo linha a linha, mesmo sem base. É isso?
+Gustavo Coutinho   15:27Exatamente. É isso aí. Isso aí. Perfeito, perfeito, não é? Mas vamos voltar aqui para o.
+André   15:28Tá, beleza.
+Gustavo Coutinho   15:34So.
+André   15:35como você não salvou, não criou nada, tá?
+Gustavo Coutinho   15:38Akita.Formador, vamos por um de força aqui.
+André   15:45Aí de repente, cara, você pode até é botar pelo, porque tá vendo que ele sempre começa com o número, fazer o cara buscar pelo. Acho que se buscar pelo número também, vai que você buscou pelo pela descrição, põe 570. Aí, mas fica mais fácil, é.
+Gustavo Coutinho   15:52Não, mas dá, dá assim, dá assim, Dedé, dá assim, Oh, dá assim, Oh, dá assim, Oh, 565, tá vendo? Dá também.
+André   15:58Tá, é, porque pelo número eu acho, é, quando já é um profissional que está acostumado, você assim, então já vai, já vai decorando 160 chave, 310, aí fica mais fácil que ficar digitando, transformar, né? 3 números fica mais fácil.
+Gustavo Coutinho   16:06é já já tem o toque na cabeçaYeah, me.Aham, já tem um toque na cabeça, aí vai ser um transformador de força, tensão primária.
+André   16:16Oh.138? Why?
+Gustavo Coutinho   16:21A 138 vamos lá beleza KV tensão circundária 60 potência aí vamos supor que é um de 10 ó vamos supor que é um de 10 MVA o cara vai primeiro clicar aqui ó MVA
+André   16:24Beleza.Vai meia nove issoSing.Oh.Tá, aham, tá, entendi. Okay.
+Gustavo Coutinho   16:37Aí depois ele põe 10, já puxou aqui 82, se ele fizer assim, se ele fizer assim isso aí, mas na hora a gente fala também para o se ele fizer assim 10 e depois vim para cá, ele vai converter, é ele vai, ele vai converter, entendeu?
+André   16:49Não vai trocar, ele converte.Entendi.
+Gustavo Coutinho   16:52Então ele tem que fazer assim, ele tem que primeiro clicar no, ele tem que primeiro clicar em qual potência que é, qual a grandeza, qual a grandeza para depois clicar aqui. Dá até para fazer algo tipo assim, quando for, quando for isso, tipo.
+André   16:58Na unidade de medida, vai primeiro na unidade de medida.Yeah.
+Gustavo Coutinho   17:08Não deixar clicar enquanto não escolher, na hora eu penso em algo, aí ele é trifásico, trifásico.
+André   17:12Stop.
+Gustavo Coutinho   17:19Oh yeah, sem comutador.
+André   17:21Oh.
+Gustavo Coutinho   17:22Aí vamos lá, um velho.Tag modelo toque 69 qualquer coisa aí número de 7234789.
+André   17:32234 está bom?
+Gustavo Coutinho   17:34Em 1970, porque ele foi reformado, o código de operação.
+André   17:3801 01 T1 vai 01 T1.
+Gustavo Coutinho   17:40É 01.T1.
+André   17:44Beleza.
+Gustavo Coutinho   17:45Observações, reformado e.
+André   17:48And so what?
+Gustavo Coutinho   17:50Reformado em 2021. Beleza, salvar.Salvou.
+André   17:57Sobra física, ele já conta, tá?
+Gustavo Coutinho   17:57E aí ó já já conta como sobra física né É aqui ó vai ter a base a aba de da base e a obra de sobra física vai ter essas duas Abas né aqui é uma contagem dos itens Total se eu vim aqui apagar esse
+André   18:01Yes.Mhm.All.
+Gustavo Coutinho   18:16aí ele volta aqui ó 6 de 6 mas se eu adicionar um outro item aqui aí ele vai sempre contabilizar e aqui é legal que o técnico tem o andamento da o andamento da subestação que ele tá lá entendeu beleza
+André   18:19Entendi.Percentual do que que ele já concluiu. Uhum.Entendi.
+Gustavo Coutinho   18:32Cadê a subestação? Finalizei ela. Bom, é isso aqui a subestação. Finalizar.Finalizada, aguardando envio.aqui ó
+André   18:44Deixa eu te fazer uma pergunta enquanto você está fazendo. Esse cadastro que você fez, porque ali eu vi que tem tuques que não são de subestação, por exemplo, até a própria tuque que você botou de armazenamento e tal. Esse cadastro que você tem aí, que você está falando, eu crio a tuque, ele já vai dar os atributos, é para todas as tuques do manual.
+Gustavo Coutinho   19:02É que assim dá, dá, não, sim, perfeito. Essa para todas as tuques do todas as tuques do manual. Isso aí.
+André   19:02que aí dá para fazer rede, dá para fazer usina, dá para fazer outras coisas, não precisa ser necessariamente subestação.São todas as tuques.Tá aí se o cara for fazer rede, às vezes a gente vai fazer rede.Isso aqui não pega já referenciado, né não?
+Gustavo Coutinho   19:19Não fiz ainda, não.
+André   19:21Não, não, tudo bem, só para saber, porque aí a gente pode estar fazendo também. A gente está fazendo levantamento de rede. A gente está usando, bom, você usou. A gente fez lá no na sou jipe que você fez lá aquele o aplicativo que tem o negócio e tal.
+Gustavo Coutinho   19:29Sim.É, foi usei usei o aquele aplicativozinho.
+André   19:37beleza aí a gente éTudo bem, é que lá a gente vai precisar, é uma situação um pouquinho diferente que a gente precisa já referenciar. Mas, digamos, como a gente está usando no celular, o próprio celular tem um outro aplicativo, dá para alternar ali. Eu não sei se a gente consegue fazer um botão de tipo copiar e colar, sabe? Porque a gente pode abrir.
+Gustavo Coutinho   19:46Certo.
+André   20:00Aquele aplicativo de coordenada, sabe o que é gratuito que a gente usa? Entrou lá, pegou a coordenada daquele item, vai estar lá, copia aquela coordenada, abre aqui um campo, fala coordenada, cola aqui. Depois você cadastra. Como eu estou falando, tem todas as truques. Então se eu precisar pegar Post255, eu vou criar um Post255, abre outro
+Gustavo Coutinho   20:02Sim.
+André   20:18Aplicativo pega a coordenada e ponho lá, então eu vou ter uma base e aí com o campo coordenado, se criar um campo coordenado, eu consigo colar a coordenada ali, por mais que ele não tenha, porque já o referenciar, você tem uma, mas eu tenho uma base Excel, CSV, seja lá o que for, que eu consigo até para do zero. Vamos fazer umas amostras, a gente consegue.Consegue ter?
+Gustavo Coutinho   20:38Não dá, dá pra dá pra fazer isso sim, é eu ma.
+André   20:41Porque aí eu uso tanto para rede quanto subestação, usina, dá para usar para várias fontes, entendeu?
+Gustavo Coutinho   20:46Não dá. Dá para fazer isso sim, mas eu pensei mesmo é em a pegar a coordenada automaticamente na hora de tirar a foto, entendeu?
+André   20:54Ah, mas se tiver como colocar, beleza, melhor ainda, porque aí não fica o módulo zitano. Tem que abrir outro aplicativo pra usar esse. Se fizer tudo num só, é mais fácil.
+Gustavo Coutinho   20:57Não dá, dá, dá, dá pra fazer isso sim.É, então é a intenção é isso aqui, facilitar a vida de todo mundo de vocês, do inventariante. Não vai, não vai substituir inventariante e ir na subestação, mas isso aqui já vai matar também aquela fase dele. Tem que ficar passando.Passando para.
+André   21:19É, ganhar tempo depois, né?
+Gustavo Coutinho   21:20Vou ficar passando para a planilha, velho, tá ligado? Enfim, finalizei, está aguardando aqui, subestação, essa aqui está aguardando. Aí se eu quiser, vamos lá, eu venho em outra aqui.Eu finalizei ela, vou finalizar ela. Eu vou criar um pop-up também de confirmação para finalizar e também vou criar uma opção para reabrir, caso o cara queira colocar mais opções. Finalizada.
+André   21:49E esse enviar visita seria subir a base, isso não.
+Gustavo Coutinho   21:52É isso aqui, aí aqui o cara tá sem sinal, o cara não consegue enviar. E aí quando ele chega onde tem sinal?
+André   22:01Chegou no hotel, acabou o dia, concluí meu dia, cheguei no hotel, vou carregar aquele arquivo que eu fiz.
+Gustavo Coutinho   22:07Exatamente.
+André   22:10Mas aí, por exemplo, uma outra pergunta, eu vou perguntando qualquer coisa que você vai me cortando, fez lá, eu vi que você abriu, tem a foto da câmera, você foi, digamos que todos os elementos que você foi fazendo, dados, você foi tirando foto ali já direto no aplicativo ali. Quando você vai estar assim, enviar a visita, ele vai enviar a base e as fotos.
+Gustavo Coutinho   22:16Tá.Is.É exatamente aqui, aquelas fotos que eu coloquei agora, cadê?
+André   22:35E essas fotos, ela fica como se fosse numa colada na base.
+Gustavo Coutinho   22:36Essa, oh, essas daqui de hoje, oh.elas ficam na base essas aqui são de hoje a 31 uma uma duas tá vendo
+André   22:40No, line.é que tá meio tá meio embaçada a sua tela não tô vendo velho
+Gustavo Coutinho   22:48And
+André   22:50Ah, melhorou, melhorou. Acho que deve ser sinal.
+Gustavo Coutinho   22:51All.Tá vendo aqui? Essas aqui são as de hoje, 31. Tá vendo? Essas aqui são as 6 de hoje que eu que eu tirei. E aí, quando? Qual que é a minha? Qual que é a minha ideia? Quando o cara quando o cara botar para enviar.
+André   22:54Não, agora embasou de novo.Mas isso é um PDF, Gustavo. Qual que é o formato que vai me salvar essas fotos? É o que? Um PDF?
+Gustavo Coutinho   23:08Aqui tem JPG, JPG.
+André   23:10Não, não, beleza. Aí, por exemplo, eu estou vendo, é, eu estou enxergando aqui uma linha, então tem lá o asset Cada 001.
+Gustavo Coutinho   23:16Não, isso aqui é a base de dados, essa aqui é o SharePoint.Checher point.
+André   23:21Então, mas essa foto vinculada desse jeito, ela vai estar como eu vou? Eu vou extrair isso num PDF ou ela como é que eu? Ou é no Excel que vai sair dentro do Excel a foto?
+Gustavo Coutinho   23:29Não, calma, quando tu for extrair, quando tu for extrair a foto, quando o cara clicar é que essa parte eu também não te André está aí.André
+André   23:42oi oi tô sim cara desculpa eu fui fechar
+Gustavo Coutinho   23:44Ah, não, de boa, de boa.É.Quando o cara quando o cara clicar no botão, a gente tem 2 opções, não é? Quando vocês forem baixar o quando um de vocês forem baixar o arquivo, dá para baixar as fotos para o computador.Entendeu? Elas separadinhas por pasta ali por subestação e dá até para colocar as fotos por item, criar a pasta do item dá. Dá para fazer isso também, ou seja, fica mais organizado ali é.
+André   24:17Porque você fez o ajuste, você sabe do que eu estou falando agora, qual onde vou chegar? Você fez o ajuste lá da Saniago. O que a gente tinha que fazer? Número de mobilizado, qual que é a foto está associada àquele cara? Então é isso que eu estou perguntando. Essa extração, quando a gente recebe essa extração, que o cara fez lá inventário, tomou o dado lá. Na hora que eu extrair, eu consigo ter
+Gustavo Coutinho   24:19Sim.Sim.Exatamente.Uh-huh.
+André   24:36Tinha por um número desse número asset, número um número de referência que vai ter lá e lá dentro só as fotos do item. É isso que eu quero saber se vai estar dentro de uma dessa estrutura, entendeu?
+Gustavo Coutinho   24:43It's.Sim, e eu tava pensando também, Dedé, da gente ir mais longe, quando clicar nesse botão aqui, enviar visita, já sobe direto para o SharePoint de vocês. E é para vocês conferirem, fica mais fácil também. Vocês clicam o botão e baixam as fotos.Entendeu? Aí vocês conseguem conferir no computador, depois deleta, mas elas já vão estar no SharePoint de vocês. Dá para fazer desse jeito também, entendeu? E a.
+André   25:09Tipo aquela pasta que eu compartilho com você, vou compartilhar um caminho Gustavo, esse é o caminho.Aí o cara vai ser.
+Gustavo Coutinho   25:14É o é então aí você não vai compartilhar nada com o seu inventariante quando clicar aqui já vai direto já vai direto já cria já cria no site do SharePoint já né já vai criar o já vai criar o
+André   25:19Ah, é automático. Entendi.Uma pasta para esse aplicativo.
+Gustavo Coutinho   25:29A pasta para esse aplicativo, não para essa para esse inventário.
+André   25:33A.
+Gustavo Coutinho   25:33para esse inventário barra essa essa subestação aí toda a foto toda a foto desse inventário que subir vai para foto do para passar do inventário toda subestação entendeu dá para fazer desse jeito também né
+André   25:37Perfect.Entendi. Tá.E aí o formulário, beleza. Não, fala aí, eu acho que eu vou te cortar, vai. Aí eu ia perguntar o seguinte, por exemplo, que nem você sabe, se você já fez, por exemplo, a gente vai fazer Enel. Então eu vou receber a base da Enel, aí eu vou determinar os campos que são importantes, que geralmente é a mesma coisa, mas tuca, tributo.
+Gustavo Coutinho   25:48É.No, you say, say, say, say.
+André   26:07Fabricante, modelo, código de operação, tal, tal. Aí eu vou subir lá previamente para o cara, que é o que está aparecendo aí. Beleza. Aí se amanhã ou depois eu vou fazer com outra finalidade. Eu só estou fazendo um inventário para confirmar, mas aí a gente vai precisar fazer uma, sei lá, eu preciso de uma avaliação mais detalhada e tu que de civil.Eu preciso que tenha ali, eu preciso criar campos, eu preciso que ele me coloque lá o metro quadrado, o tipo de brita, enfim, alguma outra informação adicional. E aí a minha pergunta é, eu crio isso lá no CSV? Se eu criar lá, porque aí o Excel é normal, eu só vou criando coluna e colocando.
+Gustavo Coutinho   26:44Tá.
+André   26:44Na hora de eu subir aqui, como é que ele vai estar concatenado porque esses campos eles já estão meio que previamente definidos ali por você, eu acho, né?
+Gustavo Coutinho   26:50É o que a gente teria que a gente teria que sentar e conversar. Quais são os campos que podem aparecer, os possíveis campos, entendeu? Para deixar tudo isso já pré-determinado, para só aparecer para o mas aí só aparece para o inventar e anti.
+André   26:59Mm-hmm.Cadastro.o que eu quiser.
+Gustavo Coutinho   27:08O os Campos daquele tipo de inventário, né? Você tinha falado que pode ser unitização, é pode ser revisão tarifária.
+André   27:11É porque aí eu posso fazer isso, eu posso fazer assim, eu vou criar um formulário padrão para a rede, vou criar um formulário padrão para subestação, vou criar um para a usina e vou criar um formulário padrão, sei lá, que eu vou chamar de avaliação, que eu preciso de um dado mais detalhado. Aí se eu já deixar pré determinado, eu falo em qual desses modelos eu quero carregar essa base e aí vai.
+Gustavo Coutinho   27:30Isso aí.
+André   27:31Direito é isso, né?
+Gustavo Coutinho   27:32isso aí perfeito perfeito isso aí show show de bola é isso mano até agora é isso eu vou criar a parte do
+André   27:33Stop.Entendi.
+Gustavo Coutinho   27:42vou criar a parte doA partir do desktop para a gente ir finalizando aí na acho que na parte do desktop a gente vai conversar mais aí durante o.durante o desenvolvimento.Entendeu?
+André   27:59Tá, é beleza, Gustavo. Então é o seguinte, então você está, você está trabalhando aí para desenvolver esse formulário aí, por enquanto, aí o que você está fazendo é o, digamos assim, o usuário. Você está fazendo o aplicativo do mobile, vai?
+Gustavo Coutinho   28:11É, agora eu já fiz a parte do usuário, agora eu vou começar a parte. Tem pouquíssima coisa para finalizar aqui na parte de na parte de na parte do usuário, do técnico, do inventariante e depois já vou para a parte do desktop.
+André   28:15Hi.Mhm.Tá, beleza. Tá bom, eu vou falar com Eu estava esperando você Você já havia comentado que estava pensando em fazer isso, tá? Eu ainda não levei para o João, para Aline, para o Bruno, nada. Eu vou mostrar para eles, tá? E aí a gente volta a se falar então.
+Gustavo Coutinho   28:33Perfeito.Tu quer que eu te mande um vídeo?
+André   28:43Eu não sei se você gravou isso aqui, pode me mandar que eu mando pra eles, disponibilizo eles assistem.
+Gustavo Coutinho   28:49Ah, beleza, beleza.
+André   28:50Tá bom, mas assim, lógico, eu vou explicar, vou conversar, mas assim, aí a gente consegue, consegue, eu consigo passar para eles, a gente vê é se fazendo isso. E aí, bom, enfim, aí a gente, aí a gente conversa, eu vejo aí.
+Gustavo Coutinho   28:51Está perfeito.E.Então a gente vai, a gente vai trocando ideia e aí até as sugestões deles sobre o aplicativo que está fazendo de retirada de retirada de função, inclusão de função, fala, olha, isso não tá legal, mas se fizer isso de jeito fica legal.
+André   29:09Isso alguma coisa que o que o João.Yeah.
+Gustavo Coutinho   29:18A gente vai trocando ideia e se quiser também conversa todo mundo junto pra gente desenrolar isso.
+André   29:22Tá bom.Tá bom, Gustavo. Beleza, cara. Valeu, obrigado. Boa semana, velho. E quando sair lá as informações lá do que eu te falei lá do IHS, enfim, da outra atividade lá, eu te dou um toque. Tá bom? Um abraço. Valeu, cara.
+Gustavo Coutinho   29:24Fechou, mano?É nós, tamo junto!Fechou, fechou. É nós, tamo junto. Já te mando, já te mando a gravação aí, falou.
+André   29:39Beleza, um abraço, valeu!
+Gustavo Coutinho parou a transcrição

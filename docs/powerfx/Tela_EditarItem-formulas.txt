@@ -1,0 +1,1993 @@
+# Tela_EditarItem — fórmulas Power Fx (PT-BR)
+# Separadores: argumentos com ; | múltiplas instruções com ;;
+
+## cmbA1 — DefaultSelectedItems (campo e AtributoA1, nao A1)
+
+# Combo moderno NAO dispara OnChange no Default. Se o Default aponta pra .A1
+# (coluna velha), a caixa fica vazia, varA1 fica Blank e o Salvar apaga AtributoA1.
+
+Filter(
+    colLookup;
+    TabelaOrigem = Trim(Coalesce(varAtrA1.TabelaOrigem; varAtrA1.ChaveTabela))
+    && Value(CodTabela) = Value(
+        Coalesce(
+            varA1;
+            varRegistroAtual.AtributoA1;
+            varItemFoto.AtributoA1;
+            varRegistroAtual.A1;
+            varItemFoto.A1
+        )
+    )
+)
+
+## cmbA1.Items
+
+Filter(
+    colLookup;
+    TabelaOrigem = Trim(Coalesce(varAtrA1.TabelaOrigem; varAtrA1.ChaveTabela))
+)
+
+## cmbA1.OnChange — locale PT-BR (ponto-e-virgula, nao virgula)
+
+Set(varA1; Self.Selected.CodTabela)
+
+## cmbTUC.OnChange
+
+# Default do combo dispara OnChange ao abrir a tela. Sem o varTucAnterior,
+# isso zera varA1…A6 (e dados tecnicos) em todo item que so abriu pra salvar.
+
+Set(varTucAnterior; varTUCSelecionado);;
+Set(varTUCSelecionado; Self.Selected.CodigoTUC);;
+Set(varDescSelecionada; Self.Selected.DescricaoTUC);;
+
+Set(
+    varAtrA1;
+    LookUp(
+        colAtributos;
+        Value(CodTUC) = Value(varTUCSelecionado)
+        && Trim(Text(NomenclaturaAtributo)) = "A1"
+    )
+);;
+Set(
+    varAtrA2;
+    LookUp(
+        colAtributos;
+        Value(CodTUC) = Value(varTUCSelecionado)
+        && Trim(Text(NomenclaturaAtributo)) = "A2"
+    )
+);;
+Set(
+    varAtrA3;
+    LookUp(
+        colAtributos;
+        Value(CodTUC) = Value(varTUCSelecionado)
+        && Trim(Text(NomenclaturaAtributo)) = "A3"
+    )
+);;
+Set(
+    varAtrA4;
+    LookUp(
+        colAtributos;
+        Value(CodTUC) = Value(varTUCSelecionado)
+        && Trim(Text(NomenclaturaAtributo)) = "A4"
+    )
+);;
+Set(
+    varAtrA5;
+    LookUp(
+        colAtributos;
+        Value(CodTUC) = Value(varTUCSelecionado)
+        && Trim(Text(NomenclaturaAtributo)) = "A5"
+    )
+);;
+Set(
+    varAtrA6;
+    LookUp(
+        colAtributos;
+        Value(CodTUC) = Value(varTUCSelecionado)
+        && Trim(Text(NomenclaturaAtributo)) = "A6"
+    )
+);;
+
+Set(varTipoA1; "LISTA");;
+Set(
+    varTipoA2;
+    Coalesce(
+        LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA2.ChaveTabela); TipoEntrada);
+        "LISTA"
+    )
+);;
+Set(
+    varTipoA3;
+    Coalesce(
+        LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA3.ChaveTabela); TipoEntrada);
+        "LISTA"
+    )
+);;
+Set(
+    varTipoA4;
+    Coalesce(
+        LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA4.ChaveTabela); TipoEntrada);
+        "LISTA"
+    )
+);;
+Set(
+    varTipoA5;
+    Coalesce(
+        LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA5.ChaveTabela); TipoEntrada);
+        "LISTA"
+    )
+);;
+Set(
+    varTipoA6;
+    Coalesce(
+        LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA6.ChaveTabela); TipoEntrada);
+        "LISTA"
+    )
+);;
+
+If(
+    Value(Coalesce(varTUCSelecionado; -1)) <> Value(Coalesce(varTucAnterior; -2));
+    Set(varAltA2; false);;
+    Set(varAltA3; false);;
+    Set(varAltA4; false);;
+    Set(varAltA5; false);;
+    Set(varAltA6; false);;
+    Set(varValorA2; Blank());;
+    Set(varValorA3; Blank());;
+    Set(varValorA4; Blank());;
+    Set(varValorA5; Blank());;
+    Set(varValorA6; Blank());;
+    Set(varA1; Blank());;
+    Set(varA2; Blank());;
+    Set(varA3; Blank());;
+    Set(varA4; Blank());;
+    Set(varA5; Blank());;
+    Set(varA6; Blank());;
+    Reset(cmbA1);;
+    Reset(cmbA2);;
+    Reset(cmbA3);;
+    Reset(cmbA4);;
+    Reset(cmbA5);;
+    Reset(cmbA6);;
+    Reset(inpA2Faixa);;
+    Reset(inpA3Faixa);;
+    Reset(inpA4Faixa);;
+    Reset(inpA5Faixa);;
+    Reset(inpA6Faixa);;
+    Reset(inpA2Livre);;
+    Reset(inpA3Livre);;
+    Reset(inpA4Livre);;
+    Reset(inpA5Livre);;
+    Reset(inpA6Livre);;
+    Set(varFabricante; Blank());;
+    Set(varModelo; Blank());;
+    Set(varNumSerie; Blank());;
+    Set(varCodOperacao; Blank());;
+    Set(varCM; Blank());;
+    Set(varAno; Blank());;
+    Set(varUnidadeItem; Blank());;
+    Set(varObservacoes; Blank());;
+    Reset(inpFabricante);;
+    Reset(inpModelo);;
+    Reset(inpNumSerie);;
+    Reset(inpCodOperacao);;
+    Reset(drpCM);;
+    Reset(inpAno);;
+    Reset(drpUnidadeItem);;
+    Reset(inpObservacoes)
+)
+
+## lblA5CodAtrb.Text
+
+If(
+    IsBlank(inpA5Faixa.Text) || !IsNumeric(inpA5Faixa.Text) || Value(inpA5Faixa.Text) <= 0;
+    "";
+    With(
+        {
+            valorBase: If(
+                varAltA5;
+                Value(inpA5Faixa.Text) * Coalesce(
+                    LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA5.ChaveTabela); FatorConv);
+                    1
+                );
+                Value(inpA5Faixa.Text)
+            )
+        };
+        With(
+            {
+                cod: Coalesce(
+                    First(
+                        Sort(
+                            Filter(
+                                colLookup;
+                                TabelaOrigem = varAtrA5.ChaveTabela
+                                && LimiteSuperior > 0
+                                && LimiteSuperior >= valorBase
+                            );
+                            LimiteSuperior;
+                            SortOrder.Ascending
+                        )
+                    ).CodTabela;
+                    LookUp(
+                        colLookup;
+                        TabelaOrigem = varAtrA5.ChaveTabela
+                        && LimiteSuperior = 0
+                    ).CodTabela
+                )
+            };
+            If(IsBlank(cod); "?"; Text(cod; "00"))
+        )
+    )
+)
+
+## OnVisible — início (varRegistroAtual + desfecho + TUC)
+
+Colar no **início** do `OnVisible` da `Tela_EditarItem` — **antes** de `varAtrA1` e de qualquer `Coalesce(varRegistroAtual…)`.
+
+**Pré-requisitos** (vêm da tela anterior, ex. `Tela_ItensVisita`):
+- `varItemFoto` — registro da base contábil (`colInventarioBase`) ou da sobra (`colCampoOffline`)
+- `varCodRef` — `CodAsset` do item (também na sobra já enviada)
+- `varCodSE` — subestação
+- `varModo` — `"EDITAR"` (base) ou `"NOVO"` (sobra física). **Não** recalcular com `IsBlank(varCodRef)`.
+- `varCodTemp` — **não usar**. Chave é só `varCodRef` / `CodAsset`.
+
+No **início** do `OnVisible`, **não** gerar GUID novo. A sobra já nasce com `varCodRef` no `btnAddItem`.
+
+```powerfx
+Set(
+    varRegistroAtual;
+    LookUp(
+        colCampoOffline;
+        CodInventario = gblInventarioSelecionado.CodInventario
+        && !IsBlank(varCodRef)
+        && CodAsset = varCodRef
+    )
+);;
+
+Set(
+    varModo;
+    If(
+        Coalesce(varModo; "") = "NOVO"
+        || StartsWith(Coalesce(Text(varCodRef); ""); "SOBRA-")
+        || Coalesce(varRegistroAtual.SobraTipo; "") = "SOBRA_FISICA"
+        || Coalesce(varRegistroAtual.Sobra; "") = "SOBRA_FISICA"
+        || Coalesce(varRegistroAtual.TipoRegistro; "") = "SOBRA_FISICA";
+        "NOVO";
+        Coalesce(varModo; If(IsBlank(varCodRef); "NOVO"; "EDITAR"))
+    )
+);;
+Set(
+    varDesfecho;
+    Coalesce(
+        varRegistroAtual.TipoRegistro;
+        If(varModo = "NOVO"; "SOBRA_FISICA"; "CONFIRMACAO")
+    )
+);;
+Set(varTUCSelecionado; Coalesce(varRegistroAtual.CodTUC; varItemFoto.CodTUC));;
+
+// … em seguida: varAtrA1…A6, varA1…A6, vars técnicas, Resets …
+```
+
+**O que é `varRegistroAtual`:** rascunho já salvo offline nesta visita (`colCampoOffline`). Se o técnico nunca clicou Salvar neste item, o `LookUp` não acha nada → fica `Blank()` → o `Coalesce` usa `varItemFoto` (base SAP).
+
+**Não** criar no `App.OnStart` — só neste `OnVisible`.
+
+---
+
+## Tela_EditarItem — botão Salvar (OnSelect completo)
+
+# NAO e mais Image6_48. Esse nome foi reusado na Tela_ItensVisita
+# (Cancelar do overlay cConfirmaExcluirSobra).
+# Colar no botao verde Salvar da Tela_EditarItem (ao lado do Cancelar,
+# Image6_47 no export antigo). Confirme o nome na arvore do Studio.
+
+If(
+    varModo = "NOVO"
+    || StartsWith(Coalesce(Text(varCodRef); ""); "SOBRA-")
+    || Coalesce(varRegistroAtual.SobraTipo; "") = "SOBRA_FISICA"
+    || Coalesce(varRegistroAtual.Sobra; "") = "SOBRA_FISICA"
+    || Coalesce(varRegistroAtual.TipoRegistro; "") = "SOBRA_FISICA";
+    Set(varModo; "NOVO");
+    If(
+        IsBlank(varModo);
+        Set(varModo; If(IsBlank(varCodRef); "NOVO"; "EDITAR"))
+    )
+);;
+If(varModo <> "NOVO"; Set(varCodTemp; Blank()));;
+
+RemoveIf(
+    colCampoOffline;
+    CodInventario = gblInventarioSelecionado.CodInventario
+    && !IsBlank(varCodRef)
+    && CodAsset = varCodRef
+);;
+
+Collect(
+    colCampoOffline;
+    {
+        IdRegistro: If(IsBlank(varRegistroAtual.IdRegistro); GUID(); varRegistroAtual.IdRegistro);
+        TipoRegistro: If(varModo = "NOVO"; "SOBRA_FISICA"; varDesfecho);
+        CodInventario: gblInventarioSelecionado.CodInventario;
+        CodSE: Coalesce(varCodSE; gblSEselecionada.CodSE);
+        NomeSE: Coalesce(varItemFoto.NomeSE; gblSEselecionada.NomeSE);
+        CodAsset: Coalesce(varCodRef; "");
+        CodTemp: "";
+        CodTUC: varTUCSelecionado;
+        DescricaoTUC: Coalesce(
+            cmbTUC.Selected.DescricaoTUC;
+            LookUp(colTUC; Value(CodigoTUC) = Value(varTUCSelecionado); DescricaoTUC);
+            varRegistroAtual.DescricaoTUC;
+            varItemFoto.DescricaoTUC;
+            ""
+        );
+        IdUC: Coalesce(Trim(varIdUC); varRegistroAtual.IdUC; varItemFoto.IdUC; "");
+        AtributoA1: Coalesce(
+            cmbA1.Selected.CodTabela;
+            varA1;
+            varRegistroAtual.AtributoA1;
+            varItemFoto.AtributoA1;
+            varItemFoto.A1
+        );
+        AtributoA2: Coalesce(IfError(cmbA2.Selected.CodTabela; Blank()); varA2);
+        AtributoA3: Coalesce(IfError(cmbA3.Selected.CodTabela; Blank()); varA3);
+        AtributoA4: Coalesce(IfError(cmbA4.Selected.CodTabela; Blank()); varA4);
+        AtributoA5: Coalesce(IfError(cmbA5.Selected.CodTabela; Blank()); varA5);
+        AtributoA6: Coalesce(IfError(cmbA6.Selected.CodTabela; Blank()); varA6);
+        ValorA2: Upper(If(Upper(Trim(varTipoA2)) = "FAIXA"; Coalesce(inpA2Faixa.Text; varValorA2; ""); If(Upper(Trim(varTipoA2)) = "LIVRE"; Coalesce(inpA2Livre.Text; varValorA2; ""); "")));
+        ValorA3: Upper(If(Upper(Trim(varTipoA3)) = "FAIXA"; Coalesce(inpA3Faixa.Text; varValorA3; ""); If(Upper(Trim(varTipoA3)) = "LIVRE"; Coalesce(inpA3Livre.Text; varValorA3; ""); "")));
+        ValorA4: Upper(If(Upper(Trim(varTipoA4)) = "FAIXA"; Coalesce(inpA4Faixa.Text; varValorA4; ""); If(Upper(Trim(varTipoA4)) = "LIVRE"; Coalesce(inpA4Livre.Text; varValorA4; ""); "")));
+        ValorA5: Upper(If(Upper(Trim(varTipoA5)) = "FAIXA"; Coalesce(inpA5Faixa.Text; varValorA5; ""); If(Upper(Trim(varTipoA5)) = "LIVRE"; Coalesce(inpA5Livre.Text; varValorA5; ""); "")));
+        ValorA6: Upper(If(Upper(Trim(varTipoA6)) = "FAIXA"; Coalesce(inpA6Faixa.Text; varValorA6; ""); If(Upper(Trim(varTipoA6)) = "LIVRE"; Coalesce(inpA6Livre.Text; varValorA6; ""); "")));
+        DescricaoBem: With(
+            {
+                prefixoImob:
+                    If(
+                        varModo = "NOVO";
+                        "";
+                        Coalesce(
+                            Trim(
+                                Coalesce(
+                                    Text(varItemFoto.Imobilizado);
+                                    Text(varRegistroAtual.Imobilizado);
+                                    ""
+                                )
+                            );
+                            "—"
+                        ) & " · "
+                    );
+                prefixoTuc: Trim(
+                    Coalesce(Text(varTUCSelecionado); "")
+                    & If(
+                        IsBlank(Coalesce(cmbA1.Selected.CodTabela; varA1));
+                        "";
+                        "." & Text(Coalesce(cmbA1.Selected.CodTabela; varA1); "00")
+                    )
+                ) & " - ";
+                texto0: Trim(
+                    Coalesce(
+                        IfError(lblDescCalc.Text; Blank());
+                        varDescSelecionada;
+                        varItemFoto.DescricaoBem;
+                        ""
+                    )
+                )
+            };
+            With(
+                {
+                    texto1:
+                        If(
+                            !IsBlank(prefixoImob) && StartsWith(texto0; prefixoImob);
+                            Trim(Mid(texto0; Len(prefixoImob) + 1; Len(texto0)));
+                            texto0
+                        )
+                };
+                If(
+                    StartsWith(texto1; prefixoTuc);
+                    Mid(texto1; Len(prefixoTuc) + 1; Len(texto1));
+                    texto1
+                )
+            )
+        );
+        Imobilizado: If(varModo = "NOVO"; ""; Coalesce(varItemFoto.Imobilizado; ""));
+        Quantidade: If(
+            varDesfecho = "NAO_ENCONTRADO";
+            0;
+            Coalesce(
+                varQuantidade;
+                varItemFoto.Quantidade;
+                1
+            )
+        );
+        Reserva: If(varReserva; "SIM"; "NÃO");
+        Fabricante: Upper(Coalesce(inpFabricante.Text; varFabricante; ""));
+        Modelo: Upper(Coalesce(inpModelo.Text; varModelo; ""));
+        NumSerie: Upper(Coalesce(inpNumSerie.Text; varNumSerie; ""));
+        CodOperacao: Upper(Coalesce(inpCodOperacao.Text; varCodOperacao; ""));
+        CM: varCM;
+        Ano: varAno;
+        Unidade: Coalesce(varUnidadeItem; "");
+        Observacoes: Upper(Coalesce(inpObservacoes.Text; varObservacoes; ""));
+        SobraTipo: If(varModo = "NOVO"; "SOBRA_FISICA"; "");
+        Sobra: If(
+            varModo = "NOVO";
+            "SOBRA_FISICA";
+            varDesfecho = "NAO_ENCONTRADO";
+            "SOBRA_CONTABIL";
+            ""
+        );
+        Sincronizada: false;
+        IdInventario: Coalesce(varRegistroAtual.IdInventario; varItemFoto.ID; varItemFoto.IdInventario; 0)
+    }
+);;
+
+If(
+    varModo <> "NOVO" && !IsBlank(varCodRef);
+    IfError(
+        UpdateIf(
+            colInventarioBase;
+            CodAsset = varCodRef
+            && CodInventario = gblInventarioSelecionado.CodInventario;
+            {
+                DescricaoBem: LookUp(colCampoOffline; CodAsset = varCodRef).DescricaoBem;
+                DescricaoTUC: LookUp(colCampoOffline; CodAsset = varCodRef).DescricaoTUC;
+                IdUC: LookUp(colCampoOffline; CodAsset = varCodRef).IdUC;
+                Reserva: If(varReserva; "SIM"; "NÃO");
+                Sobra: If(varDesfecho = "NAO_ENCONTRADO"; "SOBRA_CONTABIL"; "");
+                Status: If(varDesfecho = "NAO_ENCONTRADO"; "NÃO_ELEGIVEL"; "ADERENTE")
+            }
+        );
+        Blank()
+    );;
+    IfError(SaveData(colInventarioBase; "cache_InventarioBase"); Blank())
+);;
+
+IfError(SaveData(colCampoOffline; "cache_CampoOffline"); Blank());;
+If(
+    Coalesce(
+        LookUp(
+            colSubestacoes;
+            CodSE = gblSEselecionada.CodSE
+            && CodInventario = gblInventarioSelecionado.CodInventario
+        ).Status;
+        "Pendente"
+    ) = "Pendente";
+    UpdateIf(
+        colSubestacoes;
+        CodSE = gblSEselecionada.CodSE
+        && CodInventario = gblInventarioSelecionado.CodInventario;
+        {Status: "Em campo"}
+    );;
+    IfError(SaveData(colSubestacoes; "cache_Subestacoes"); Blank());;
+    Set(
+        gblSEselecionada;
+        First(
+            Filter(
+                colSubestacoes;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        )
+    )
+);;
+Back()
+
+## OnVisible — vars dados técnicos (adicionar após varA1…varA6)
+
+Set(varFabricante; Coalesce(varRegistroAtual.Fabricante; varItemFoto.Fabricante; ""));;
+Set(varModelo; Coalesce(varRegistroAtual.Modelo; varItemFoto.Modelo; ""));;
+Set(varNumSerie; Coalesce(varRegistroAtual.NumSerie; varItemFoto.NumSerie; ""));;
+Set(varCodOperacao; Coalesce(varRegistroAtual.CodOperacao; varItemFoto.CodOperacao; ""));;
+Set(varCM; Coalesce(varRegistroAtual.CM; varItemFoto.CM; Blank()));;
+Set(varAno; Coalesce(varRegistroAtual.Ano; varItemFoto.Ano; Blank()));;
+Set(varUnidadeItem; Coalesce(varRegistroAtual.Unidade; varItemFoto.Unidade; ""));;
+Set(varObservacoes; Coalesce(varRegistroAtual.Observacoes; varItemFoto.Observacoes; ""));;
+Set(varIdUC; Coalesce(varRegistroAtual.IdUC; varItemFoto.IdUC; ""));;
+Set(
+    varReserva;
+    Upper(
+        Coalesce(
+            varRegistroAtual.Reserva;
+            varItemFoto.Reserva;
+            "NÃO"
+        )
+    ) = "SIM"
+);;
+
+Reset(inpFabricante);;
+Reset(inpModelo);;
+Reset(inpNumSerie);;
+Reset(inpCodOperacao);;
+Reset(drpCM);;
+Reset(inpAno);;
+Reset(drpUnidadeItem);;
+Reset(inpObservacoes);;
+Reset(inpIdUC);;
+Reset(tglReserva)
+
+## App.OnStart — colCampoOffline (schema = Inventario + fila)
+
+# Dummy canonico: docs/powerfx/schema-inventario.txt
+
+ClearCollect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "";
+        CodTemp: "";
+        SobraTipo: "";
+        Sincronizada: false;
+        IdInventario: 0;
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA2: "";
+        ValorA3: "";
+        ValorA4: "";
+        ValorA5: "";
+        ValorA6: "";
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+
+## App.OnStart — colInventarioBase (schema = lista Inventario)
+
+ClearCollect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+
+## App.OnStart — forcar schema DEPOIS dos LoadData
+
+# LoadData de cache antigo APAGA coluna nova. Set(Last) grava o tipo
+# de varItemFoto / varRegistroAtual. Dummy = registro INTEIRO (schema-inventario.txt).
+# Collect so com {CM: 0} apaga Reserva de novo.
+
+Collect(
+    colInventarioBase;
+    {
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA1: 0;
+        ValorA2: 0;
+        ValorA3: 0;
+        ValorA4: 0;
+        ValorA5: 0;
+        ValorA6: 0;
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Set(varItemFoto; Last(colInventarioBase));;
+Remove(colInventarioBase; Last(colInventarioBase));;
+Set(varItemFoto; Blank());;
+
+Collect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "";
+        CodTemp: "";
+        SobraTipo: "";
+        Sincronizada: false;
+        IdInventario: 0;
+        ID: 0;
+        Title: "";
+        CodInventario: "";
+        CodSE: "";
+        NomeSE: "";
+        CodAsset: "";
+        IdItem: 0;
+        Imobilizado: "";
+        CodTUC: 0;
+        DescricaoTUC: "";
+        IdUC: "";
+        TI: 0;
+        LocalInstalacao: 0;
+        ArranjoFisico: 0;
+        CM: 0;
+        AtributoA1: 0;
+        AtributoA2: 0;
+        AtributoA3: 0;
+        AtributoA4: 0;
+        AtributoA5: 0;
+        AtributoA6: 0;
+        ValorA2: "";
+        ValorA3: "";
+        ValorA4: "";
+        ValorA5: "";
+        ValorA6: "";
+        DescricaoBem: "";
+        Quantidade: 0;
+        QuantidadeCampo: 0;
+        Unidade: "";
+        Elegivel: "";
+        Reserva: "";
+        Fabricante: "";
+        Modelo: "";
+        NumSerie: "";
+        Ano: 0;
+        Bay: "";
+        CodOperacao: "";
+        Projeto: "";
+        Observacoes: "";
+        Status: "";
+        Sobra: "";
+        ValidadoPor: "";
+        Origem: ""
+    }
+);;
+Set(varRegistroAtual; Last(colCampoOffline));;
+Remove(colCampoOffline; Last(colCampoOffline));;
+Set(varRegistroAtual; Blank());;
+
+## Tela_Home — Patch CONFIRMACAO (campos extras no bloco Patch)
+
+CodTUC: linhaAtual.CodTUC;
+AtributoA1: linhaAtual.AtributoA1;
+AtributoA2: linhaAtual.AtributoA2;
+AtributoA3: linhaAtual.AtributoA3;
+AtributoA4: linhaAtual.AtributoA4;
+AtributoA5: linhaAtual.AtributoA5;
+AtributoA6: linhaAtual.AtributoA6;
+DescricaoBem: linhaAtual.DescricaoBem;
+QuantidadeCampo: linhaAtual.Quantidade;
+Reserva: linhaAtual.Reserva;
+Fabricante: linhaAtual.Fabricante;
+Modelo: linhaAtual.Modelo;
+NumSerie: linhaAtual.NumSerie;
+CodOperacao: linhaAtual.CodOperacao;
+CM: linhaAtual.CM;
+Ano: linhaAtual.Ano;
+Unidade: linhaAtual.Unidade;
+
+## Chave do rascunho — correcao do RemoveIf (perda de dados)
+
+# DIAGNOSTICO
+#   varCodTemp nunca recebe valor em nenhuma tela; so e lido em Tela_EditarItem.
+#   varCodRef e setado apenas no botao da galeria (Tela_ItensVisita) e nunca limpo.
+#   Registros gravados por Tela_ItensVisita e pelo Salvar ficam com CodTemp = "".
+#   Em Power Fx IsBlank("") e true e Blank() = "" tambem e true.
+#   Logo, se varModo cair em "NOVO" com varCodTemp vazio, a condicao
+#   CodTemp = varCodTemp casa com TODOS os rascunhos do inventario e o
+#   RemoveIf apaga tudo; o SaveData seguinte persiste a perda.
+#   Gatilho hoje: item de base com CodAsset vazio (sobra ja sincronizada)
+#   -> IsBlank(varCodRef) -> varModo = "NOVO".
+
+# PASSO 1 — condicao unica de identidade do rascunho.
+#   Usar nos DOIS lugares: LookUp do OnVisible e RemoveIf do Salvar.
+#   Sobra ja enviada: CodTemp vazio + CodAsset = SOBRA-... — cair no CodAsset.
+CodInventario = gblInventarioSelecionado.CodInventario
+&& If(
+    varModo = "NOVO";
+    If(
+        !IsBlank(varCodTemp);
+        CodTemp = varCodTemp;
+        !IsBlank(varCodRef) && CodAsset = varCodRef
+    );
+    !IsBlank(varCodRef) && CodAsset = varCodRef
+)
+
+# PASSO 2 — garantir a chave antes de qualquer leitura.
+#   No OnVisible, logo depois de Set(varModo; ...) e ANTES do LookUp:
+#   So gera GUID se for sobra NOVA (sem CodTemp e sem CodAsset).
+If(
+    varModo = "NOVO";
+    If(
+        IsBlank(varCodTemp) && IsBlank(varCodRef);
+        Set(varCodTemp; Text(GUID()))
+    );;
+    If(
+        IsBlank(varCodRef);
+        Set(varCodRef; "SOBRA-" & Coalesce(varCodTemp; Text(GUID())))
+    )
+);;
+#   ATENCAO: tem que ser Text(GUID()) e nao GUID().
+#   A coluna CodTemp e texto (App.OnStart define CodTemp: "") e o Power Fx
+#   recusa comparar GUID com texto: "Os valores de GUID so podem ser
+#   comparados a outros valores de GUID" — o erro aparece no RemoveIf do Salvar.
+#   IdRegistro e o oposto: no schema e GUID() de verdade, deixar GUID() puro.
+
+# PASSO 3 — limpar a chave oposta na navegacao.
+#   Tela_ItensVisita, botao Editar da galeria:
+Set(varCodRef; ThisItem.CodAsset);;
+Set(varCodTemp; Blank());;
+Set(varCodSE; ThisItem.CodSE);;
+Set(varItemFoto; ThisItem);;
+Navigate(Tela_EditarItem; ScreenTransition.None)
+
+#   Futuro botao de sobra fisica:
+Set(varCodRef; Blank());;
+Set(varCodTemp; GUID());;
+Set(varItemFoto; Blank());;
+Navigate(Tela_EditarItem; ScreenTransition.None)
+
+# PASSO 4 (recomendado) — varModo por sinal explicito, nao por inferencia.
+#   IsBlank(varCodRef) classifica item de base sem CodAsset como sobra.
+#   Setar varModo na navegacao ("EDICAO" / "NOVO") e no OnVisible usar:
+Set(varModo; Coalesce(varModo; If(IsBlank(varCodRef); "NOVO"; "EDICAO")));;
+
+# inpA5Livre.Default aponta para varItemFoto.ValorA2 (deveria ser ValorA5)
+
+## Revisao 2026-08-22 (2a rodada) — OnVisible completo
+
+# A) varDescSelecionada CONTAMINA entre itens.
+#    Hoje: Set(varDescSelecionada; Coalesce(varDescSelecionada; varItemFoto.DescricaoBem))
+#    varDescSelecionada e global e sobrevive ao Back(). Se o tecnico editou o item A
+#    (cmbTUC.OnChange gravou a descricao de A) e depois abre o item B, o Coaleske
+#    encontra a var preenchida e MANTEM a descricao do item A. O Salvar grava
+#    DescricaoBem: varDescSelecionada -> item B fica com a descricao do item A.
+#    Corrigir e MOVER para depois do LookUp de varRegistroAtual:
+Set(varDescSelecionada; Coalesce(varRegistroAtual.DescricaoBem; varItemFoto.DescricaoBem));;
+
+# B) Ano volta como "0000" ao reabrir.
+#    O Salvar grava Ano: Coalesce(varAno; 0) -> quando o campo esta vazio, vai 0.
+#    Ao reabrir, 0 nao e Blank, entao varAno = 0 e inpAno.Default mostra "0000".
+#    Corrigir no Salvar (preferido), deixando o campo realmente vazio:
+Ano: varAno
+#    ou, se precisar manter o 0 no Collect, no OnVisible:
+Set(
+    varAno;
+    With(
+        {a: Coalesce(varRegistroAtual.Ano; varItemFoto.Ano; 0)};
+        If(a = 0; Blank(); a)
+    )
+);;
+
+# C) Duplicatas inocuas no inicio do OnVisible — podem sair:
+#    Set(varUnidadeItem; varItemFoto.Unidade)   -> sobrescrito depois do LookUp
+#    Set(varTUCSelecionado; varItemFoto.CodTUC) -> sobrescrito depois do LookUp
+
+# D) Observacoes: varObservacoes NAO faz fallback pra base, mas
+#    inpObservacoes.Default faz Coalesce(varObservacoes; varItemFoto.Observacoes).
+#    Resultado: o input mostra a observacao da base, porem varObservacoes fica "".
+#    Se o tecnico salvar sem tocar no campo, grava "" e a observacao desaparece.
+#    Decidir um dos dois caminhos:
+#      (i)  observacao e SO de campo -> inpObservacoes.Default = varObservacoes
+#      (ii) herda da base -> Set(varObservacoes; Coalesce(varRegistroAtual.Observacoes; varItemFoto.Observacoes; ""))
+
+## Revisao 2026-08-22 — achados no YAML
+
+# 1) inpNumSerie SEM OnChange -> varNumSerie nunca atualiza -> Salvar grava valor velho
+inpNumSerie.OnChange: Set(varNumSerie; Self.Text)
+
+# 2) varA1..varA6: rascunho, AtributoA* e A1 velho. 0 no rascunho (Blank
+#    gravado em coluna numero) NAO e Blank — Coalesce(0; base) vira 0 e apaga A1.
+Set(
+    varA1;
+    With(
+        {
+            r: Coalesce(varRegistroAtual.AtributoA1; varRegistroAtual.A1);
+            b: Coalesce(varItemFoto.AtributoA1; varItemFoto.A1)
+        };
+        If(IsBlank(r) || Value(Coalesce(r; 0)) = 0; b; r)
+    )
+);;
+Set(varA2; Coalesce(varRegistroAtual.AtributoA2; varItemFoto.AtributoA2; varItemFoto.A2));;
+Set(varA3; Coalesce(varRegistroAtual.AtributoA3; varItemFoto.AtributoA3; varItemFoto.A3));;
+Set(varA4; Coalesce(varRegistroAtual.AtributoA4; varItemFoto.AtributoA4; varItemFoto.A4));;
+Set(varA5; Coalesce(varRegistroAtual.AtributoA5; varItemFoto.AtributoA5; varItemFoto.A5));;
+Set(varA6; Coalesce(varRegistroAtual.AtributoA6; varItemFoto.AtributoA6; varItemFoto.A6));;
+
+# 3) varDesfecho e setado 2x no OnVisible; o 2o sobrescreve e perde o caso NOVO.
+#    Manter APENAS esta linha, depois do LookUp de varRegistroAtual:
+Set(
+    varDesfecho;
+    Coalesce(
+        varRegistroAtual.TipoRegistro;
+        If(varModo = "NOVO"; "SOBRA_FISICA"; "CONFIRMACAO")
+    )
+);;
+
+# 4) varTUCSelecionado e varUnidadeItem tambem setados 2x — remover a 1a ocorrencia
+#    (antes do LookUp), ela nao tem efeito.
+
+# 5) varModo = "NOVO" depende de varCodTemp, que nao e setado nesta tela.
+#    Se vier Blank, o LookUp casa qualquer registro com CodTemp = "".
+#    Garantir na tela que cria a sobra: Set(varCodTemp; GUID())
+
+## Cards técnicos — Default (trocar varItemFoto.* pelas vars)
+
+# Default deve usar a VAR (que já faz Coalesce rascunho -> base no OnVisible).
+# Usar varItemFoto.* direto perde o que o tecnico digitou e voltou pra tela.
+
+inpFabricante.Default:   varFabricante
+inpModelo.Default:       varModelo
+inpNumSerie.Default:     varNumSerie
+inpCodOperacao.Default:  varCodOperacao
+inpIdUC.Default:         varIdUC
+inpIdUC.OnChange:        Set(varIdUC; Self.Text)
+drpCM.Default: LookUp(colCentroModular; Codigo = varCM)
+inpAno.Default:          If(IsBlank(varAno); ""; Text(varAno; "0000"))
+inpObservacoes.Default:  varObservacoes
+
+## Cards técnicos — lblDiverge com base vazia
+
+# Base vazia nao "diverge" — nao ha o que comparar. Esconder o label.
+
+lblDiverge_1.Visible: !IsBlank(varItemFoto.Fabricante)
+lblDiverge_2.Visible: !IsBlank(varItemFoto.Modelo)
+lblDiverge_3.Visible: !IsBlank(varItemFoto.NumSerie)
+lblDiverge_4.Visible: !IsBlank(varItemFoto.Ano) && IsNumeric(inpAno.Text)
+lblDiverge_5.Visible: !IsBlank(varItemFoto.CodOperacao)
+lblDivergeCM.Visible: !IsBlank(varItemFoto.CM)
+lblDivergeCM.Text: If(varCM = varItemFoto.CM; "confere"; "diverge")
+
+# Reserva: varReserva e boolean; lista e SIM/NÃO. Sobra e base vazia: some.
+lblDivergeReserva.Visible:
+    varModo <> "NOVO"
+    && !IsBlank(Trim(Coalesce(varItemFoto.Reserva; "")))
+lblDivergeReserva.Text:
+    If(
+        varReserva = (Upper(Trim(varItemFoto.Reserva)) = "SIM");
+        "confere";
+        "diverge"
+    )
+lblDivergeReserva.Color:
+    If(
+        varReserva = (Upper(Trim(varItemFoto.Reserva)) = "SIM");
+        Cor.Success;
+        Cor.Delete
+    )
+
+# Comparacao robusta (ignora espaco/caixa):
+lblDiverge_1.Text: If(Trim(Upper(Coalesce(varItemFoto.Fabricante; ""))) = Trim(Upper(inpFabricante.Text)); "confere"; "diverge")
+
+## cCardObservacoes — correcoes
+
+Text22_6.Text:        "OBSERVAÇÕES DE CAMPO"      # estava "CÓDIGO DE OPERAÇÃO"
+Text23_6.Visible:     false                       # observacao de campo nao tem "base:"
+lblDiverge_6.Visible: false                       # nada a comparar
+inpObservacoes.Width: Parent.Width - 3            # sem o label, ocupa tudo
+
+## cCardA6 — Visible / Width
+
+[OK] lblA6CodAtrb.Visible: Upper(Trim(varTipoA6)) = "FAIXA"  (Studio 2026-08-27)
+[OK] inpA6Faixa.Width — mesmo condicional de A2..A5 (Studio 2026-08-27)
+    Parent.Width-Self.X*2 - If(Upper(Trim(varTipoA6)) = "FAIXA" && IsBlank(LookUp(colCatSimples; TabelaOrigem = varAtrA6.ChaveTabela).UnidadeAlt); lblA6Grand.Width + lblA6CodAtrb.Width; lblA6CodAtrb.Width)
+
+## Limpeza de resquicios (cosmetico)
+
+cCardsInformacoes.Height  -> propriedade vazia (=)
+inpA5Livre.Default        -> propriedade vazia (=)
+cmbA3.Items               -> remover comentario "// Items — corrigir"
+lblA2/A3/A4Grand.Color    -> comentario diz "// lblA6Grand.Color", trocar pelo nome certo
+Text23_4.Text             -> "base: " & Coalesce(Text(varItemFoto.Ano; "0000"); "—")
+
+## Inputs — OnChange (exemplo)
+
+inpFabricante.OnChange: Set(varFabricante; Self.Text)
+inpModelo.OnChange: Set(varModelo; Self.Text)
+inpNumSerie.OnChange: Set(varNumSerie; Self.Text)
+inpCodOperacao.OnChange: Set(varCodOperacao; Self.Text)
+drpCM.OnChange: Set(varCM; Self.Selected.Codigo)
+inpAno.OnChange: |-
+    If(
+        IsBlank(Self.Text) || !IsNumeric(Self.Text);
+        Set(varAno; Blank());
+        Set(varAno; Value(Self.Text))
+    )
+inpObservacoes.OnChange: Set(varObservacoes; Self.Text)
+drpUnidadeItem.OnChange: Set(varUnidadeItem; Self.Selected.Unidade)
+
+## cCardCM — dropdown (ModernDropdown)
+
+# Default espera REGISTRO de Items — nao o codigo solto.
+drpCM.Items: colCentroModular
+drpCM.ItemDisplayText: ThisItem.Codigo & " — " & ThisItem.Nome
+drpCM.Default: LookUp(colCentroModular; Codigo = varCM)
+drpCM.OnChange: Set(varCM; Self.Selected.Codigo)
+lblCMBase.Text: If(IsBlank(varItemFoto.CM); "base: —"; "base: " & Text(varItemFoto.CM) & " — " & Coalesce(LookUp(colCentroModular; Codigo = varItemFoto.CM; Nome); "—"))
+lblCMDesc.Text: ""
+lblCMDesc.Visible: false
+
+## App.OnStart — colUnidadeMedida (lista fixa)
+
+ClearCollect(
+    colUnidadeMedida;
+    {Unidade: "UN"; Rotulo: "UN - Unidade"};
+    {Unidade: "PC"; Rotulo: "PC - Peça"};
+    {Unidade: "M"; Rotulo: "M - Metro"};
+    {Unidade: "M2"; Rotulo: "M² - Metro quadrado"};
+    {Unidade: "KG"; Rotulo: "KG - Quilograma"}
+);;
+
+## App.OnStart — catálogos MCPSE (CM / arranjo / local / TI)
+
+# Fonte canônica: docs/powerfx/catalogos-mcpse.txt · planilha 11.09 Tabela-TI-CM-LI.xlsx
+# Catalogo estatico — NAO criar lista SharePoint. Sem SaveData.
+# Inventario.CM = Codigo 0-9 (equipamento). Nao usar Subestacoes.CM.
+# Arranjo e local sao da SE. TI = colTipoInstalacao (local). Se Subestacoes.TI vier em branco, o inventariante preenche na visita (André, 05.10). Se veio na base, só exibe.
+
+# Cole o bloco completo de catalogos-mcpse.txt (4 ClearCollect).
+
+## cCardQuantidade — unidade integrada (Dropdown)
+
+Text23 (base): ="base: " & varItemFoto.Quantidade & " " & Coalesce(varItemFoto.Unidade; "—")
+inpQuantidade.OnChange: Set(varQuantidade; Value(Self.Text))
+drpUnidadeItem.Items: colUnidadeMedida
+drpUnidadeItem.ItemDisplayText: ThisItem.Unidade
+drpUnidadeItem.Default: LookUp(colUnidadeMedida; Unidade = Trim(Upper(varUnidadeItem)))
+drpUnidadeItem.OnChange: Set(varUnidadeItem; Self.Selected.Unidade)
+drpUnidadeItem.Width: 100
+inpQuantidade.Width: Parent.Width - drpUnidadeItem.Width - lblDiverge.Width - 6
+lblDiverge.Text: If(Value(inpQuantidade.Text) = varItemFoto.Quantidade && varUnidadeItem = varItemFoto.Unidade; "confere"; "diverge")
+
+## drpUnidadeItem — propriedades (Dropdown dentro de cCardQuantidade)
+
+Items: colUnidadeMedida
+ItemDisplayText: ThisItem.Unidade
+Default: LookUp(colUnidadeMedida; Unidade = Trim(Upper(varUnidadeItem)))
+OnChange: Set(varUnidadeItem; Self.Selected.Unidade)
+
+# ATENCAO: Default do ModernDropdown espera um REGISTRO do schema de Items.
+# - varUnidadeItem (texto)        -> erro "Esperado um valor compativel com 'Items'"
+# - {Unidade: varUnidadeItem}     -> valida, mas nao seleciona (registro sintetico)
+# - LookUp(colUnidadeMedida; ...) -> correto (registro real vindo de Items)
+
+## BUG 2026-08-22 — DescricaoBem repetida em todos os registros
+
+Sintoma: colCampoOffline com 3 registros de CodTUC diferentes (570; 210; 160)
+e a MESMA DescricaoBem ("TRANSFORMADOR DE FORCA ...").
+
+Causa: no OnVisible existia
+    Set(varDescSelecionada; Coalesce(varDescSelecionada; varItemFoto.DescricaoBem));;
+varDescSelecionada e global e sobrevive a navegacao. O Coalesce le a propria
+variavel primeiro, entao o valor do PRIMEIRO item aberto nunca mais e trocado.
+O Salvar grava DescricaoBem: varDescSelecionada -> contamina todos os itens.
+
+Correcao (OnVisible, DEPOIS do Set(varRegistroAtual; ...)):
+    Set(
+        varDescSelecionada;
+        Coalesce(varRegistroAtual.DescricaoBem; varItemFoto.DescricaoBem; "")
+    );;
+E remover a linha antiga que ficava antes do LookUp.
+
+Regra geral: nenhuma variavel global de item pode aparecer dentro do proprio
+Coalesce no OnVisible. O mesmo vale para varTUCSelecionado; varUnidadeItem; varA1..A6.
+
+## lblDescCalc.Text — descricao recomposta a partir dos atributos
+
+Label (ModernText) no card de topo. Recompoe a descricao quando o tecnico troca
+TUC ou atributos; mantem a descricao da base quando nada mudou.
+O Salvar NÃO deve gravar o prefixo TUC.A1 — a galeria já monta
+CodTUC & "." & A1 & " - " & DescricaoBem. Se gravar lblDescCalc.Text inteiro,
+o card fica "210.01 - 210.01 - DISJUNTOR...".
+
+DescricaoBem no Collect (tira o prefixo se o label já tiver):
+With(
+    {
+        prefixo: Trim(
+            Coalesce(Text(varTUCSelecionado); "")
+            & If(IsBlank(varA1); ""; "." & Text(varA1; "00"))
+        ) & " - ";
+        texto: Trim(Coalesce(lblDescCalc.Text; varDescSelecionada; ""))
+    };
+    If(
+        StartsWith(texto; prefixo);
+        Mid(texto; Len(prefixo) + 1; Len(texto));
+        texto
+    )
+)
+
+# Galeria (Text do card BASE e SOBRAS) — nao duplica se DescricaoBem ja veio com codigo:
+With(
+    {
+        prefixo: ThisItem.CodTUC & "." & Text(Coalesce(ThisItem.AtributoA1; ThisItem.A1); "00") & " - ";
+        desc: Trim(Coalesce(ThisItem.DescricaoBem; ""))
+    };
+    If(StartsWith(desc; Trim(Text(ThisItem.CodTUC)) & "."); desc; prefixo & desc)
+)
+
+# A1 no Concat: TUC 210 / 570 / 575 pulam o DescricaoItem do A1.
+# 210: "CLASSE DE TENSAO IGUAL OU SUPERIOR A 69kV".
+# 570 / 575: o A1 e o proprio nome da TUC — sem PULAR vira
+# "TRANSFORMADOR DE FORÇA TRANSFORMADOR DE FORÇA…".
+# Os demais TUC usam A1. Nome da TUC: nao prefixar se attrs ja comeca com ele.
+
+# FAIXA: NUNCA usar DescricaoItem do catálogo ("anterior até 72,5kV").
+# Usar o valor digitado em inpA*Faixa + unidade do card (toggle Unidade/UnidadeAlt).
+# LISTA: DescricaoItem. LIVRE: texto do inpA*Livre.
+# mudou inclui inpA*Faixa preenchido: o codigo da faixa (varA*) pode nao mudar
+# se o valor novo continua na mesma banda do catalogo.
+
+# Formula completa (lblDescCalc.Text):
+Coalesce(
+    If(
+        varModo = "NOVO" && IsBlank(varTUCSelecionado);
+        "Novo item — sobra física";
+        With(
+            {
+                baseDesc: Coalesce(varItemFoto.DescricaoBem; "");
+                mudou:
+                    varModo = "NOVO"
+                    || Value(Coalesce(varTUCSelecionado; 0)) <> Value(Coalesce(varItemFoto.CodTUC; 0))
+                    || Value(Coalesce(varA1; 0)) <> Value(Coalesce(varItemFoto.AtributoA1; 0))
+                    || Value(Coalesce(varA2; 0)) <> Value(Coalesce(varItemFoto.AtributoA2; 0))
+                    || Value(Coalesce(varA3; 0)) <> Value(Coalesce(varItemFoto.AtributoA3; 0))
+                    || Value(Coalesce(varA4; 0)) <> Value(Coalesce(varItemFoto.AtributoA4; 0))
+                    || Value(Coalesce(varA5; 0)) <> Value(Coalesce(varItemFoto.AtributoA5; 0))
+                    || Value(Coalesce(varA6; 0)) <> Value(Coalesce(varItemFoto.AtributoA6; 0))
+                    || (Upper(Trim(varTipoA2)) = "FAIXA" && !IsBlank(Trim(inpA2Faixa.Text)))
+                    || (Upper(Trim(varTipoA3)) = "FAIXA" && !IsBlank(Trim(inpA3Faixa.Text)))
+                    || (Upper(Trim(varTipoA4)) = "FAIXA" && !IsBlank(Trim(inpA4Faixa.Text)))
+                    || (Upper(Trim(varTipoA5)) = "FAIXA" && !IsBlank(Trim(inpA5Faixa.Text)))
+                    || (Upper(Trim(varTipoA6)) = "FAIXA" && !IsBlank(Trim(inpA6Faixa.Text)))
+            };
+            With(
+                {
+                    desc:
+                        With(
+                            {
+                                nomeTuc: Trim(
+                                    Coalesce(
+                                        LookUp(colTUC; Value(CodigoTUC) = Value(varTUCSelecionado); DescricaoTUC);
+                                        ""
+                                    )
+                                );
+                                attrs: Trim(
+                                    Concat(
+                                    Table(
+                                        {
+                                            chave: varAtrA1.ChaveTabela;
+                                            cod: varA1;
+                                            tipo: If(
+                                                Value(varTUCSelecionado) = 210
+                                                || Value(varTUCSelecionado) = 570
+                                                || Value(varTUCSelecionado) = 575;
+                                                "PULAR";
+                                                "LISTA"
+                                            );
+                                            livre: "";
+                                            faixa: "";
+                                            unid: ""
+                                        };
+                                        {
+                                            chave: varAtrA2.ChaveTabela;
+                                            cod: varA2;
+                                            tipo: Upper(Trim(varTipoA2));
+                                            livre: If(Upper(Trim(varTipoA2)) = "LIVRE"; Trim(inpA2Livre.Text); "");
+                                            faixa: If(Upper(Trim(varTipoA2)) = "FAIXA"; Trim(inpA2Faixa.Text); "");
+                                            unid: If(
+                                                varAltA2;
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA2.ChaveTabela); UnidadeAlt); "");
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA2.ChaveTabela); Unidade); "")
+                                            )
+                                        };
+                                        {
+                                            chave: varAtrA3.ChaveTabela;
+                                            cod: varA3;
+                                            tipo: Upper(Trim(varTipoA3));
+                                            livre: If(Upper(Trim(varTipoA3)) = "LIVRE"; Trim(inpA3Livre.Text); "");
+                                            faixa: If(Upper(Trim(varTipoA3)) = "FAIXA"; Trim(inpA3Faixa.Text); "");
+                                            unid: If(
+                                                varAltA3;
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA3.ChaveTabela); UnidadeAlt); "");
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA3.ChaveTabela); Unidade); "")
+                                            )
+                                        };
+                                        {
+                                            chave: varAtrA4.ChaveTabela;
+                                            cod: varA4;
+                                            tipo: Upper(Trim(varTipoA4));
+                                            livre: If(Upper(Trim(varTipoA4)) = "LIVRE"; Trim(inpA4Livre.Text); "");
+                                            faixa: If(Upper(Trim(varTipoA4)) = "FAIXA"; Trim(inpA4Faixa.Text); "");
+                                            unid: If(
+                                                varAltA4;
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA4.ChaveTabela); UnidadeAlt); "");
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA4.ChaveTabela); Unidade); "")
+                                            )
+                                        };
+                                        {
+                                            chave: varAtrA5.ChaveTabela;
+                                            cod: varA5;
+                                            tipo: Upper(Trim(varTipoA5));
+                                            livre: If(Upper(Trim(varTipoA5)) = "LIVRE"; Trim(inpA5Livre.Text); "");
+                                            faixa: If(Upper(Trim(varTipoA5)) = "FAIXA"; Trim(inpA5Faixa.Text); "");
+                                            unid: If(
+                                                varAltA5;
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA5.ChaveTabela); UnidadeAlt); "");
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA5.ChaveTabela); Unidade); "")
+                                            )
+                                        };
+                                        {
+                                            chave: varAtrA6.ChaveTabela;
+                                            cod: varA6;
+                                            tipo: Upper(Trim(varTipoA6));
+                                            livre: If(Upper(Trim(varTipoA6)) = "LIVRE"; Trim(inpA6Livre.Text); "");
+                                            faixa: If(Upper(Trim(varTipoA6)) = "FAIXA"; Trim(inpA6Faixa.Text); "");
+                                            unid: If(
+                                                varAltA6;
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA6.ChaveTabela); UnidadeAlt); "");
+                                                Coalesce(LookUp(colCatSimples; TabelaOrigem = Trim(varAtrA6.ChaveTabela); Unidade); "")
+                                            )
+                                        }
+                                    ) As p;
+                                    With(
+                                        {
+                                            parte:
+                                                If(
+                                                    p.tipo = "PULAR";
+                                                    "";
+                                                    If(
+                                                        p.tipo = "LIVRE";
+                                                        p.livre;
+                                                        If(
+                                                            p.tipo = "FAIXA";
+                                                            If(
+                                                                IsBlank(p.faixa);
+                                                                "";
+                                                                Trim(p.faixa & If(IsBlank(Trim(p.unid)); ""; " " & p.unid))
+                                                            );
+                                                            Coalesce(
+                                                                LookUp(
+                                                                    colLookup;
+                                                                    TabelaOrigem = Trim(p.chave)
+                                                                    && Value(CodTabela) = Value(p.cod);
+                                                                    DescricaoItem
+                                                                );
+                                                                ""
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                        };
+                                        If(IsBlank(Trim(parte)); ""; Trim(parte) & " ")
+                                    )
+                                )
+                                );
+                                bruto: If(
+                                    !mudou && !IsBlank(baseDesc);
+                                    Trim(baseDesc);
+                                    If(
+                                        IsBlank(attrs);
+                                        nomeTuc;
+                                        If(
+                                            !IsBlank(nomeTuc) && StartsWith(attrs; nomeTuc);
+                                            attrs;
+                                            Trim(nomeTuc & " " & attrs)
+                                        )
+                                    )
+                                )
+                            };
+                            If(
+                                !IsBlank(nomeTuc)
+                                && StartsWith(bruto; nomeTuc)
+                                && StartsWith(
+                                    Trim(Mid(bruto; Len(nomeTuc) + 1; Len(bruto)));
+                                    nomeTuc
+                                );
+                                Trim(Mid(bruto; Len(nomeTuc) + 1; Len(bruto)));
+                                bruto
+                            )
+                        )
+                };
+                Trim(
+                    With(
+                        {
+                            codigo:
+                                Coalesce(Text(varTUCSelecionado); Text(varItemFoto.CodTUC); "")
+                                & If(IsBlank(varA1); ""; "." & Text(varA1; "00"))
+                                & If(IsBlank(desc); ""; " - " & desc);
+                            imob: Trim(
+                                Coalesce(
+                                    Text(varItemFoto.Imobilizado);
+                                    Text(varRegistroAtual.Imobilizado);
+                                    ""
+                                )
+                            )
+                        };
+                        If(
+                            varModo = "NOVO";
+                            Trim(codigo);
+                            Coalesce(imob; "—") & " · " & Trim(codigo)
+                        )
+                    )
+                )
+            )
+        )
+    );
+    "Novo item — sobra física"
+)
+
+# Notas:
+# - FAIXA vazia some da descricao (nao cai no LookUp).
+# - Unidade segue o toggle varAltA* (kV vs V, etc.).
+# - A1 continua LISTA (DescricaoItem). Se o texto ja comeca com o nome da TUC, nao prefixa de novo.
+
+## lblDescCalc.Size — encolhe pra caber no Height 100, sem scrollbar
+
+AutoHeight: false
+Height: 100
+
+Size:
+If(
+    Self.Text = "Novo item — sobra física";
+    26;
+    Max(
+        12;
+        Min(
+            22;
+            RoundDown(1900 / Max(Len(Self.Text); 40); 0)
+        )
+    )
+)
+
+## Sobra fisica — botao "Adicionar item" (Tela_ItensVisita)
+
+# Padrao: CodAsset = "SOBRA-" & GUID. Gerar uma vez em varCodRef.
+# Nao usar varCodTemp como chave (docs/fotos-campos.md).
+
+btnAddItem.OnSelect:
+    Set(varModo; "NOVO");;
+    Set(varDesfecho; "SOBRA_FISICA");;
+    Set(varCodRef; "SOBRA-" & Text(GUID()));;
+    Set(varCodTemp; Blank());;
+    Set(varCodSE; gblSEselecionada.CodSE);;
+    Set(varItemFoto; Blank());;
+    Set(varRegistroAtual; Blank());;
+    Set(varDescSelecionada; Blank());;
+    Set(varTUCSelecionado; Blank());;
+    Set(varA1; Blank());;
+    Set(varIdUC; Blank());;
+    Set(varAbaItens; "SOBRAS");;
+    Navigate(Tela_EditarItem; ScreenTransition.None)
+
+# varItemFoto = Blank() e obrigatorio: a variavel tem o shape de colInventarioBase
+# (+ RegistroCampo). Atribuir um registro literal diferente da erro de tipo.
+
+Defaults para NOVO no OnVisible:
+    Set(varQuantidade; Coalesce(varRegistroAtual.Quantidade; varItemFoto.Quantidade; 1));;
+    Set(varUnidadeItem; Coalesce(varRegistroAtual.Unidade; varItemFoto.Unidade; "UN"));;
+
+Galeria das sobras (galItensSobras.Items) — as sobras NAO aparecem em galItensBase,
+que le colInventarioBase. Filtra por SobraTipo E pelos outros sinais (CodAsset SOBRA-),
+porque rascunho antigo pode ter gravado TipoRegistro = CONFIRMACAO e SobraTipo vazio:
+    Filter(
+        colCampoOffline;
+        CodInventario = gblInventarioSelecionado.CodInventario
+        && CodSE = gblSEselecionada.CodSE
+        && (
+            SobraTipo = "SOBRA_FISICA"
+            || Sobra = "SOBRA_FISICA"
+            || TipoRegistro = "SOBRA_FISICA"
+            || StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+        )
+        && (
+            IsBlank(Trim(inpBuscaItens.Text))
+            || inpBuscaItens.Text in Coalesce(DescricaoBem; "")
+            || inpBuscaItens.Text in Text(Coalesce(CodTUC; ""))
+            || inpBuscaItens.Text in Coalesce(IdUC; "")
+            || inpBuscaItens.Text in Coalesce(CodAsset; "")
+        )
+    )
+
+Reabrir uma sobra (botao editar da galSobras):
+    Set(varModo; "NOVO");;
+    Set(varDesfecho; "SOBRA_FISICA");;
+    Set(varCodRef; ThisItem.CodAsset);;
+    Set(varCodTemp; Blank());;
+    Set(varCodSE; ThisItem.CodSE);;
+    Set(varItemFoto; Blank());;
+    Navigate(Tela_EditarItem; ScreenTransition.None)
+
+# varItemFoto = Blank() e obrigatorio: a var tem o shape de colInventarioBase.
+# ThisItem da galItensSobras e colCampoOffline → erro de tipo incompatível.
+# Os campos vêm do LookUp de varRegistroAtual (CodTemp / CodAsset).
+# NAO zerar varCodRef. Sobra ja enviada tem CodAsset (SOBRA-...) e CodTemp
+# vazio. Se zerar os dois, o OnVisible gera GUID novo e o Salvar duplica.
+
+## Nomes reais no Studio (YAML 2026-08-27) — NAO usar export antigo
+
+# Tela_ItensVisita
+#   galItensBase              galeria BASE (nao e Gallery6)
+#   galItensSobras            galeria SOBRAS
+#   btnEditarBase             lapis BASE
+#   btnEditarSobras           lapis SOBRAS
+#   btnConfirmarBase          confirmar rapido
+#   btnNaoEncontradoBase      nao encontrado
+#   btnFotosAmbiente / btnFotosBase / btnFotosSobras
+#   Text16 / Text17 / Rectangle4   progresso (cContagemItens)
+#   Text18                    titulo do card BASE
+#   btnAddItem                Adicionar item
+#   cConfirmaExcluirSobra     overlay excluir
+#   Image6_48                 X do overlay (Cancelar) — NAO e Salvar
+#   btnCancelarExcluirSobra   Cancelar do overlay
+#   btnConfirmarExcluirSobra  Excluir de verdade
+#   btnDeleteSobras           lixeira do card
+#
+# Tela_EditarItem
+#   Salvar = botao verde com IconText "Salvar" (nome na arvore; NAO Image6_48)
+
+## Visita 2026-08-27 — save BASE / progresso / A6
+
+# Sintoma: ao Salvar um item da BASE, aparece outro 570.01 (aba SOBRAS)
+# e/ou o titulo vira "570.01 - 570.01 - TRANSFORMADOR...".
+# Causa 1: botao Editar da BASE nao zera varModo/varCodTemp. Se veio de uma
+#   sobra (varModo = "NOVO"), o Salvar grava SobraTipo = "SOBRA_FISICA".
+# Causa 2: DescricaoBem sai com prefixo TUC.A1 e a galeria prefixa de novo.
+# Causa 3: progresso com galItensSobras.AllItems zera na aba BASE (galeria
+#   invisivel). Contar sobra em colCampoOffline, nao na galeria.
+# Causa 4: Confirmar/Nao encontrado na galeria faz Collect sem RemoveIf.
+
+## btnEditarBase.OnSelect — Editar (card BASE)
+
+Set(varModo; "EDITAR");;
+Set(varCodRef; ThisItem.CodAsset);;
+Set(varCodTemp; Blank());;
+Set(varCodSE; ThisItem.CodSE);;
+Set(varItemFoto; ThisItem);;
+Navigate(Tela_EditarItem; ScreenTransition.None)
+
+## Text18.Text — titulo do card BASE (Imobilizado · TUC.A1 · descricao · IdUC)
+
+# 18.09: IdUC no lugar do nome da SE. Corta ` — {NomeSE}` se a base veio com ele.
+# Nome da TUC duplicado (TRANSFORMADOR DE FORÇA TRANSFORMADOR DE FORÇA…) some.
+
+With(
+    {
+        imob: Coalesce(Text(ThisItem.Imobilizado); "—");
+        iduc: Trim(
+            Coalesce(
+                ThisItem.RegistroCampo.IdUC;
+                ThisItem.IdUC;
+                ""
+            )
+        );
+        prefixo: ThisItem.CodTUC
+            & If(
+                IsBlank(Coalesce(ThisItem.RegistroCampo.AtributoA1; ThisItem.AtributoA1; ThisItem.A1));
+                "";
+                "." & Text(Coalesce(ThisItem.RegistroCampo.AtributoA1; ThisItem.AtributoA1; ThisItem.A1); "00")
+            )
+            & " - ";
+        descBruta: Trim(
+            Coalesce(
+                ThisItem.RegistroCampo.DescricaoBem;
+                ThisItem.DescricaoBem;
+                ""
+            )
+        );
+        corte: " — " & Coalesce(gblSEselecionada.NomeSE; "");
+        nomeTuc: Trim(
+            Coalesce(
+                ThisItem.DescricaoTUC;
+                LookUp(colTUC; Value(CodigoTUC) = Value(ThisItem.CodTUC); DescricaoTUC);
+                ""
+            )
+        )
+    };
+    With(
+        {
+            desc0: If(
+                !IsBlank(corte)
+                    && corte <> " — "
+                    && !IsBlank(Find(corte; descBruta));
+                Trim(
+                    Left(
+                        descBruta;
+                        Find(corte; descBruta) - 1
+                    )
+                );
+                descBruta
+            )
+        };
+        With(
+            {
+                desc: If(
+                    !IsBlank(nomeTuc)
+                    && StartsWith(desc0; nomeTuc)
+                    && StartsWith(
+                        Trim(Mid(desc0; Len(nomeTuc) + 1; Len(desc0)));
+                        nomeTuc
+                    );
+                    Trim(Mid(desc0; Len(nomeTuc) + 1; Len(desc0)));
+                    desc0
+                )
+            };
+            imob
+                & " · "
+                & If(
+                    StartsWith(desc; Trim(Text(ThisItem.CodTUC)) & ".");
+                    desc;
+                    prefixo & desc
+                )
+                & If(IsBlank(iduc); ""; " · " & iduc)
+        )
+    )
+)
+
+## Progresso da visita — BASE revisada + sobras
+
+# feitos = rascunhos da visita (confirmacao/nao encontrado + sobras).
+# total = itens da base + sobras (sobra entra nos dois lados, senao passa de 100%).
+# Dois Filter separados. Sem If dentro de Filter.
+
+Text16.Text:
+With(
+    {
+        feitos: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        );
+        sobras: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && SobraTipo = "SOBRA_FISICA"
+            )
+        );
+        totalBase: CountRows(
+            Filter(
+                colInventarioBase;
+                CodSE = gblSEselecionada.CodSE
+                && Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+            )
+        )
+    };
+    With(
+        {total: totalBase + sobras};
+        feitos & " de " & total & " itens revisados"
+    )
+)
+
+Text17.Text:
+With(
+    {
+        feitos: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        );
+        sobras: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && SobraTipo = "SOBRA_FISICA"
+            )
+        );
+        totalBase: CountRows(
+            Filter(
+                colInventarioBase;
+                CodSE = gblSEselecionada.CodSE
+                && Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+            )
+        )
+    };
+    With(
+        {total: totalBase + sobras};
+        If(total = 0; 0; Round(feitos / total * 100; 0)) & "%"
+    )
+)
+
+Rectangle4.Width:
+With(
+    {
+        feitos: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        );
+        sobras: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && SobraTipo = "SOBRA_FISICA"
+            )
+        );
+        totalBase: CountRows(
+            Filter(
+                colInventarioBase;
+                CodSE = gblSEselecionada.CodSE
+                && Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+            )
+        )
+    };
+    With(
+        {total: totalBase + sobras};
+        If(total = 0; 0; (feitos / total) * Parent.Width)
+    )
+)
+
+## Progresso da visita — BASE revisada + sobras
+
+# feitos = rascunhos da visita (confirmacao/nao encontrado + sobras).
+# total = itens da base + sobras (sobra entra nos dois lados, senao passa de 100%).
+# NAO usar galItensSobras.AllItems: na aba BASE a galeria esta invisivel e AllItems
+# volta 0 — a sobra some do denominador.
+
+Text16.Text:
+With(
+    {
+        feitos: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        );
+        sobras: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && SobraTipo = "SOBRA_FISICA"
+            )
+        );
+        totalBase: CountRows(
+            Filter(
+                colInventarioBase;
+                CodSE = gblSEselecionada.CodSE
+                && Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+            )
+        )
+    };
+    With(
+        {total: totalBase + sobras};
+        feitos & " de " & total & " itens revisados"
+    )
+)
+
+Text17.Text:
+With(
+    {
+        feitos: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        );
+        sobras: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && SobraTipo = "SOBRA_FISICA"
+            )
+        );
+        totalBase: CountRows(
+            Filter(
+                colInventarioBase;
+                CodSE = gblSEselecionada.CodSE
+                && Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+            )
+        )
+    };
+    With(
+        {total: totalBase + sobras};
+        If(total = 0; 0; Round(feitos / total * 100; 0)) & "%"
+    )
+)
+
+Rectangle4.Width:
+With(
+    {
+        feitos: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        );
+        sobras: CountRows(
+            Filter(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodInventario = gblInventarioSelecionado.CodInventario
+                && SobraTipo = "SOBRA_FISICA"
+            )
+        );
+        totalBase: CountRows(
+            Filter(
+                colInventarioBase;
+                CodSE = gblSEselecionada.CodSE
+                && Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+            )
+        )
+    };
+    With(
+        {total: totalBase + sobras};
+        If(total = 0; 0; (feitos / total) * Parent.Width)
+    )
+)
+
+## btnConfirmarBase.OnSelect — Confirmar rapido (BASE)
+
+RemoveIf(
+    colCampoOffline;
+    CodInventario = gblInventarioSelecionado.CodInventario
+    && !IsBlank(ThisItem.CodAsset)
+    && CodAsset = ThisItem.CodAsset
+);;
+Collect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "CONFIRMACAO";
+        CodInventario: gblInventarioSelecionado.CodInventario;
+        CodSE: ThisItem.CodSE;
+        NomeSE: ThisItem.NomeSE;
+        CodAsset: ThisItem.CodAsset;
+        CodTemp: "";
+        CodTUC: ThisItem.CodTUC;
+        DescricaoTUC: Coalesce(
+            ThisItem.DescricaoTUC;
+            LookUp(colTUC; Value(CodigoTUC) = Value(ThisItem.CodTUC); DescricaoTUC);
+            ""
+        );
+        IdUC: Coalesce(ThisItem.IdUC; "");
+        AtributoA1: Coalesce(ThisItem.AtributoA1; ThisItem.A1);
+        AtributoA2: Coalesce(ThisItem.AtributoA2; ThisItem.A2);
+        AtributoA3: Coalesce(ThisItem.AtributoA3; ThisItem.A3);
+        AtributoA4: Coalesce(ThisItem.AtributoA4; ThisItem.A4);
+        AtributoA5: Coalesce(ThisItem.AtributoA5; ThisItem.A5);
+        AtributoA6: Coalesce(ThisItem.AtributoA6; ThisItem.A6);
+        DescricaoBem: ThisItem.DescricaoBem;
+        Quantidade: ThisItem.Quantidade;
+        Fabricante: Coalesce(ThisItem.Fabricante; "");
+        Modelo: Coalesce(ThisItem.Modelo; "");
+        NumSerie: Coalesce(ThisItem.NumSerie; "");
+        CodOperacao: Coalesce(ThisItem.CodOperacao; "");
+        CM: ThisItem.CM;
+        Ano: ThisItem.Ano;
+        Unidade: Coalesce(ThisItem.Unidade; "");
+        Observacoes: "";
+        SobraTipo: "";
+        Sincronizada: false
+    }
+);;
+SaveData(colCampoOffline; "cache_CampoOffline")
+
+## btnNaoEncontradoBase.OnSelect — Nao encontrado rapido (BASE)
+
+RemoveIf(
+    colCampoOffline;
+    CodInventario = gblInventarioSelecionado.CodInventario
+    && !IsBlank(ThisItem.CodAsset)
+    && CodAsset = ThisItem.CodAsset
+);;
+Collect(
+    colCampoOffline;
+    {
+        IdRegistro: GUID();
+        TipoRegistro: "NAO_ENCONTRADO";
+        CodInventario: gblInventarioSelecionado.CodInventario;
+        CodSE: ThisItem.CodSE;
+        NomeSE: ThisItem.NomeSE;
+        CodAsset: ThisItem.CodAsset;
+        CodTemp: "";
+        CodTUC: ThisItem.CodTUC;
+        DescricaoTUC: Coalesce(
+            ThisItem.DescricaoTUC;
+            LookUp(colTUC; Value(CodigoTUC) = Value(ThisItem.CodTUC); DescricaoTUC);
+            ""
+        );
+        IdUC: Coalesce(ThisItem.IdUC; "");
+        AtributoA1: Coalesce(ThisItem.AtributoA1; ThisItem.A1);
+        AtributoA2: Coalesce(ThisItem.AtributoA2; ThisItem.A2);
+        AtributoA3: Coalesce(ThisItem.AtributoA3; ThisItem.A3);
+        AtributoA4: Coalesce(ThisItem.AtributoA4; ThisItem.A4);
+        AtributoA5: Coalesce(ThisItem.AtributoA5; ThisItem.A5);
+        AtributoA6: Coalesce(ThisItem.AtributoA6; ThisItem.A6);
+        DescricaoBem: ThisItem.DescricaoBem;
+        Quantidade: ThisItem.Quantidade;
+        Fabricante: Coalesce(ThisItem.Fabricante; "");
+        Modelo: Coalesce(ThisItem.Modelo; "");
+        NumSerie: Coalesce(ThisItem.NumSerie; "");
+        CodOperacao: Coalesce(ThisItem.CodOperacao; "");
+        CM: ThisItem.CM;
+        Ano: ThisItem.Ano;
+        Unidade: Coalesce(ThisItem.Unidade; "");
+        Observacoes: "";
+        SobraTipo: "";
+        Sincronizada: false
+    }
+);;
+SaveData(colCampoOffline; "cache_CampoOffline")
+
+## Image6_48 — Cancelar overlay exclusao de sobra (Tela_ItensVisita)
+
+# NAO e o Salvar. Overlay cConfirmaExcluirSobra.
+# Visible do overlay: !IsBlank(varSobraExcluir)
+
+Image6_48.OnSelect:
+Set(varSobraExcluir; Blank())
+
+## Visita 2026-09-03 — sobra volta como BASE e duplica no Salvar
+
+# Causa: Enviar visita grava a sobra no Inventario (Origem=CAMPO, Sobra=SOBRA_FISICA,
+# CodAsset=SOBRA-...). Baixar dados joga essa linha em colInventarioBase. A galeria
+# BASE mostra tudo da SE. colCampoOffline pode ter sido limpo → SOBRAS (0).
+# Editar esse card com CodAsset vazio (ou OnVisible forçando NOVO + GUID novo)
+# cria outra sobra e deixa o item da base.
+
+## galItensBase.Items
+
+# 17.09: As itemBase — CodAsset = CodAsset (sem alias) pinta TODOS Confirmado.
+# 18.09: varAbaItens = FALTA → só item sem rascunho. Visible da galeria: <> SOBRAS.
+# 21.09: Sort por IdItem (ordem da planilha do André). Nao e IdUC.
+
+SortByColumns(
+    Filter(
+        AddColumns(
+            Filter(
+                colInventarioBase;
+                CodSE = gblSEselecionada.CodSE
+                && Coalesce(Origem; "") <> "CAMPO"
+                && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+                && (
+                    IsBlank(Trim(inpBuscaItens.Text))
+                    || inpBuscaItens.Text in Coalesce(DescricaoBem; "")
+                    || inpBuscaItens.Text in Text(Coalesce(CodTUC; ""))
+                    || inpBuscaItens.Text in Coalesce(Imobilizado; "")
+                    || inpBuscaItens.Text in Coalesce(IdUC; "")
+                    || inpBuscaItens.Text in Coalesce(CodAsset; "")
+                )
+            ) As itemBase;
+            RegistroCampo;
+            LookUp(
+                colCampoOffline;
+                CodSE = gblSEselecionada.CodSE
+                && CodAsset = itemBase.CodAsset
+                && CodInventario = gblInventarioSelecionado.CodInventario
+            )
+        );
+        varAbaItens <> "FALTA" || IsBlank(RegistroCampo)
+    );
+    "IdItem";
+    SortOrder.Ascending
+)
+
+## Tela_ItensVisita.OnVisible — hidratar sobras ja enviadas (colar no FIM, antes de Set(varCarregando; false))
+
+# 18.09: no COMECO do OnVisible — If(IsBlank(varAbaItens); Set(varAbaItens; "BASE"));;
+
+ForAll(
+    Filter(
+        colInventarioBase;
+        CodSE = gblSEselecionada.CodSE
+        && (
+            Coalesce(Origem; "") = "CAMPO"
+            || Coalesce(Sobra; "") = "SOBRA_FISICA"
+            || StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+        )
+    ) As itemBase;
+    If(
+        CountRows(
+            Filter(
+                colCampoOffline;
+                CodInventario = gblInventarioSelecionado.CodInventario
+                && CodSE = itemBase.CodSE
+                && (
+                    (Coalesce(itemBase.CodAsset; "") <> "" && CodAsset = itemBase.CodAsset)
+                    || (Coalesce(itemBase.ID; 0) > 0 && IdInventario = itemBase.ID)
+                )
+            )
+        ) = 0;
+        Collect(
+            colCampoOffline;
+            {
+                IdRegistro: GUID();
+                TipoRegistro: "SOBRA_FISICA";
+                CodInventario: gblInventarioSelecionado.CodInventario;
+                CodSE: itemBase.CodSE;
+                NomeSE: itemBase.NomeSE;
+                CodAsset: Coalesce(itemBase.CodAsset; "");
+                CodTemp: "";
+                CodTUC: itemBase.CodTUC;
+                DescricaoTUC: Coalesce(itemBase.DescricaoTUC; "");
+                IdUC: Coalesce(itemBase.IdUC; "");
+                AtributoA1: Coalesce(itemBase.AtributoA1; itemBase.A1; 0);
+                AtributoA2: Coalesce(itemBase.AtributoA2; itemBase.A2; 0);
+                AtributoA3: Coalesce(itemBase.AtributoA3; itemBase.A3; 0);
+                AtributoA4: Coalesce(itemBase.AtributoA4; itemBase.A4; 0);
+                AtributoA5: Coalesce(itemBase.AtributoA5; itemBase.A5; 0);
+                AtributoA6: Coalesce(itemBase.AtributoA6; itemBase.A6; 0);
+                ValorA2: "";
+                ValorA3: "";
+                ValorA4: "";
+                ValorA5: "";
+                ValorA6: "";
+                DescricaoBem: itemBase.DescricaoBem;
+                Quantidade: itemBase.Quantidade;
+                Fabricante: Coalesce(itemBase.Fabricante; "");
+                Modelo: Coalesce(itemBase.Modelo; "");
+                NumSerie: Coalesce(itemBase.NumSerie; "");
+                CodOperacao: Coalesce(itemBase.CodOperacao; "");
+                CM: itemBase.CM;
+                Ano: itemBase.Ano;
+                Unidade: Coalesce(itemBase.Unidade; "");
+                Observacoes: Coalesce(itemBase.Observacoes; "");
+                SobraTipo: "SOBRA_FISICA";
+                Sincronizada: true;
+                IdInventario: Coalesce(itemBase.ID; 0)
+            }
+        )
+    )
+);;
+IfError(SaveData(colCampoOffline; "cache_CampoOffline"); Blank())
+
+## btnEditarSobras.OnSelect
+
+Set(varModo; "NOVO");;
+Set(varDesfecho; "SOBRA_FISICA");;
+Set(
+    varCodRef;
+    Coalesce(
+        ThisItem.CodAsset;
+        If(!IsBlank(ThisItem.CodTemp); "SOBRA-" & Text(ThisItem.CodTemp); Blank())
+    )
+);;
+Set(varCodTemp; ThisItem.CodTemp);;
+Set(varCodSE; ThisItem.CodSE);;
+Set(varItemFoto; Blank());;
+Navigate(Tela_EditarItem; ScreenTransition.None)
+
+## btnEditarBase.OnSelect — se o card ainda for sobra (rede de seguranca)
+
+If(
+    Coalesce(ThisItem.Origem; "") = "CAMPO"
+    || Coalesce(ThisItem.Sobra; "") = "SOBRA_FISICA"
+    || StartsWith(Coalesce(Text(ThisItem.CodAsset); ""); "SOBRA-");
+    Set(varModo; "NOVO");
+    Set(varModo; "EDITAR")
+);;
+Set(varCodRef; ThisItem.CodAsset);;
+Set(varCodTemp; Blank());;
+Set(varItemFoto; ThisItem);;
+Set(varCodSE; ThisItem.CodSE);;
+Navigate(Tela_EditarItem; ScreenTransition.None)
+
+## btnAddItem.OnSelect — sobra ja nasce com CodAsset (nao zera varCodRef)
+
+Set(varModo; "NOVO");;
+Set(varDesfecho; "SOBRA_FISICA");;
+Set(varCodRef; "SOBRA-" & Text(GUID()));;
+Set(varCodTemp; Blank());;
+Set(varItemFoto; Blank());;
+Set(varRegistroAtual; Blank());;
+Set(varAbaItens; "SOBRAS");;
+Set(varCodSE; gblSEselecionada.CodSE);;
+Set(varA1; Blank());;
+Set(varIdUC; Blank());;
+Navigate(Tela_EditarItem; ScreenTransition.None)

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — toast (notificação própria)</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryL90:#EBF4FF; --primaryD30:#2464B1;
+    --okbg:#ECF6EC; --oktx:#2D752C; --okbar:#2D752C;
+    --errbg:#FDE8EE; --errtx:#F1416C; --errbar:#F1416C;
+    --infobg:#EBF4FF; --infotx:#2464B1; --infobar:#348FFD;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+    color:var(--text); padding:22px 22px 36px;
+  }
+  body.shot{padding:0; background:#E8ECF0}
+  body.shot .kicker, body.shot h1, body.shot .lead, body.shot .cap, body.shot .kit{display:none}
+  body.tipos .app, body.tipos h1, body.tipos .lead, body.tipos .cap{display:none}
+  body.tipos .kicker:first-of-type{display:none}
+  body.tipos{padding:28px 22px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:28px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1080px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  .cap{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase; margin:0 0 8px}
+
+  .app{
+    width:1280px; height:720px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page); position:relative;
+  }
+  body.shot .app{border-radius:0; border:0}
+
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni.on{background:var(--navy3); color:#fff}
+  .dot{width:16px; height:16px; border-radius:5px; background:rgba(255,255,255,.28); flex:0 0 16px}
+  .ni.on .dot{background:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px; gap:2px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column; position:relative}
+  .top{
+    height:66px; background:#fff; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; padding:0 22px;
+  }
+  .toptitle{font-size:20px; font-weight:700; color:var(--title)}
+  .topsub{font-size:12px; color:var(--label); margin-top:2px}
+
+  .body{padding:16px 20px 18px; display:flex; flex-direction:column; gap:12px; flex:1; min-height:0}
+  .kpis{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .kpi{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px}
+  .kpil{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .kpiv{font-size:26px; font-weight:700; line-height:1.1; margin-top:4px}
+  .kpisub{font-size:12px; color:var(--label); margin-top:3px}
+  .kpi.in .kpiv{color:var(--primaryD30)}
+  .kpi.out .kpiv{color:var(--oktx)}
+
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0}
+  .panel{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column}
+  .ph{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px}
+  .pt{font-size:15px; font-weight:700; color:var(--title)}
+  .ps{font-size:12px; color:var(--label)}
+  .cta{
+    flex:1; border:1px solid #C5D4E6; border-radius:12px; background:#F7FAFD;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:8px; text-align:center; padding:18px;
+  }
+  .ctat{font-size:15px; font-weight:700; color:var(--title)}
+  .ctas{font-size:12.5px; color:var(--label); max-width:280px; line-height:1.45}
+  .row{border:1px solid var(--border); border-radius:11px; padding:12px 13px; display:flex; align-items:center; gap:12px; background:#FBFCFD; margin-bottom:8px}
+  .rname{font-size:14px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:11.5px; color:var(--label); margin-top:2px}
+  .chip{display:inline-flex; align-items:center; height:21px; padding:0 8px; border-radius:999px; font-size:10px; font-weight:700; background:#C6E5C5; color:var(--oktx)}
+  .ebtn{
+    height:28px; padding:0 12px; border-radius:8px; font-size:11.5px; font-weight:700;
+    border:1px solid var(--navy); background:var(--navy); color:#fff; margin-left:auto;
+  }
+
+  .toast{
+    position:absolute; top:14px; right:18px; z-index:30;
+    width:392px; min-height:58px;
+    border-radius:12px; border:1px solid transparent;
+    box-shadow:0 12px 32px rgba(18,59,110,.14);
+    display:flex; align-items:stretch; overflow:hidden;
+  }
+  .toast.ok{background:var(--okbg); border-color:var(--okbg)}
+  .toast.erro{background:var(--errbg); border-color:var(--errbg)}
+  .toast.aviso{background:var(--infobg); border-color:var(--infobg)}
+  .toast-in{flex:1; display:flex; align-items:center; gap:12px; padding:11px 10px 11px 14px}
+  .ico{
+    width:22px; height:22px; flex:0 0 22px;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent;
+  }
+  .toast.ok .ico{color:var(--oktx)}
+  .toast.erro .ico{color:var(--errtx)}
+  .toast.aviso .ico{color:var(--infotx)}
+  .tmsg{flex:1; min-width:0; font-size:13.5px; font-weight:650; line-height:1.35; color:var(--title)}
+  .toast.ok .tmsg{color:var(--oktx)}
+  .toast.erro .tmsg{color:var(--errtx)}
+  .toast.aviso .tmsg{color:var(--infotx)}
+  .tx{
+    width:28px; height:28px; border-radius:8px; border:0; background:transparent;
+    color:var(--label); font-size:16px; font-weight:700; cursor:default; flex:0 0 28px;
+  }
+
+  .kit{width:1280px; margin-top:18px}
+  .kitrow{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px}
+  .kit .toast{position:relative; top:auto; right:auto; width:auto; box-shadow:0 8px 20px rgba(18,59,110,.12)}
+  .kitlab{font-size:11px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase; margin-bottom:8px}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TOAST</div>
+  <h1>Notificação própria. Sem o banner nativo.</h1>
+  <p class="lead">Card no canto superior direito, uma cor só por tipo — sem faixa na lateral. Some em 3 s ou no X. <b>OK</b> SuccessL90, <b>ERRO</b> Delete 90%, <b>AVISO</b> PrimaryL90. Não trava a tela (não é popup).</p>
+  <div class="cap">cmpToast · varToastOn · varToastMsg · varToastTipo</div>
+
+  <div class="app" id="app-ok">
+    <aside class="sb">
+      <div class="brand">
+        <div class="logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/></svg>
+        </div>
+        <div class="brandname">Infralytics</div>
+      </div>
+      <div class="user">
+        <div class="av">GC</div>
+        <div class="uname"><b>Gustavo Coutinho</b>escritório</div>
+      </div>
+      <nav class="nav">
+        <div class="ni"><div class="dot"></div>Home</div>
+        <div class="ni on"><div class="dot"></div>Importar / Exportar</div>
+        <div class="ni"><div class="dot"></div>Projetos</div>
+        <div class="ni"><div class="dot"></div>Conferência</div>
+        <div class="ni"><div class="dot"></div>Cadastros</div>
+      </nav>
+      <div class="foot">
+        <div class="theme"><span class="on">Light</span><span>Dark</span></div>
+        <div class="ver">v.1.0.0</div>
+      </div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div>
+          <div class="toptitle">Importar / Exportar</div>
+          <div class="topsub">Planilha das SEs Finalizada</div>
+        </div>
+      </header>
+      <div class="body">
+        <div class="kpis">
+          <div class="kpi in"><div class="kpil">Entrada</div><div class="kpiv">4</div><div class="kpisub">projetos no sistema</div></div>
+          <div class="kpi out"><div class="kpil">Saída pronta</div><div class="kpiv">18</div><div class="kpisub">SEs Finalizada</div></div>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <div class="ph"><div class="pt">Importar</div><div class="ps">Novo projeto</div></div>
+            <div class="cta">
+              <div class="ctat">Novo projeto</div>
+              <div class="ctas">Nome, período, concessionária e a planilha entram no container.</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="pt">Exportar</div><div class="ps">Só SE Finalizada</div></div>
+            <div class="row">
+              <div>
+                <div class="rname">Neoenergia Brasília</div>
+                <div class="rmeta">INV-004 · Set 2026</div>
+              </div>
+              <span class="chip">Finalizada</span>
+              <div class="ebtn">Planilha</div>
+            </div>
+            <div class="row">
+              <div>
+                <div class="rname">CEB Distribuição</div>
+                <div class="rmeta">INV-003 · Ago 2026</div>
+              </div>
+              <span class="chip">Finalizada</span>
+              <div class="ebtn">Planilha</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="toast ok">
+        <div class="toast-in">
+          <div class="ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div class="tmsg">Planilha gerada</div>
+          <button class="tx" type="button" aria-label="Fechar">×</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="kicker">OS TRÊS TIPOS</div>
+  <div class="kit">
+    <div class="kitrow">
+      <div>
+        <div class="kitlab">OK · Success</div>
+        <div class="toast ok">
+          <div class="toast-in">
+            <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg></div>
+            <div class="tmsg">Slot salvo. O campo precisa entrar de novo.</div>
+            <button class="tx" type="button">×</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="kitlab">ERRO · Delete</div>
+        <div class="toast erro">
+          <div class="toast-in">
+            <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+            <div class="tmsg">Não foi possível gerar a planilha</div>
+            <button class="tx" type="button">×</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="kitlab">AVISO · Primary</div>
+        <div class="toast aviso">
+          <div class="toast-in">
+            <div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg></div>
+            <div class="tmsg">Espera terminar a importação ou a exclusão.</div>
+            <button class="tx" type="button">×</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script>
+  if (location.search.indexOf("shot") >= 0) document.body.classList.add("shot");
+  if (location.search.indexOf("tipos") >= 0) document.body.classList.add("tipos");
+</script>
+</body>
+</html>

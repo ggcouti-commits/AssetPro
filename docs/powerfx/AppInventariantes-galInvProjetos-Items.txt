@@ -1,0 +1,68 @@
+# Tela_Inventarios → galInvProjetos → Items
+# Igual Mobile, nomes do Desktop Inventariantes.
+# Locale PT-BR: ; | ;;
+#
+# Controles deste app: txtInvBusca (nao InputBuscaCampanha).
+# gblFiltroStatus nasce "Todos" no OnStart (chips de status do projeto ainda nao existem).
+#
+# Se AINDA mostrar tudo: no slot INV02, Inventariantes.Perfil NAO pode ser "ESCRITORIO".
+# Depois do Entrar, confere CountRows(colAlocacoes) — tem que ser > 0.
+
+## galInvProjetos → Items
+
+Apaga. Cola:
+
+```
+SortByColumns(
+    Filter(
+        ForAll(
+            Distinct(colCampanhas; CodInventario) As d;
+            LookUp(colCampanhas; CodInventario = d.Value)
+        );
+        (
+            varPerfil = "ESCRITORIO"
+            || CodInventario in Filter(
+                colAlocacoes;
+                Login = gblUsuario.Login && Ativo = "Sim"
+            ).CodInventario
+        )
+        && (gblFiltroStatus = "Todos" || Status = gblFiltroStatus)
+        && (
+            IsBlank(txtInvBusca.Text)
+            || txtInvBusca.Text in NomeInventario
+            || txtInvBusca.Text in Coalesce(Concessionaria; "")
+            || txtInvBusca.Text in Coalesce(UF; "")
+        )
+    );
+    "DataCriacao";
+    SortOrder.Descending
+)
+```
+
+## galInvProjetos → Visible
+
+```
+CountRows(
+    Filter(
+        ForAll(
+            Distinct(colCampanhas; CodInventario) As d;
+            LookUp(colCampanhas; CodInventario = d.Value)
+        );
+        varPerfil = "ESCRITORIO"
+        || CodInventario in Filter(
+            colAlocacoes;
+            Login = gblUsuario.Login && Ativo = "Sim"
+        ).CodInventario
+    )
+) > 0
+```
+
+## Teste rapido (Studio / Play)
+
+1. Login INV02 + senha.
+2. Em formula bar de teste (ou label temporario):
+   - `varPerfil` → tem que ser inventariante (ex. INVENTARIANTE), nao ESCRITORIO
+   - `gblUsuario.Login` → INV02 (mesmo texto da coluna Login em Alocacoes)
+   - `CountRows(Filter(colAlocacoes; Login = gblUsuario.Login && Ativo = "Sim"))` → 1 (ou N designadas)
+3. Se varPerfil = ESCRITORIO → troca o Perfil do slot na lista Inventariantes.
+4. Se colAlocacoes = 0 → Alocacoes.Login diferente do Login do slot (espaco/caixa).

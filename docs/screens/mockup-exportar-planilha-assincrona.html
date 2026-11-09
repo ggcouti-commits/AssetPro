@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Tela_Exportar: planilha em geração</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD60:#153965;
+    --fieldbg:#E8F3FF; --fieldtx:#1B4C86;
+    --okbg:#ECF6EC; --oktx:#2D752C; --green:#40A73F;
+    --pendbg:#EEF0F3; --pendtx:#6B7683;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:Arial,Helvetica,sans-serif; color:var(--text); padding:22px 22px 40px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:28px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1100px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  .app{
+    width:1040px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page);
+  }
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni.on{background:var(--navy3); color:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{height:66px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 22px}
+  .toptitle{font-size:20px; font-weight:700; color:var(--title)}
+  .topsub{font-size:12px; color:var(--label); margin-top:2px}
+  .body{padding:16px 20px 18px; display:flex; flex-direction:column; gap:12px; flex:1}
+  .panel{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px}
+  .ph{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px}
+  .pt{font-size:15px; font-weight:700; color:var(--title)}
+  .ps{font-size:12px; color:var(--label)}
+  .rows{display:flex; flex-direction:column; gap:8px}
+  .row{border:1px solid var(--border); border-radius:11px; padding:12px 13px; display:flex; align-items:center; gap:12px; background:#FBFCFD}
+  .row.hot{border-color:#B9D4F8; background:#F7FBFF}
+  .row.ready{border-color:#C6E5C5; background:#F7FCF7}
+  .row.off{opacity:.55}
+  .rn{flex:1; min-width:0}
+  .rname{font-size:14px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:11.5px; color:var(--label); margin-top:2px}
+  .rstat{font-size:11.5px; font-weight:700; margin-top:4px}
+  .rstat.wait{color:var(--fieldtx)}
+  .rstat.ok{color:var(--oktx)}
+  .chip{display:inline-flex; align-items:center; height:21px; padding:0 8px; border-radius:999px; font-size:10px; font-weight:700}
+  .c-run{background:var(--fieldbg); color:var(--fieldtx)}
+  .c-done{background:var(--okbg); color:var(--oktx)}
+  .qty{text-align:right; min-width:78px}
+  .qnum{font-size:18px; font-weight:700; color:var(--oktx); line-height:1}
+  .qlbl{font-size:10px; font-weight:600; color:var(--label); margin-top:2px}
+  .qty.zero .qnum{color:var(--pendtx)}
+  .eacts{display:flex; flex-direction:column; gap:6px; flex:0 0 108px}
+  .ebtn{height:30px; border-radius:8px; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center}
+  .ebtn.go{background:var(--primaryD60); color:#fff}
+  .ebtn.busy{background:#fff; color:var(--label); border:1px solid var(--border)}
+  .ebtn.down{background:#fff; color:var(--pendtx); border:1px solid var(--border)}
+  .ebtn.live{background:var(--green); color:#fff}
+  .ebtn.ghost{background:#fff; color:var(--primaryD60); border:1px solid var(--primaryD60)}
+  .ebtn.off{background:#fff; color:var(--label); border:1px solid var(--border); height:30px; width:108px}
+  .toast{
+    align-self:flex-end; min-width:320px; max-width:460px;
+    background:#fff; border-radius:10px; border:1px solid var(--border);
+    box-shadow:0 10px 28px rgba(18,59,110,.16);
+    display:flex; overflow:hidden;
+  }
+  .toast i{width:6px; flex:0 0 6px}
+  .toast.info i{background:var(--primary)}
+  .toast.ok i{background:var(--green)}
+  .toast div{padding:12px 14px}
+  .toast b{display:block; font-size:13px; color:var(--title); margin-bottom:2px}
+  .toast span{font-size:12px; color:var(--label); line-height:1.35}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TELA_EXPORTAR</div>
+  <h1>A planilha nasce no card. O download também.</h1>
+  <p class="lead"><b>Planilha</b> dispara a geração e a tela libera na hora. O card mostra que está gerando. Quando o arquivo fica pronto, <b>Baixar</b> acende no mesmo card e o clique baixa o xlsx. Ninguém abre a pasta no SharePoint.</p>
+
+  <div class="kicker">1 · LOGO DEPOIS DO CLIQUE EM PLANILHA</div>
+  <div class="app" id="estado-gerando">
+    <aside class="sb">
+      <div class="brand"><div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/></svg></div><div class="brandname">Infralytics</div></div>
+      <div class="user"><div class="av">AC</div><div class="uname"><b>André</b>escritório</div></div>
+      <nav class="nav">
+        <div class="ni on">Home</div>
+        <div class="ni">Projetos</div>
+        <div class="ni">Conferência</div>
+        <div class="ni">Cadastros</div>
+      </nav>
+      <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div><div class="toptitle">Importar / Exportar</div><div class="topsub">A planilha gera no fundo · o download fica neste card</div></div>
+      </header>
+      <div class="body">
+        <div class="panel">
+          <div class="ph"><div class="pt">Exportar</div><div class="ps">Só SE Finalizada · o Baixar acende quando o arquivo existe</div></div>
+          <div class="rows">
+            <div class="row hot">
+              <div class="rn">
+                <div class="rname">Neoenergia Brasília</div>
+                <div class="rmeta">Setembro 2026 · 44 instalações</div>
+                <div class="rstat wait">Gerando planilha · 1.248 itens</div>
+              </div>
+              <span class="chip c-run">Em andamento</span>
+              <div class="qty"><div class="qnum">18</div><div class="qlbl">finalizadas</div></div>
+              <div class="eacts">
+                <div class="ebtn busy">Gerando</div>
+                <div class="ebtn down">Baixar</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="rn">
+                <div class="rname">Neoenergia Coelba</div>
+                <div class="rmeta">Junho 2026 · 15 instalações</div>
+                <div class="rstat ok">Planilha pronta</div>
+              </div>
+              <span class="chip c-done">Concluída</span>
+              <div class="qty"><div class="qnum">15</div><div class="qlbl">finalizadas</div></div>
+              <div class="eacts">
+                <div class="ebtn ghost">Atualizar</div>
+                <div class="ebtn live">Baixar</div>
+              </div>
+            </div>
+            <div class="row off">
+              <div class="rn">
+                <div class="rname">Enel São Paulo</div>
+                <div class="rmeta">Setembro 2026 · 8 instalações</div>
+              </div>
+              <span class="chip c-run">Em andamento</span>
+              <div class="qty zero"><div class="qnum">0</div><div class="qlbl">finalizadas</div></div>
+              <div class="ebtn off">Sem saída</div>
+            </div>
+          </div>
+        </div>
+        <div class="toast info"><i></i><div><b>Gerando a planilha</b><span>Pode continuar na tela. O Baixar acende neste card quando o arquivo ficar pronto.</span></div></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="kicker">2 · ARQUIVO PRONTO — O BAIXAR ACENDE</div>
+  <div class="app" id="estado-pronta">
+    <aside class="sb">
+      <div class="brand"><div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/></svg></div><div class="brandname">Infralytics</div></div>
+      <div class="user"><div class="av">AC</div><div class="uname"><b>André</b>escritório</div></div>
+      <nav class="nav">
+        <div class="ni on">Home</div>
+        <div class="ni">Projetos</div>
+        <div class="ni">Conferência</div>
+        <div class="ni">Cadastros</div>
+      </nav>
+      <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div><div class="toptitle">Importar / Exportar</div><div class="topsub">A planilha gera no fundo · o download fica neste card</div></div>
+      </header>
+      <div class="body">
+        <div class="panel">
+          <div class="ph"><div class="pt">Exportar</div><div class="ps">Só SE Finalizada · o Baixar acende quando o arquivo existe</div></div>
+          <div class="rows">
+            <div class="row ready">
+              <div class="rn">
+                <div class="rname">Neoenergia Brasília</div>
+                <div class="rmeta">Setembro 2026 · 44 instalações</div>
+                <div class="rstat ok">Planilha pronta · 1.248 itens</div>
+              </div>
+              <span class="chip c-run">Em andamento</span>
+              <div class="qty"><div class="qnum">18</div><div class="qlbl">finalizadas</div></div>
+              <div class="eacts">
+                <div class="ebtn ghost">Atualizar</div>
+                <div class="ebtn live">Baixar</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="rn">
+                <div class="rname">Neoenergia Coelba</div>
+                <div class="rmeta">Junho 2026 · 15 instalações</div>
+                <div class="rstat ok">Planilha pronta</div>
+              </div>
+              <span class="chip c-done">Concluída</span>
+              <div class="qty"><div class="qnum">15</div><div class="qlbl">finalizadas</div></div>
+              <div class="eacts">
+                <div class="ebtn ghost">Atualizar</div>
+                <div class="ebtn live">Baixar</div>
+              </div>
+            </div>
+            <div class="row off">
+              <div class="rn">
+                <div class="rname">Enel São Paulo</div>
+                <div class="rmeta">Setembro 2026 · 8 instalações</div>
+              </div>
+              <span class="chip c-run">Em andamento</span>
+              <div class="qty zero"><div class="qnum">0</div><div class="qlbl">finalizadas</div></div>
+              <div class="ebtn off">Sem saída</div>
+            </div>
+          </div>
+        </div>
+        <div class="toast ok"><i></i><div><b>Planilha pronta</b><span>Clica em Baixar neste card. O arquivo abre no navegador.</span></div></div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

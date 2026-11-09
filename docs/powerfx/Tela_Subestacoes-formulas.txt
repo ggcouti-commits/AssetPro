@@ -1,0 +1,454 @@
+# Tela_Subestacoes — consulta (confirmado 2026-09-06)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Mockup: docs/screens/subestacoes-desktop.png
+#
+# Filtro SE: gblFiltroStatusSE (OnStart = "Todas")
+# Campanha: gblInventarioSelecionado
+# Status SE: Pendente | Em campo | Finalizada
+# ClasseTensao (Subestacoes) = tensao nominal da SE (ex. 138 kV). Ver docs/subestacoes-campos.md.
+# ArranjoFisico / LocalInstalacao = da SE (reuniao 08.09). CM MCPSE e do item (Inventario.CM).
+# TI = tipo de instalacao (codigo do local; colTipoInstalacao). SE urbana 30-34 SDU / rural 50-54 SDR. 93/96 = medicao. Nao confundir ClasseTensao (kV) com TI nem com Subestacoes.CM legado.
+#
+# Delegacao (desktop):
+# OnStart -> colSubestacoes (campanhas Ativo = "Sim"). Inventario NAO entra no OnStart.
+# Clique na campanha carrega colSEsCampanha + colInventarioBase (ForAll por SE) + colFotosCampanha.
+# Galeria so conta em memoria. Clique na SE NAO zera colInventarioBase.
+# Galeria desta tela: colSEsCampanha (se OnVisible) OU Filter(colSubestacoes; CodInventario = ...)
+
+## Tela_Subestacoes.OnVisible
+
+# Deixa vazio no Studio. Nao dar Clear em colInventarioBase — a campanha ja carregou.
+
+# cLoading.Visible = varCarregando (se existir overlay de carregamento)
+
+## Filtros — OnSelect
+
+### btnFiltTodas.OnSelect
+
+Set(gblFiltroStatusSE; "Todas")
+
+### btnFiltPendente.OnSelect
+
+Set(gblFiltroStatusSE; "Pendente")
+
+### btnFiltEmCampo.OnSelect
+
+Set(gblFiltroStatusSE; "Em campo")
+
+### btnFiltFinalizada.OnSelect
+
+Set(gblFiltroStatusSE; "Finalizada")
+
+## Filtros — Text (rotulo + contagem)
+
+### btnFiltTodas.Text
+
+"Todas (" & CountRows(colSEsCampanha) & ")"
+
+### btnFiltPendente.Text
+
+"Pendente (" & CountRows(Filter(colSEsCampanha; Status = "Pendente")) & ")"
+
+### btnFiltEmCampo.Text
+
+"Em campo (" & CountRows(Filter(colSEsCampanha; Status = "Em campo")) & ")"
+
+### btnFiltFinalizada.Text
+
+"Finalizada (" & CountRows(Filter(colSEsCampanha; Status = "Finalizada")) & ")"
+
+## Filtros — destaque selecionado
+
+### btnFiltTodas.Fill
+
+If(gblFiltroStatusSE = "Todas"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnFiltTodas.Color
+
+If(gblFiltroStatusSE = "Todas"; Cor.TextInverted; Cor.NeutralL30)
+
+### btnFiltPendente.Fill
+
+If(gblFiltroStatusSE = "Pendente"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnFiltPendente.Color
+
+If(gblFiltroStatusSE = "Pendente"; Cor.TextInverted; Cor.NeutralL30)
+
+### btnFiltEmCampo.Fill
+
+If(gblFiltroStatusSE = "Em campo"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnFiltEmCampo.Color
+
+If(gblFiltroStatusSE = "Em campo"; Cor.TextInverted; Cor.NeutralL30)
+
+### btnFiltFinalizada.Fill
+
+If(gblFiltroStatusSE = "Finalizada"; Cor.PrimaryD80; Cor.BackgroundStandard)
+
+### btnFiltFinalizada.Color
+
+If(gblFiltroStatusSE = "Finalizada"; Cor.TextInverted; Cor.NeutralL30)
+
+## Galeria — Items (colSEsCampanha + contagens em memoria)
+
+# colSEsCampanha / colInventarioBase / colFotosCampanha carregadas no OnVisible.
+# AddColumns roda em memoria (poucas SEs por campanha). Busca por texto fica local.
+
+### galSubestacoesHome.Items
+
+SortByColumns(
+    Filter(
+        AddColumns(
+            AddColumns(
+                AddColumns(
+                    Filter(
+                        colSEsCampanha;
+                        Switch(
+                            gblFiltroStatusSE;
+                            "Todas"; true;
+                            "Pendente"; Status = "Pendente";
+                            "Em campo"; Status = "Em campo";
+                            "Finalizada"; Status = "Finalizada";
+                            false
+                        )
+                    );
+                    QtdRevisada;
+                    With(
+                        {se: CodSE};
+                        CountRows(
+                            Filter(
+                                colInventarioBase;
+                                CodSE = se
+                                && !IsBlank(Coalesce(ValidadoPor; ""))
+                            )
+                        )
+                    )
+                );
+                QtdTotal;
+                With(
+                    {se: CodSE};
+                    With(
+                        {
+                            base: CountRows(
+                                Filter(
+                                    colInventarioBase;
+                                    CodSE = se
+                                    && Coalesce(Origem; "") <> "CAMPO"
+                                    && Coalesce(Sobra; "") <> "SOBRA_FISICA"
+                                    && !StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+                                )
+                            );
+                            sobras: CountRows(
+                                Filter(
+                                    colInventarioBase;
+                                    CodSE = se
+                                    && (
+                                        Coalesce(Sobra; "") = "SOBRA_FISICA"
+                                        || StartsWith(Coalesce(Text(CodAsset); ""); "SOBRA-")
+                                    )
+                                )
+                            )
+                        };
+                        base + sobras
+                    )
+                )
+            );
+            QtdFotos;
+            With(
+                {se: CodSE};
+                CountRows(
+                    Filter(
+                        colFotosCampanha;
+                        CodSE = se
+                    )
+                )
+            )
+        );
+        IsBlank(InputBuscaSE.Text)
+        || InputBuscaSE.Text in CodSE
+        || InputBuscaSE.Text in NomeSE
+        || InputBuscaSE.Text in Municipio
+    );
+    "NomeSE";
+    SortOrder.Ascending
+)
+
+## Card da galeria — cabecalho (nome em destaque)
+
+# Ordem na arvore: lblSENome acima de lblSECod; lblSEMeta abaixo do codigo.
+
+### lblSENome.Text
+
+ThisItem.NomeSE
+
+### lblSENome.Size
+
+16
+
+### lblSENome.FontWeight
+
+FontWeight.Bold
+
+### lblSENome.Color
+
+Cor.PrimaryD30
+
+### lblSECod.Text
+
+ThisItem.CodSE
+
+### lblSECod.Size
+
+11
+
+### lblSECod.FontWeight
+
+FontWeight.Semibold
+
+### lblSECod.Color
+
+Cor.NeutralL30
+
+### lblSEMeta.Text
+
+ThisItem.Municipio
+
+### lblSEMeta.Visible
+
+false
+
+# No layout atual o municipio pode ficar oculto; kV vai em lblKV (rodape direito).
+
+### lblKV.Text
+
+If(
+    IsBlank(Coalesce(ThisItem.ClasseTensao; ""));
+    "—";
+    If(
+        EndsWith(Lower(Trim(ThisItem.ClasseTensao)); "kv");
+        ThisItem.ClasseTensao;
+        ThisItem.ClasseTensao & " kV"
+    )
+)
+
+# ClasseTensao = coluna Subestacoes (criar no SP). Spec: docs/subestacoes-campos.md
+# Se for numero no SP: Text(ThisItem.ClasseTensao) & " kV"
+
+### lblKV.Size
+
+13
+
+### lblKV.FontWeight
+
+FontWeight.Bold
+
+### lblKV.Color
+
+Cor.TextStandard
+
+## Card — chip de status (btnStatusSE, DisplayMode.View)
+
+### btnStatusSE.Text
+
+ThisItem.Status
+
+### btnStatusSE.DisplayMode
+
+DisplayMode.View
+
+### btnStatusSE.Fill
+
+Switch(
+    ThisItem.Status;
+    "Em campo"; Cor.PrimaryL90;
+    "Finalizada"; ColorFade(Cor.Success; 70%);
+    Cor.NeutralL90
+)
+
+### btnStatusSE.Color
+
+Switch(
+    ThisItem.Status;
+    "Em campo"; Cor.PrimaryD30;
+    "Finalizada"; ColorFade(Cor.Success; -0.3);
+    Cor.NeutralL30
+)
+
+## Card — fotos (Image Mundo Power ou ModernText)
+
+### imgFotos.Visible
+
+ThisItem.QtdFotos > 0
+
+# Na propriedade Image do controle, troque so a linha IconText por:
+# IconText: If(ThisItem.QtdFotos = 0; ""; ThisItem.QtdFotos & " fotos")
+# IconColor: TCor.PrimaryD30
+# TextColor: TCor.PrimaryD30
+
+### lblFotos.Text
+
+ThisItem.QtdFotos & " fotos"
+
+### lblFotos.Color
+
+Cor.PrimaryD30
+
+### lblFotos.FontWeight
+
+FontWeight.Bold
+
+### lblFotos.Size
+
+10
+
+### lblFotos.Visible
+
+ThisItem.QtdFotos > 0
+
+## Card — tecnico (coluna Responsavel ainda nao no SP — placeholder)
+
+### lblTecnicoTitulo.Text
+
+"técnico"
+
+### lblTecnicoTitulo.Size
+
+10
+
+### lblTecnicoTitulo.FontWeight
+
+FontWeight.Semibold
+
+### lblTecnicoTitulo.Color
+
+Cor.NeutralL30
+
+### lblTecnicoNome.Text
+
+Coalesce(
+    First(
+        Filter(
+            colInventarioBase;
+            CodSE = ThisItem.CodSE
+            && !IsBlank(Coalesce(ValidadoPor; ""))
+        )
+    ).ValidadoPor;
+    "—"
+)
+
+### lblTecnicoNome.Color
+
+If(
+    IsBlank(
+        First(
+            Filter(
+                colInventarioBase;
+                CodSE = ThisItem.CodSE
+                && !IsBlank(Coalesce(ValidadoPor; ""))
+            )
+        ).ValidadoPor
+    );
+    Cor.NeutralL30;
+    Cor.TextStandard
+)
+
+### lblTecnicoNome.Size
+
+12
+
+### lblTecnicoNome.FontWeight
+
+FontWeight.Semibold
+
+## Card — progresso revisados (canto inferior direito)
+
+# Layout atual: um label so — "18/24 revisados".
+
+### lblRevisados.Text
+
+ThisItem.QtdRevisada & "/" & ThisItem.QtdTotal & " revisados"
+
+### lblRevisados.Size
+
+13
+
+### lblRevisados.FontWeight
+
+FontWeight.Bold
+
+### lblRevisados.Color
+
+Switch(
+    ThisItem.Status;
+    "Em campo"; Cor.PrimaryD30;
+    "Finalizada"; ColorFade(Cor.Success; -0.3);
+    Cor.NeutralL30
+)
+
+# Se usar dois labels (num + legenda):
+
+### lblRevisadosNum.Text
+
+ThisItem.QtdRevisada & "/" & ThisItem.QtdTotal
+
+### lblRevisadosNum.Size
+
+13
+
+### lblRevisadosNum.FontWeight
+
+FontWeight.Bold
+
+### lblRevisadosNum.Color
+
+Switch(
+    ThisItem.Status;
+    "Em campo"; Cor.PrimaryD30;
+    "Finalizada"; ColorFade(Cor.Success; -0.3);
+    Cor.NeutralL30
+)
+
+### lblRevisadosLegenda.Text
+
+"revisados"
+
+### lblRevisadosLegenda.Size
+
+10
+
+### lblRevisadosLegenda.FontWeight
+
+FontWeight.Semibold
+
+### lblRevisadosLegenda.Color
+
+Cor.NeutralL30
+
+## Galeria — clique na SE → itens (consulta)
+
+### galSubestacoesHome.OnSelect
+
+Set(varCarregando; true);;
+Set(
+    gblSEselecionada;
+    {
+        ID: ThisItem.ID;
+        CodInventario: ThisItem.CodInventario;
+        CodSE: ThisItem.CodSE;
+        NomeSE: ThisItem.NomeSE;
+        SubODI: ThisItem.SubODI;
+        Regional: ThisItem.Regional;
+        Municipio: ThisItem.Municipio;
+        UF: ThisItem.UF;
+        TI: ThisItem.TI;
+        CM: ThisItem.CM;
+        ClasseTensao: ThisItem.ClasseTensao;
+        Status: ThisItem.Status
+    }
+);;
+Navigate(Tela_ItensConsulta; ScreenTransition.None);;
+Set(varCarregando; false)
+
+# Detalhe: docs/powerfx/Tela_ItensConsulta-formulas.txt

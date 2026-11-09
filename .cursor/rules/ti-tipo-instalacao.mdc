@@ -1,0 +1,16 @@
+---
+description: TI é tipo de instalação (do local), não tensão nem centro modular
+alwaysApply: true
+---
+
+# TI — tipo de instalação
+
+Áudio André 11.09.2026. Spec: `docs/mcpse/ti-tipo-instalacao.md`
+
+- **TI** = tipologia do **local** (o que a instalação é). Vale para qualquer instalação elétrica, não só SE. No app: `Subestacoes.TI`.
+- Todos os ativos daquele local têm o **mesmo** TI. Na SE, classifica pela **maior tensão** (entra 138 / sai 13 → 138).
+- **Não** é kV (`ClasseTensao`), **não** é `U`/`R` do nome, **não** é `LocalInstalacao` (0–4), **não** é CM.
+- **CM** (`Inventario.CM`) é do **equipamento** (ligado ao trafo, entrada de linha, alimentador…). Muda de item para item.
+- Chave de avaliação: **TI + CM + TUC + A1–A6**. Preço e índices casam por código, não por texto.
+- Catálogo: `colTipoInstalacao` (`docs/powerfx/catalogos-mcpse.txt`). SE urbana 30–34 SDU · SE rural 50–54 SDR · rede 40/41 · usina 10–19 · **93/96 = medição**, não SE.
+- **Quem preenche TI** — André, 05.10.2026: se vier na base, entra preenchido. Se vier em branco, o **inventariante** preenche na visita (`colTipoInstalacao` → `Subestacoes.TI`). Não é o escritório. Um TI por local. Fenômeno, 08.10.2026: valor vindo da base **não trava**. Com a subestação aberta, o inventariante corrige TI, local de instalação e arranjo no popup Local. Subestação finalizada continua só leitura.

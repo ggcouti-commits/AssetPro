@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coluna da direita do card · Incluir rede</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    margin: 0;
+    background: #EBEAEA;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #323130;
+  }
+  .wrap {
+    width: 980px;
+    padding: 16px 18px 20px;
+    background: #EBEAEA;
+  }
+  .cap {
+    font-size: 13px;
+    font-weight: 600;
+    color: #706F6E;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .card {
+    background: #F5F5F5;
+    border: 1px solid #C2C1C1;
+    border-radius: 15px;
+    margin-bottom: 12px;
+  }
+  .card:last-child { margin-bottom: 0; }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto 248px;
+    gap: 18px;
+    align-items: center;
+    padding: 14px 16px;
+  }
+  .name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2464B1;
+    line-height: 1.3;
+  }
+  .meta {
+    font-size: 13px;
+    font-weight: 600;
+    color: #706F6E;
+    margin-top: 4px;
+  }
+  .chip {
+    height: 26px;
+    padding: 0 12px;
+    border-radius: 100px;
+    background: #EBF4FF;
+    color: #2464B1;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .qty {
+    text-align: center;
+    min-width: 84px;
+  }
+  .qty b {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .qty span {
+    display: block;
+    margin-top: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #706F6E;
+  }
+  .qty.zero b { color: #706F6E; }
+  .qty.on b { color: #2D752C; }
+  .acts {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    align-self: start;
+  }
+  .excluir {
+    height: 18px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 700;
+    color: #F1416C;
+    line-height: 18px;
+  }
+  .btn {
+    height: 36px;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: default;
+  }
+  .navy { background: #153965; color: #fff; }
+  .off {
+    background: #fff;
+    color: #ADADAC;
+    border: 1px solid #ADADAC;
+  }
+  .off:disabled { opacity: 1; }
+  .down { background: #2D752C; color: #fff; }
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="cap">Coluna da direita do card · Incluir rede entre Excluir e Sem saída</p>
+
+    <article class="card">
+      <div class="row">
+        <div>
+          <div class="name">Companhia Estadual de Distribuição de Energia Elétrica Jan 2027</div>
+          <div class="meta">outubro 2026 · 12 instalações</div>
+        </div>
+        <span class="chip">Em andamento</span>
+        <div class="qty zero"><b>0</b><span>finalizadas</span></div>
+        <div class="acts">
+          <div class="excluir">Excluir</div>
+          <div class="btn navy">Incluir rede</div>
+          <div class="pair">
+            <button class="btn off" type="button" disabled>Sem saída</button>
+            <div class="btn down">Baixar</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="row">
+        <div>
+          <div class="name">Neoenergia Brasil Out 2026</div>
+          <div class="meta">outubro 2026 · 4 instalações</div>
+        </div>
+        <span class="chip">Em andamento</span>
+        <div class="qty on"><b>3</b><span>finalizadas</span></div>
+        <div class="acts">
+          <div class="excluir">Excluir</div>
+          <div class="pair">
+            <div class="btn navy">Atualizar</div>
+            <div class="btn down">Baixar</div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</body>
+</html>

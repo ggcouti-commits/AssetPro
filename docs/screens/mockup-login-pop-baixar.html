@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Mobile — Tela_Login · popup Baixar dados</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1; --primaryD60:#153965;
+    --neutralL30:#706F6E; --neutralL90:#EBEAEA;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px 22px 36px}
+  body.shot{padding:0; background:#E8ECF0}
+  body.shot .kicker, body.shot h1, body.shot .lead, body.shot .cap, body.shot .col:not(.shot-col){display:none}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:0 0 6px}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:760px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  .phones{display:flex; gap:28px; align-items:flex-start; flex-wrap:wrap}
+  .col{display:flex; flex-direction:column; gap:10px}
+  .cap{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase}
+
+  .phone{
+    width:360px; height:740px; border:1px solid var(--border); border-radius:28px;
+    overflow:hidden; background:var(--navy); position:relative;
+    box-shadow:0 18px 40px rgba(18,59,110,.18);
+  }
+  body.shot .phone{border-radius:0; border:0; box-shadow:none}
+  .safe{padding:52px 28px 28px; height:100%; display:flex; flex-direction:column}
+  .brand{display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:36px}
+  .logo{width:64px; height:64px; border-radius:16px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .bname{font-size:22px; font-weight:700; color:#fff}
+  .bsub{font-size:13px; color:#9EC4F0; margin-top:2px}
+  .card{
+    background:#fff; border-radius:16px; padding:22px 20px 20px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .lab{font-size:11px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .inp{
+    height:48px; border:1px solid var(--border); border-radius:10px;
+    background:#F7FAFD; display:flex; align-items:center; padding:0 14px;
+    font-size:15px; color:var(--text); margin-top:6px;
+  }
+  .btn{
+    height:50px; border-radius:10px; background:var(--primaryD30); color:#fff;
+    font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center;
+    margin-top:6px;
+  }
+  .btn-ghost{
+    height:48px; border-radius:12px; border:1.5px solid #C5D4E6; background:#F7FAFD;
+    color:var(--primaryD30); font-size:14px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px;
+  }
+  .hint{font-size:11.5px; color:#8AA8C9; text-align:center; margin-top:auto; padding-top:20px}
+
+  .scrim{
+    position:absolute; inset:0; background:rgba(0,0,0,.45);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .pop{
+    width:100%; background:#fff; border-radius:20px; padding:24px;
+    box-shadow:0 16px 40px rgba(0,0,0,.22);
+    display:flex; flex-direction:column; gap:16px;
+  }
+  .pop-title{font-size:24px; font-weight:700; color:var(--primaryD60); line-height:1.2}
+  .pop-txt{font-size:16px; color:var(--text); line-height:1.45}
+  .pop-ok{
+    height:56px; border-radius:12px; background:var(--primaryD30); color:#fff;
+    font-size:16px; font-weight:700; display:flex; align-items:center; justify-content:center;
+    margin-top:4px;
+  }
+</style>
+</head>
+<body>
+  <div class="kicker">MOBILE · TELA_LOGIN · CPOPAVISOBAIXAR</div>
+  <h1>Popup ao Entrar sem baixar dados</h1>
+  <p class="lead">Se <b>colInventariantes</b> estiver vazia e o usuário tocar em <b>Entrar</b>, sobe o overlay <code>cPopAvisoBaixar</code>. <b>Entendi</b> só fecha (<code>Set(varPopAvisoBaixar; false)</code>). O download continua no botão <b>Baixar dados</b>.</p>
+
+  <div class="phones">
+    <div class="col">
+      <div class="cap">1 · login preenchido</div>
+      <div class="phone">
+        <div class="safe">
+          <div class="brand">
+            <div class="logo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.2" fill="#fff" stroke="none"/></svg></div>
+            <div>
+              <div class="bname">Infralytics</div>
+              <div class="bsub">Inventário em campo</div>
+            </div>
+          </div>
+          <div class="card">
+            <div>
+              <div class="lab">Login</div>
+              <div class="inp">Inventariante01</div>
+            </div>
+            <div>
+              <div class="lab">Senha</div>
+              <div class="inp">••••••••</div>
+            </div>
+            <div class="btn">Entrar</div>
+          </div>
+          <div class="btn-ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M8 11l4 4 4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+            Baixar dados
+          </div>
+          <div class="hint">v.1.0.0</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col shot-col">
+      <div class="cap">2 · popup (Entrar sem baixar)</div>
+      <div class="phone" id="login-pop-baixar">
+        <div class="safe">
+          <div class="brand">
+            <div class="logo"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.2" fill="#fff" stroke="none"/></svg></div>
+            <div>
+              <div class="bname">Infralytics</div>
+              <div class="bsub">Inventário em campo</div>
+            </div>
+          </div>
+          <div class="card">
+            <div>
+              <div class="lab">Login</div>
+              <div class="inp">Inventariante01</div>
+            </div>
+            <div>
+              <div class="lab">Senha</div>
+              <div class="inp">••••••••</div>
+            </div>
+            <div class="btn">Entrar</div>
+          </div>
+          <div class="btn-ghost">Baixar dados</div>
+          <div class="hint">v.1.0.0</div>
+        </div>
+        <div class="scrim">
+          <div class="pop">
+            <div class="pop-title">Baixar dados</div>
+            <div class="pop-txt">Não há dados neste aparelho. Toque em Baixar dados (com internet) antes de entrar.</div>
+            <div class="pop-ok">Entendi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

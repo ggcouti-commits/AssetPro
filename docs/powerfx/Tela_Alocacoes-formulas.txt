@@ -1,0 +1,751 @@
+# Tela_Alocacoes (Desktop)
+#
+# Designa projeto (Campanhas) + instalacao (Subestacoes) a um slot.
+# Front: Projeto. Lista SP: Campanhas. Uma linha Alocacoes = Login + CodInventario + CodSE.
+# Mobile filtra por esta lista: inventariante só vê o designado; escritório vê tudo.
+# Spec: docs/powerfx/mobile-filtro-alocacao.txt
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Mockup: docs/screens/mockup-usuarios-alocacoes.html · docs/screens/mockup-usuarios-alocacoes-estados.html
+# PNG: docs/screens/usuarios-alocacoes.png · docs/screens/usuarios-alocacoes-estados.png
+#      usuarios-alocacoes-adicionar.png · designada.png · ocupada.png · vazia.png
+#      docs/screens/usuarios-galeria-usado-por.png
+# Entra com varUsrSel da Tela_Usuarios.
+
+## Recorte
+
+# Escritorio escolhe o slot, depois o projeto, depois a SE. Adicionar grava.
+# Uma SE so pode estar em um slot ativo (um editor por SE).
+# Nao carrega Inventario (itens). Usa colCampanhas + colSubestacoes do OnStart.
+
+---
+
+## A. SharePoint — lista `Alocacoes` (uma vez)
+
+Site AssetPro. Nova lista, nome **Alocacoes** (sem acento).
+
+| Coluna | Tipo | Exemplo |
+|--------|------|---------|
+| Title | texto (obrigatorio) | `Inventariante01-SE-001` |
+| Login | texto | `Inventariante01` |
+| CodUsuario | texto | `USR-001` |
+| UsadoPor | texto | `Ricardo` |
+| CodInventario | texto | `INV-012` |
+| NomeInventario | texto | `Neoenergia PE` |
+| CodSE | texto | `SE-001` |
+| NomeSE | texto | `Sub. Est. Recife I` |
+| Ativo | texto | `Sim` |
+
+Ativo e texto `Sim` / `Nao`, igual o resto.
+
+Desktop e Mobile: Dados → adicionar a lista **Alocacoes**.
+
+---
+
+## B. Tela_Usuarios — entrada
+
+### B1. lbtnUsrDesignar → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+!varUsrNovo
+    && !IsBlank(varUsrSel)
+    && varUsrSel.Ativo = "Sim"
+    && varUsrSel.Perfil <> "ESCRITORIO"
+```
+
+# Text / IconText = "Designar instalações"
+# Icon = Location (pino). Classico: Icon.Location
+# Fill Cor.BackgroundStandard | Color Cor.PrimaryD60 | BorderColor Cor.Border
+# Slot ESCRITORIO nao designa: ja ve todos os projetos e SEs.
+
+### B2. lbtnUsrDesignar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varAloCamp; Blank());;
+Navigate(Tela_Alocações; ScreenTransition.None)
+```
+
+---
+
+## C. Tela_Alocacoes
+
+# Duplica Tela_Usuarios. Renomeia. Apaga o form/galeria. Deixa cmpMenuV1_1.
+# Fill = Cor.BackgroundScreen.
+# Arvore: cmpMenuV1_1 | cAloTop | cAloBody (3 colunas)
+#   galAloProjetos | galAloSEs | galAloMinhas
+# Largura: proporcional, nao 300 travado.
+#   cAloBody Horizontal, Gap 14, Padding 16.
+#   FillPortions 2 | 3 | 2  (projeto | SEs | minhas) = 28% / 44% / 28% do util.
+#   FlexibleWidth true nos tres. LayoutMinWidth 220 | 360 | 220.
+
+### 1. Tela_Alocacoes → OnVisible
+
+Apaga o que estiver la. Cola:
+
+```
+Refresh(Alocacoes);;
+If(
+    IsBlank(varAloCamp);
+    Set(varAloCamp; First(SortByColumns(colCampanhas; "NomeInventario"; SortOrder.Ascending)))
+);;
+Set(varCarregando; false);;
+ClearCollect(
+    colAloSEsSel;
+    {CodSE: ""; NomeSE: ""; CodInventario: ""}
+);;
+Clear(colAloSEsSel)
+```
+
+### 2. btnAloVoltar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Navigate(Tela_Usuarios; ScreenTransition.None)
+```
+
+### 3. lblAloTitulo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Designar instalações"
+```
+
+### 4. lblAloSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+Coalesce(varUsrSel.UsadoPor; "Livre") & " · " & varUsrSel.Login
+```
+
+### 5. galAloProjetos → Items
+
+Apaga o que estiver la. Cola:
+
+```
+SortByColumns(
+    colCampanhas;
+    "NomeInventario";
+    SortOrder.Ascending
+)
+```
+
+### 6. galAloProjetos → TemplateFill
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.CodInventario = varAloCamp.CodInventario;
+    Cor.PrimaryL90;
+    Cor.BackgroundStandard
+)
+```
+
+### 7. galAloProjetos → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varAloCamp; ThisItem);;
+Clear(colAloSEsSel)
+```
+
+### 8. lblAloProjNome → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.NomeInventario
+```
+
+### 9. lblAloProjMeta → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.CodInventario
+    & " · "
+    & CountRows(
+        Filter(colSubestacoes; CodInventario = ThisItem.CodInventario)
+    )
+    & " instalações"
+```
+
+### 10. galAloSEs → Items
+
+Apaga o que estiver la. Cola:
+
+```
+SortByColumns(
+    Filter(
+        colSubestacoes;
+        CodInventario = varAloCamp.CodInventario
+    );
+    "CodSE";
+    SortOrder.Ascending
+)
+```
+
+### 10b. galAloSEs → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+Cor.BackgroundStandard
+```
+
+### 10c. galAloSEs → TemplateFill
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        );
+        sel: !IsBlank(LookUp(colAloSEsSel; CodSE = ThisItem.CodSE))
+    };
+    If(
+        sel;
+        Cor.PrimaryL90;
+        IsBlank(a);
+        Cor.BackgroundStandard;
+        a.Login = varUsrSel.Login;
+        Cor.PrimaryL90;
+        ColorFade(Cor.Delete; 90%)
+    )
+)
+```
+
+### 10d. recAloSEBar → Visible
+
+# Retangulo 3px na esquerda do template da galAloSEs. X=0 Height=Parent.Height Width=3.
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        )
+    };
+    !IsBlank(a) && a.Login = varUsrSel.Login
+)
+```
+
+### 10e. recAloSEBar → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+Cor.PrimaryD30
+```
+
+### 11. lblAloSECod → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.CodSE
+```
+
+### 12. lblAloSENome → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.NomeSE
+```
+
+### 13. lblAloSEMeta → Text
+
+Apaga o que estiver la. Cola:
+
+```
+Coalesce(ThisItem.ClasseTensao; "")
+    & If(
+        !IsBlank(ThisItem.Status);
+        " · " & ThisItem.Status;
+        ""
+    )
+    & With(
+        {
+            a: LookUp(
+                Alocacoes;
+                CodInventario = ThisItem.CodInventario
+                    && CodSE = ThisItem.CodSE
+                    && Ativo = "Sim"
+            )
+        };
+        If(
+            IsBlank(a);
+            "";
+            a.Login = varUsrSel.Login;
+            "";
+            " · " & Coalesce(a.UsadoPor; a.Login) & " já tem"
+        )
+    )
+```
+
+### 14. btnAloAdd → Text
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        )
+    };
+    If(
+        IsBlank(a);
+        "Adicionar";
+        a.Login = varUsrSel.Login;
+        "Designada";
+        "Ocupada"
+    )
+)
+```
+
+### 15. btnAloAdd → DisplayMode
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        )
+    };
+    If(
+        IsBlank(a);
+        DisplayMode.Edit;
+        DisplayMode.View
+    )
+)
+```
+
+### 16. btnAloAdd → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    IsBlank(varUsrSel);
+    With(
+        {_: true};
+        Set(varToastMsg; "Volte e escolha um slot.");;
+        Set(varToastTipo; "AVISO");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    );
+    Patch(
+        Alocacoes;
+        Defaults(Alocacoes);
+        {
+            Title: varUsrSel.Login & "-" & ThisItem.CodSE;
+            Login: varUsrSel.Login;
+            CodUsuario: varUsrSel.CodUsuario;
+            UsadoPor: varUsrSel.UsadoPor;
+            CodInventario: ThisItem.CodInventario;
+            NomeInventario: varAloCamp.NomeInventario;
+            CodSE: ThisItem.CodSE;
+            NomeSE: ThisItem.NomeSE;
+            Ativo: "Sim"
+        }
+    );;
+    Refresh(Alocacoes);;
+    Set(varToastMsg; "Instalação designada.");;
+    Set(varToastTipo; "OK");;
+    Set(varToastOn; false);;
+    Set(varToastOn; true)
+)
+```
+
+# Height 28 | Radius 8 | Width ~ 128
+# Controle = Image Mundo Power (igual lbtnUsrDesignar). Troca so o With de parametros.
+
+### 16e. btnAloAdd → Image (parametros Mundo Power)
+
+# Apaga so o primeiro With (IconSVG ate FontFamily). O "Nao altere abaixo" fica.
+
+Apaga o bloco de parametros. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        )
+    };
+    With(
+        {
+            IconSVG: If(
+                IsBlank(a);
+                "<path d='M416 256a16 16 0 01-16 16H272v128a16 16 0 01-32 0V272H112a16 16 0 010-32h128V112a16 16 0 0132 0v128h128a16 16 0 0116 16z'/></svg>";
+                a.Login = varUsrSel.Login;
+                "<path d='M256 48C141.31 48 48 141.31 48 256s93.31 208 208 208 208-93.31 208-208S370.69 48 256 48zm108.25 138.29l-134.4 160a16 16 0 01-12 5.71h-.27a16 16 0 01-11.89-5.3l-57.6-64a16 16 0 1123.78-21.4l45.29 50.32 122.59-145.91a16 16 0 0124.5 20.58z'/></svg>";
+                "<path d='M368 192h-16V112a96 96 0 10-192 0v80h-16a64.07 64.07 0 00-64 64v176a64.07 64.07 0 0064 64h224a64.07 64.07 0 0064-64V256a64.07 64.07 0 00-64-64zm-48 0H192V112a64 64 0 11128 0z'/></svg>"
+            );
+            IconText: If(
+                IsBlank(a);
+                "Adicionar";
+                a.Login = varUsrSel.Login;
+                "Designada";
+                "Ocupada"
+            );
+            IconColor: If(
+                IsBlank(a);
+                TCor.TextInverted;
+                a.Login = varUsrSel.Login;
+                TCor.NeutralL30;
+                TCor.Delete
+            );
+            TextColor: If(
+                IsBlank(a);
+                TCor.TextInverted;
+                a.Login = varUsrSel.Login;
+                TCor.NeutralL30;
+                TCor.Delete
+            );
+            TextSize: 12;
+            TextCenter: true;
+            PaddingText: 0;
+            PaddingIcon: 12;
+            varLoading: false;
+            TextLoading: "Loading";
+            FontFamily: "Arial"
+        };
+```
+
+
+### 16b. btnAloAdd → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        )
+    };
+    If(
+        IsBlank(a);
+        Cor.PrimaryD30;
+        Cor.BackgroundStandard
+    )
+)
+```
+
+### 16c. btnAloAdd → Color
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        )
+    };
+    If(
+        IsBlank(a);
+        Cor.TextInverted;
+        a.Login = varUsrSel.Login;
+        Cor.NeutralL30;
+        Cor.Delete
+    )
+)
+```
+
+### 16d. btnAloAdd → BorderColor
+
+Apaga o que estiver la. Cola:
+
+```
+With(
+    {
+        a: LookUp(
+            Alocacoes;
+            CodInventario = ThisItem.CodInventario
+                && CodSE = ThisItem.CodSE
+                && Ativo = "Sim"
+        )
+    };
+    If(
+        IsBlank(a);
+        Cor.PrimaryD30;
+        Cor.Border
+    )
+)
+```
+
+# Adicionar: borda = Fill (PrimaryD30). Designada / Ocupada: Cor.Border.
+# Image em DisplayMode.View pinta DisabledBorderColor, nao BorderColor.
+
+### 16d-2. btnAloAdd → DisabledBorderColor
+
+Apaga o que estiver la. Cola:
+
+```
+Self.BorderColor
+```
+
+### 16d-3. btnAloAdd → DisabledFill
+
+Apaga o que estiver la. Cola:
+
+```
+Self.Fill
+```
+
+### 17. galAloMinhas → Items
+
+Apaga o que estiver la. Cola:
+
+```
+SortByColumns(
+    Filter(
+        Alocacoes;
+        Login = varUsrSel.Login && Ativo = "Sim"
+    );
+    "CodSE";
+    SortOrder.Ascending
+)
+```
+
+### 18. lblAloMinhaTitulo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.CodSE & " · " & ThisItem.NomeSE
+```
+
+### 19. lblAloMinhaMeta → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.NomeInventario
+```
+
+### 20. lblAloMinhasCab → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Já designadas a " & Coalesce(varUsrSel.UsadoPor; varUsrSel.Login)
+```
+
+### 21. btnAloRemover → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Patch(
+    Alocacoes;
+    ThisItem;
+    {Ativo: "Nao"}
+);;
+Refresh(Alocacoes);;
+If(
+    !IsBlank(varUsrSel.ID);
+    Patch(
+        Inventariantes;
+        LookUp(Inventariantes; ID = varUsrSel.ID);
+        {
+            SessaoVersao:
+                Coalesce(
+                    LookUp(Inventariantes; ID = varUsrSel.ID).SessaoVersao;
+                    0
+                ) + 1
+        }
+    );;
+    Set(varUsrSel; LookUp(Inventariantes; ID = varUsrSel.ID))
+)
+```
+
+# Nao apaga a linha — inativa. Visita/foto ja pode ter o CodSE.
+
+### 21b. btnAloRemover → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"×"
+```
+
+### 21c. btnAloRemover → Color
+
+Apaga o que estiver la. Cola:
+
+```
+Cor.Delete
+```
+
+### 21d. btnAloRemover → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+ColorFade(Cor.Delete; 90%)
+```
+
+### 22. lblAloVazio → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+CountRows(galAloMinhas.AllItems) = 0
+```
+
+### 23. lblAloVazio → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Nenhuma instalação"
+```
+
+### 24. lblAloVazioSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Selecionar todas ou clica Adicionar em cada uma."
+```
+
+### 25. lblAloProjCab → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Projeto"
+```
+
+### 26. lblAloProjCabSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Campanhas ativas"
+```
+
+### 27. lblAloSECab → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Instalações do projeto"
+```
+
+### 28. lblAloSECabSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+Coalesce(varAloCamp.NomeInventario; "")
+    & If(
+        CountRows(colAloSEsSel) = 0;
+        "";
+        " · " & CountRows(colAloSEsSel) & " selecionadas"
+    )
+```
+
+### 29. lblAloMinhasSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+CountRows(galAloMinhas.AllItems) & " instalações"
+```
+
+### 30. lblAloProjChip → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.Status
+```
+
+### 31. lblAloProjChip → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+Switch(
+    ThisItem.Status;
+    "Em andamento";
+    Cor.PrimaryL90;
+    "Finalizada";
+    ColorFade(Cor.Success; 70%);
+    Cor.NeutralL90
+)
+```
+
+### 32. lblAloProjChip → Color
+
+Apaga o que estiver la. Cola:
+
+```
+Switch(
+    ThisItem.Status;
+    "Em andamento";
+    Cor.PrimaryD30;
+    "Finalizada";
+    ColorFade(Cor.Success; -0.3);
+    Cor.NeutralL30
+)
+```
+
+---
+
+## 17.09 — varias SEs + bump sessao
+
+# Spec completo (passos F1–F10): `docs/powerfx/pauta-2026-09-17-studio.md`
+# Card da galAloSEs seleciona (colecao colAloSEsSel). btnAloDesignarVarias grava tudo.
+# Todo Patch em Alocacoes incrementa Inventariantes.SessaoVersao.
+
+---
+
+## 18.09 / 20.09 — selecionar todas as livres
+
+# Joao: ~300 SEs. Nao clicar uma a uma. btnAloSelTodas enche colAloSEsSel
+# so com instalacao LIVRE (sem Alocacoes Ativo=Sim). Ocupada nao entra.
+# btnAloDesignarVarias grava uma linha Alocacoes por SE + bump SessaoVersao.
+# Studio: docs/powerfx/pauta-2026-09-20-alocacoes-studio.md
+# Toast desktop (cmpToast). Nao Notify.
+

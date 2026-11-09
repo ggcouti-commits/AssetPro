@@ -1,0 +1,135 @@
+# Tela_Inventarios — recorte Alocacoes nas galerias (App Inventariantes)
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+#
+# Causa: Items lia colCampanhas / colSubestacoes inteiras.
+# Escritorio (varPerfil = "ESCRITORIO") ve tudo.
+# Inventariante: so CodInventario / CodSE em colAlocacoes do slot.
+# Precisa: login ter montado colAlocacoes (btnEntrar).
+
+## 1. galInvProjetos → Items
+
+Apaga. Cola:
+
+```
+SortByColumns(
+    Filter(
+        colCampanhas;
+        (
+            varPerfil = "ESCRITORIO"
+            || !IsBlank(
+                LookUp(
+                    colAlocacoes;
+                    CodInventario = CodInventario
+                )
+            )
+        )
+        && (
+            IsBlank(txtInvBusca.Text)
+            || txtInvBusca.Text in NomeInventario
+            || txtInvBusca.Text in Coalesce(Concessionaria; "")
+        )
+    );
+    "NomeInventario";
+    SortOrder.Ascending
+)
+```
+
+## 2. galInvProjetos → Visible
+
+Apaga. Cola:
+
+```
+CountRows(
+    Filter(
+        colCampanhas;
+        varPerfil = "ESCRITORIO"
+        || !IsBlank(
+            LookUp(
+                colAlocacoes;
+                CodInventario = CodInventario
+            )
+        )
+    )
+) > 0
+```
+
+## 3. cInvVazioProj (container vazio de projetos) → Visible
+
+# Se o nome for outro, e o que aparece quando nao tem card.
+# Hoje costuma ser CountRows(colCampanhas) = 0. Troca para:
+
+```
+CountRows(
+    Filter(
+        colCampanhas;
+        varPerfil = "ESCRITORIO"
+        || !IsBlank(
+            LookUp(
+                colAlocacoes;
+                CodInventario = CodInventario
+            )
+        )
+    )
+) = 0
+```
+
+## 4. galInvSEs → Items
+
+Apaga. Cola:
+
+```
+SortByColumns(
+    Filter(
+        colSubestacoes;
+        CodInventario = gblInventarioSelecionado.CodInventario
+        && (
+            varPerfil = "ESCRITORIO"
+            || CodSE in Filter(
+                colAlocacoes;
+                Login = gblUsuario.Login && Ativo = "Sim"
+            ).CodSE
+        )
+        && (
+            (
+                gblFiltroGrupo = "Redes"
+                && (EhRede = "Sim" || StartsWith(Coalesce(CodSE; ""); "REDE-"))
+            )
+            || (
+                gblFiltroGrupo <> "Redes"
+                && Coalesce(EhRede; "") <> "Sim"
+                && !StartsWith(Coalesce(CodSE; ""); "REDE-")
+            )
+        )
+        && Switch(
+            varInvFiltroSE;
+            "Todas"; true;
+            "Pendente"; Coalesce(Status; "Pendente") = "Pendente";
+            "Em campo"; Status = "Em campo";
+            "Finalizada"; Status = "Finalizada";
+            false
+        )
+        && (
+            IsBlank(txtInvBusca.Text)
+            || txtInvBusca.Text in CodSE
+            || txtInvBusca.Text in NomeSE
+        )
+    );
+    "CodSE";
+    SortOrder.Ascending
+)
+```
+
+## 5. Botões SE / Rede (`cInvFiltroGrupo`)
+
+- `Container74` → `cInvFiltroGrupo`
+- `btnGrupoSubestacoes` → `btnInvGrupoSE` · OnSelect: `Set(gblFiltroGrupo; "Subestacoes");; Set(varInvFiltroSE; "Todas")`
+- `btnGrupoRedes` → `btnInvGrupoRede` · OnSelect: `Set(gblFiltroGrupo; "Redes");; Set(varInvFiltroSE; "Todas")`
+- Visible do container: passo 2 e tem instalação alocada
+- Init: `Set(gblFiltroGrupo; "Subestacoes")` no OnStart e ao abrir projeto
+
+## 6. galInvSEs / cInvVazioSE → Visible
+
+Mesmo filtro de Alocacoes + `gblFiltroGrupo` (sem status/busca). Galeria `> 0`; vazio `= 0`.
+
+# Resultado: inventariante so ve SE/rede alocadas; botões separam Subestações e Redes.
+# Conferir no Play com slot inventariante que tem linha em Alocacoes.

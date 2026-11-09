@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Designar projeto e instalação ao slot</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1;
+    --okbg:#C6E5C5; --oktx:#2D752C;
+    --sel:#E8F1FB; --field:#F7FAFD; --danger:#F1416C;
+    --pendbg:#EBEAEA; --pendtx:#706F6E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px 22px 36px}
+  body.shot{padding:0}
+  body.shot .kicker, body.shot h1, body.shot .lead, body.shot .cap, body.shot .app:not(.show){display:none}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:26px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1080px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+  .cap{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase; margin-bottom:8px}
+
+  .app{
+    width:1280px; height:720px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page);
+  }
+  body.shot .app.show{border:0; border-radius:0}
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni svg{flex:0 0 18px}
+  .ni.on{background:var(--navy3); color:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px; gap:2px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{
+    height:66px; background:#fff; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between; padding:0 20px 0 22px;
+  }
+  .topt{display:flex; align-items:center; gap:10px}
+  .back{width:34px; height:34px; border-radius:8px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--title)}
+  .toptitle{font-size:20px; font-weight:700; color:var(--title)}
+  .topsub{font-size:12px; color:var(--label); margin-top:2px}
+  .btn{
+    height:34px; padding:0 14px; border-radius:8px; font-size:12px; font-weight:700;
+    display:flex; align-items:center; gap:6px; border:1px solid var(--navy); background:var(--navy); color:#fff;
+  }
+  .btn.ghost{background:#fff; color:var(--navy); border-color:#C5D4E6}
+
+  .body{padding:16px 20px; display:grid; gap:14px; min-height:0; flex:1}
+  .body.usr{grid-template-columns:360px 1fr}
+  .body.alo{grid-template-columns:300px 1fr 300px}
+  .list,.form,.col{background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; display:flex; flex-direction:column}
+  .colh{padding:12px 14px 10px; border-bottom:1px solid #EDF0F3}
+  .colht{font-size:13px; font-weight:700; color:var(--title)}
+  .colhs{font-size:11.5px; color:var(--label); margin-top:2px}
+  .row{padding:13px 14px; border-bottom:1px solid #EDF0F3; display:flex; justify-content:space-between; align-items:center; gap:10px}
+  .row.sel{background:var(--sel); box-shadow:inset 3px 0 0 var(--navy)}
+  .rname{font-size:14px; font-weight:700; color:var(--title)}
+  .rmeta{font-size:12px; color:var(--label); margin-top:2px}
+  .chip{height:21px; padding:0 9px; border-radius:999px; font-size:10px; font-weight:700; display:inline-flex; align-items:center; flex:0 0 auto}
+  .c-ok{background:var(--okbg); color:var(--oktx)}
+  .c-off{background:var(--pendbg); color:var(--pendtx)}
+  .c-run{background:#D6E8FF; color:#1B4C86}
+
+  .form{padding:18px 22px 18px; gap:11px}
+  .ft{font-size:16px; font-weight:700; color:var(--title)}
+  .fsub{font-size:12px; color:var(--label); margin-bottom:4px}
+  .lab{font-size:11px; font-weight:700; letter-spacing:.4px; color:var(--label); margin-bottom:6px}
+  .inp{
+    height:44px; border:1px solid var(--border); border-radius:8px;
+    background:var(--field); display:flex; align-items:center; padding:0 14px;
+    font-size:14px; color:var(--text);
+  }
+  .actions{display:flex; justify-content:flex-end; gap:10px; margin-top:auto; padding-top:8px}
+  .ghostb{
+    height:40px; padding:0 16px; border-radius:8px; font-size:13px; font-weight:700;
+    display:flex; align-items:center; gap:8px; background:#fff; color:var(--navy); border:1px solid #C5D4E6;
+  }
+  .ghostb svg{flex:0 0 16px}
+  .save{
+    height:40px; padding:0 18px; border-radius:8px; background:var(--primaryD30); color:#fff;
+    font-size:13px; font-weight:700; display:flex; align-items:center;
+  }
+
+  .se{padding:12px 14px; border-bottom:1px solid #EDF0F3; display:flex; align-items:center; gap:10px}
+  .se.sel{background:var(--sel)}
+  .secod{font-size:13px; font-weight:700; color:var(--title); width:72px; flex:0 0 72px}
+  .sen{flex:1; min-width:0}
+  .sename{font-size:13px; font-weight:700; color:var(--title)}
+  .sem{font-size:11.5px; color:var(--label); margin-top:1px}
+  .add{
+    height:28px; padding:0 10px; border-radius:8px; font-size:11px; font-weight:700;
+    background:var(--navy); color:#fff; display:flex; align-items:center;
+  }
+  .add.off{background:#fff; color:var(--pendtx); border:1px solid var(--border)}
+  .x{
+    width:28px; height:28px; border-radius:8px; border:1px solid #F5C2C7; color:var(--danger);
+    display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; background:#FFF6F7;
+  }
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TELA_USUARIOS · GALERIA</div>
+  <h1>A galeria mostra quem está com o tablet.</h1>
+  <p class="lead">Título = <b>UsadoPor</b> (Ricardo). Subtítulo = login do slot. Sem nome: aparece <b>Livre</b>.</p>
+  <div class="cap">1 · galUsuarios</div>
+
+  <div class="app" id="usr">
+    <aside class="sb">
+      <div class="brand">
+        <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/></svg></div>
+        <div class="brandname">Infralytics</div>
+      </div>
+      <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+      <nav class="nav">
+        <div class="ni">Home</div>
+        <div class="ni">Projetos</div>
+        <div class="ni">Inventários</div>
+        <div class="ni">Importar / Exportar</div>
+        <div class="ni on">Usuários</div>
+      </nav>
+      <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div><div class="toptitle">Usuários</div><div class="topsub">3 slots</div></div>
+        <div class="btn">Novo slot</div>
+      </header>
+      <div class="body usr">
+        <div class="list">
+          <div class="row sel">
+            <div>
+              <div class="rname">Ricardo</div>
+              <div class="rmeta">Inventariante01 · USR-001</div>
+            </div>
+            <span class="chip c-ok">Ativo</span>
+          </div>
+          <div class="row">
+            <div>
+              <div class="rname">Otavio</div>
+              <div class="rmeta">Inventariante02 · USR-002</div>
+            </div>
+            <span class="chip c-ok">Ativo</span>
+          </div>
+          <div class="row">
+            <div>
+              <div class="rname">Livre</div>
+              <div class="rmeta">Inventariante03 · USR-003</div>
+            </div>
+            <span class="chip c-off">Inativo</span>
+          </div>
+        </div>
+        <div class="form">
+          <div class="ft">Inventariante01</div>
+          <div class="fsub">USR-001 · slot de campo</div>
+          <div><div class="lab">LOGIN</div><div class="inp">Inventariante01</div></div>
+          <div><div class="lab">USADO POR</div><div class="inp">Ricardo</div></div>
+          <div class="actions">
+            <div class="ghostb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.3"/></svg>Designar instalações</div>
+            <div class="save">Salvar</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="kicker">DESKTOP · TELA_ALOCACOES</div>
+  <h1>Projeto primeiro. Depois a instalação.</h1>
+  <p class="lead">Uma linha em <b>Alocacoes</b> = um slot + um <b>CodInventario</b> + um <b>CodSE</b>. O campo (Inventários) só vê o que estiver aqui. Front diz <b>Projeto</b>; a lista continua <b>Campanhas</b>.</p>
+  <div class="cap">2 · Tela_Alocacoes</div>
+
+  <div class="app" id="alo">
+    <aside class="sb">
+      <div class="brand">
+        <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/></svg></div>
+        <div class="brandname">Infralytics</div>
+      </div>
+      <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+      <nav class="nav">
+        <div class="ni">Home</div>
+        <div class="ni">Projetos</div>
+        <div class="ni">Inventários</div>
+        <div class="ni">Importar / Exportar</div>
+        <div class="ni on">Usuários</div>
+      </nav>
+      <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div class="topt">
+          <div class="back">←</div>
+          <div>
+            <div class="toptitle">Designar instalações</div>
+            <div class="topsub">Ricardo · Inventariante01</div>
+          </div>
+        </div>
+      </header>
+      <div class="body alo">
+        <div class="col">
+          <div class="colh">
+            <div class="colht">Projeto</div>
+            <div class="colhs">Campanhas ativas</div>
+          </div>
+          <div class="row sel">
+            <div>
+              <div class="rname">Neoenergia PE</div>
+              <div class="rmeta">INV-012 · 4 instalações</div>
+            </div>
+            <span class="chip c-run">Em andamento</span>
+          </div>
+          <div class="row">
+            <div>
+              <div class="rname">Equatorial MA</div>
+              <div class="rmeta">INV-008 · 6 instalações</div>
+            </div>
+            <span class="chip c-ok">Finalizada</span>
+          </div>
+        </div>
+        <div class="col">
+          <div class="colh">
+            <div class="colht">Instalações do projeto</div>
+            <div class="colhs">Neoenergia PE · clica Adicionar</div>
+          </div>
+          <div class="se">
+            <div class="secod">SE-001</div>
+            <div class="sen"><div class="sename">Sub. Est. Recife I</div><div class="sem">138 kV · Em campo</div></div>
+            <div class="add off">Designada</div>
+          </div>
+          <div class="se">
+            <div class="secod">SE-002</div>
+            <div class="sen"><div class="sename">Sub. Est. Olinda</div><div class="sem">69 kV · Pendente</div></div>
+            <div class="add">Adicionar</div>
+          </div>
+          <div class="se">
+            <div class="secod">SE-003</div>
+            <div class="sen"><div class="sename">Sub. Est. Jaboatão</div><div class="sem">13,8 kV · Otavio já tem</div></div>
+            <div class="add off">Ocupada</div>
+          </div>
+          <div class="se">
+            <div class="secod">SE-004</div>
+            <div class="sen"><div class="sename">Sub. Est. Litoral</div><div class="sem">138 kV · Em campo</div></div>
+            <div class="add">Adicionar</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="colh">
+            <div class="colht">Já designadas a Ricardo</div>
+            <div class="colhs">2 instalações</div>
+          </div>
+          <div class="se">
+            <div class="sen"><div class="sename">SE-001 · Recife I</div><div class="sem">Neoenergia PE</div></div>
+            <div class="x">×</div>
+          </div>
+          <div class="se">
+            <div class="sen"><div class="sename">SE-009 · Cabo</div><div class="sem">Equatorial MA</div></div>
+            <div class="x">×</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    var q = location.search;
+    if (q.indexOf("shot=usr") >= 0) { document.body.classList.add("shot"); document.getElementById("usr").classList.add("show"); }
+    if (q.indexOf("shot=alo") >= 0) { document.body.classList.add("shot"); document.getElementById("alo").classList.add("show"); }
+  </script>
+</body>
+</html>

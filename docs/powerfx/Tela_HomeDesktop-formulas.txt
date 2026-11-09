@@ -1,0 +1,515 @@
+# Tela_Campanhas — KPIs + galeria (era Home; confirmado 2026-09-05)
+# Front: esta tela e a lista de **Projetos**. Lista SP / colCampanhas / Tela_Campanhas nao mudam.
+# A Home nova e so importar/exportar: docs/powerfx/Tela_Home-importar-exportar.txt
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Cores: so Cor.* / TCor.* (docs/powerfx/cores-formulas.txt). Sem RGBA hex.
+
+## KPIs — Text direto na colecao (nao usar var no OnVisible)
+
+# StartScreen.OnVisible corre enquanto o OnStart ainda esta no ClearCollect.
+# varKPI* fica 0 e nao atualiza. A galeria liga em colCampanhas e por isso aparece.
+
+# Home filtra colCampanhas.Status (base). Nao deriva de SE.
+# KPI Em campo e o unico que conta SE.
+
+### lblKPICampanhasValor.Text
+
+CountRows(Filter(colCampanhas; Status = "Em andamento"))
+
+### lblKPIEmCampoValor.Text
+
+CountRows(Filter(colSubestacoes; Status = "Em campo"))
+
+### lblKPIFinalizadasValor.Text
+
+CountRows(
+    Filter(
+        colCampanhas;
+        Status = "Concluído" || Status = "Concluída" || Status = "Concluídas" || Status = "Finalizada"
+    )
+)
+
+### lblKPIPendentesValor.Text
+
+CountRows(Filter(colCampanhas; Status = "Pendente"))
+
+# Tela_Home.OnVisible: pode apagar os 4 Set(varKPI...).
+# colCampanhas ja vem Filter(Ativo = "Sim") no OnStart.
+# Status em branco na SE nao entra em nenhum card.
+# Filtro da galeria: gblFiltroStatus (OnStart = "Todos").
+# Clique no card: Set + Navigate(Tela_Subestacoes) — consulta/visualizacao.
+# Status "Importando": o Patch ja gravou em Campanhas, mas a Home nao mostra
+# ate o timer virar Pendente. A barra fica na galeria da Tela_Exportar.
+# Tela_Inventarios = menu Inventarios — entrada de dados (clone mobile). Ver todas zera filtro.
+
+### Tela_Home.OnVisible
+
+Set(gblFiltroStatus; "Todos");;
+Set(varCarregando; false)
+
+## cPainelCampanhas / galCampanhasHome
+
+# Mini-contagens: colSubestacoes (ja filtrada por campanhas ativas no OnStart).
+# Revisada = Status Em campo OU Finalizada.
+
+### galCampanhasHome.Items
+
+SortByColumns(
+    Filter(
+        colCampanhas;
+        Status <> "Importando"
+        && Switch(
+            gblFiltroStatus;
+            "Todos"; true;
+            "Em andamento"; Status = "Em andamento";
+            "Pendente"; Status = "Pendente";
+            "Finalizada";
+                Status = "Concluído" || Status = "Concluída" || Status = "Concluídas" || Status = "Finalizada";
+            "Em campo";
+                With(
+                    {cod: CodInventario};
+                    CountRows(
+                        Filter(
+                            colSubestacoes;
+                            CodInventario = cod && Status = "Em campo"
+                        )
+                    ) > 0
+                );
+            false
+        )
+    );
+    "DataCriacao";
+    SortOrder.Descending
+)
+
+### galCampanhasHome.WrapCount
+
+2
+
+### lblCampNome.Text
+
+ThisItem.NomeInventario
+
+### lblCampMeta.Text
+
+# Subestacao = EhRede <> "Sim". Rede = EhRede = "Sim".
+# Numero do mini: esquerda subestacao, direita rede.
+
+With(
+    {
+        ses: CountRows(
+            Filter(
+                colSubestacoes;
+                CodInventario = ThisItem.CodInventario
+                && EhRede <> "Sim"
+            )
+        );
+        redes: CountRows(
+            Filter(
+                colSubestacoes;
+                CodInventario = ThisItem.CodInventario
+                && EhRede = "Sim"
+            )
+        )
+    };
+    Text(ThisItem.DataCriacao; "mmmm yyyy")
+    & " · "
+    & ses
+    & If(ses = 1; " instalação"; " instalações")
+    & " · "
+    & redes
+    & If(redes = 1; " rede"; " redes")
+)
+
+### btnCampChip.Text
+
+If(
+    ThisItem.CodInventario = varLockCod && ArquivoOcupado;
+    If(varOpArquivo = "EXCLUINDO"; "Excluindo"; "Importando");
+    ThisItem.Status
+)
+
+### btnCampChip.Fill
+
+If(
+    ThisItem.CodInventario = varLockCod && ArquivoOcupado;
+    If(varOpArquivo = "EXCLUINDO"; ColorFade(Cor.Delete; 70%); Cor.PrimaryL90);
+    Switch(
+        ThisItem.Status;
+        "Em andamento"; Cor.PrimaryL90;
+        "Em campo"; Cor.PrimaryL90;
+        "Concluído"; ColorFade(Cor.Success; 70%);
+        "Concluída"; ColorFade(Cor.Success; 70%);
+        "Concluídas"; ColorFade(Cor.Success; 70%);
+        "Finalizada"; ColorFade(Cor.Success; 70%);
+        Cor.NeutralL90
+    )
+)
+
+### btnCampChip.Color
+
+If(
+    ThisItem.CodInventario = varLockCod && ArquivoOcupado;
+    If(varOpArquivo = "EXCLUINDO"; ColorFade(Cor.Delete; -0.3); Cor.PrimaryD30);
+    Switch(
+        ThisItem.Status;
+        "Em andamento"; Cor.PrimaryD30;
+        "Em campo"; Cor.PrimaryD30;
+        "Concluído"; ColorFade(Cor.Success; -0.3);
+        "Concluída"; ColorFade(Cor.Success; -0.3);
+        "Concluídas"; ColorFade(Cor.Success; -0.3);
+        "Finalizada"; ColorFade(Cor.Success; -0.3);
+        Cor.NeutralL30
+    )
+)
+
+### icoAbrirCampanha.Fill
+
+# O icone e o clique do card inteiro (Width/Height = Parent). Fill solido tapa o card.
+# Ocioso: transparente. Ocupado: veu 16% (Primary / Delete). Conteudo continua visivel.
+
+If(
+    ThisItem.CodInventario = varLockCod && ArquivoOcupado;
+    If(
+        varOpArquivo = "EXCLUINDO";
+        RGBA(226; 68; 68; 0.16);
+        RGBA(52; 143; 253; 0.16)
+    );
+    Cor.Transparent
+)
+
+### icoAbrirCampanha.Color
+
+Cor.Transparent
+
+### icoAbrirCampanha.DisabledFill
+
+Self.Fill
+
+### icoAbrirCampanha.DisabledColor
+
+Cor.Transparent
+
+### icoAbrirCampanha.HoverFill
+
+Self.Fill
+
+### icoAbrirCampanha.PressedFill
+
+Self.Fill
+
+### icoAbrirCampanha.DisplayMode
+
+If(
+    ThisItem.CodInventario = varLockCod && (ArquivoOcupado || varUltimaOp = "EXCLUINDO");
+    DisplayMode.Disabled;
+    DisplayMode.Edit
+)
+
+### icoAbrirCampanha.OnSelect
+
+If(
+    ThisItem.CodInventario = varLockCod && (ArquivoOcupado || varUltimaOp = "EXCLUINDO");
+    With(
+        {_: true};
+        Set(
+            varToastMsg;
+            If(
+                varUltimaOp = "EXCLUINDO" || varOpArquivo = "EXCLUINDO";
+                "Este projeto está sendo excluído.";
+                "Este projeto ainda está importando."
+            )
+        );;
+        Set(varToastTipo; "AVISO");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    );
+    Set(varCarregando; true);;
+    Set(gblInventarioSelecionado; ThisItem);;
+    Set(varCodCampanha; ThisItem.CodInventario);;
+    ClearCollect(
+        colSEsCampanha;
+        Filter(
+            colSubestacoes;
+            CodInventario = varCodCampanha
+        )
+    );;
+    Clear(colInventarioBase);;
+    ForAll(
+        colSEsCampanha As se;
+        Collect(
+            colInventarioBase;
+            Filter(
+                Inventario;
+                CodInventario = varCodCampanha
+                && CodSE = se.CodSE
+            )
+        )
+    );;
+    ClearCollect(
+        colFotosCampanha;
+        Filter(
+            Fotos;
+            CodInventario = varCodCampanha
+        )
+    );;
+    Navigate(Tela_Subestacoes; ScreenTransition.None);;
+    Set(varCarregando; false)
+)
+
+### recBarFill.Width
+
+# If() no Power Apps ainda avalia o ramo da divisao — usar Max(..., 1)
+recBarTrack.Width * CountRows(
+    Filter(
+        colSubestacoes;
+        CodInventario = ThisItem.CodInventario
+        && (Status = "Em campo" || Status = "Finalizada")
+    )
+) / Max(ThisItem.QtdSEs; 1)
+
+### recBarTrack.Fill
+
+Cor.NeutralL90
+
+### recBarFill.Fill
+
+If(
+    CountRows(
+        Filter(
+            colSubestacoes;
+            CodInventario = ThisItem.CodInventario
+            && (Status = "Em campo" || Status = "Finalizada")
+        )
+    ) = 0;
+    Cor.NeutralL60;
+    Cor.Success
+)
+
+### lblCampRevisadas.Text
+
+With(
+    {
+        ses: CountRows(
+            Filter(
+                colSubestacoes;
+                CodInventario = ThisItem.CodInventario
+                && EhRede <> "Sim"
+            )
+        );
+        redes: CountRows(
+            Filter(
+                colSubestacoes;
+                CodInventario = ThisItem.CodInventario
+                && EhRede = "Sim"
+            )
+        );
+        revSes: CountRows(
+            Filter(
+                colSubestacoes;
+                CodInventario = ThisItem.CodInventario
+                && EhRede <> "Sim"
+                && (Status = "Em campo" || Status = "Finalizada")
+            )
+        );
+        revRedes: CountRows(
+            Filter(
+                colSubestacoes;
+                CodInventario = ThisItem.CodInventario
+                && EhRede = "Sim"
+                && (Status = "Em campo" || Status = "Finalizada")
+            )
+        )
+    };
+    revSes & " de " & ses & If(ses = 1; " instalação revisada"; " instalações revisadas")
+    & " · "
+    & revRedes & " de " & redes & If(redes = 1; " rede revisada"; " redes revisadas")
+)
+
+### lblCampPct.Text
+
+Text(
+    Round(
+        100 * CountRows(
+            Filter(
+                colSubestacoes;
+                CodInventario = ThisItem.CodInventario
+                && (Status = "Em campo" || Status = "Finalizada")
+            )
+        ) / Max(ThisItem.QtdSEs; 1);
+        0
+    )
+) & "%"
+
+### lblMiniCampo.Text
+
+CountRows(
+    Filter(
+        colSubestacoes;
+        CodInventario = ThisItem.CodInventario
+        && Status = "Em campo"
+        && EhRede <> "Sim"
+    )
+)
+& " · "
+& CountRows(
+    Filter(
+        colSubestacoes;
+        CodInventario = ThisItem.CodInventario
+        && Status = "Em campo"
+        && EhRede = "Sim"
+    )
+)
+
+# Width = 140 (lblMiniCampo e lblMiniCampoDesc)
+
+### lblMiniCampo.Color
+
+Cor.PrimaryD30
+
+### lblMiniFin.Text
+
+CountRows(
+    Filter(
+        colSubestacoes;
+        CodInventario = ThisItem.CodInventario
+        && Status = "Finalizada"
+        && EhRede <> "Sim"
+    )
+)
+& " · "
+& CountRows(
+    Filter(
+        colSubestacoes;
+        CodInventario = ThisItem.CodInventario
+        && Status = "Finalizada"
+        && EhRede = "Sim"
+    )
+)
+
+# Width = 140 (lblMiniFin e lblMiniFinDesc)
+
+### lblMiniFin.Color
+
+Cor.Success
+
+### lblMiniPend.Text
+
+CountRows(
+    Filter(
+        colSubestacoes;
+        CodInventario = ThisItem.CodInventario
+        && Status = "Pendente"
+        && EhRede <> "Sim"
+    )
+)
+& " · "
+& CountRows(
+    Filter(
+        colSubestacoes;
+        CodInventario = ThisItem.CodInventario
+        && Status = "Pendente"
+        && EhRede = "Sim"
+    )
+)
+
+# Width = 140 (lblMiniPend e lblMiniPendDesc)
+# lblMiniRede e lblMiniRedeDesc: Visible = false
+
+### lblMiniPend.Color
+
+Cor.NeutralL30
+
+### lblVerTodas.Color
+
+Cor.Primary
+
+### lblCampNome.Color
+
+Cor.PrimaryD60
+
+### lblCampMeta.Color
+
+Cor.NeutralL30
+
+### lblKPIFinalizadasValor.Color
+
+Cor.Success
+
+### lblKPIPendentesValor.Color
+
+Cor.NeutralL30
+
+### lblKPIEmCampoValor.Color
+
+Cor.PrimaryD30
+
+### galCampanhasHome.OnSelect
+
+Select(icoAbrirCampanha)
+
+### lblCampanhaNome.OnSelect
+
+Select(Parent)
+
+### btnVerTodas.OnSelect
+
+Set(gblFiltroStatus; "Todos")
+
+# KPI: container solto (Manual) + icone classico por cima.
+# Nao usar OnSelect nos ModernText. Se ja colou, apaga.
+
+### icoKPICampanhas.OnSelect
+
+Set(gblFiltroStatus; "Em andamento")
+
+### icoKPIEmCampo.OnSelect
+
+Set(gblFiltroStatus; "Em campo")
+
+### icoKPIFinalizadas.OnSelect
+
+Set(gblFiltroStatus; "Finalizada")
+
+### icoKPIPendentes.OnSelect
+
+Set(gblFiltroStatus; "Pendente")
+
+### icoKPI* (os 4) — visual
+
+# X = 0 | Y = 0 | Width = Parent.Width | Height = Parent.Height
+# Icon = Icon.Add (invisivel)
+# Color / HoverColor / PressedColor / BorderColor / DisabledColor = Cor.Transparent
+# Fill / HoverFill / PressedFill / DisabledFill = Cor.Transparent
+# FocusedBorderThickness = 0
+# Tooltip = o nome do KPI
+
+### Container6.Fill
+
+If(gblFiltroStatus = "Em andamento"; Cor.PrimaryL90; Cor.BackgroundStandard)
+
+### Container6_2.Fill
+
+If(gblFiltroStatus = "Em campo"; Cor.PrimaryL90; Cor.BackgroundStandard)
+
+### Container6_3.Fill
+
+If(gblFiltroStatus = "Finalizada"; ColorFade(Cor.Success; 70%); Cor.BackgroundStandard)
+
+### Container6_4.Fill
+
+If(gblFiltroStatus = "Pendente"; Cor.NeutralL90; Cor.BackgroundStandard)
+
+### cmpMenuV1_1.OnSelect
+
+Switch(
+    varMenuKey;
+    "home"; Navigate(Tela_Home; ScreenTransition.None);
+    "exportar"; Navigate(Tela_Exportar; ScreenTransition.None);
+    "conferencia"; Navigate(Tela_Conferência; ScreenTransition.None);
+    "inventarios"; Navigate(Tela_Inventarios; ScreenTransition.None);
+    "cadastros"; Navigate(Tela_Cadastros; ScreenTransition.None);
+    "concessionarias"; Navigate(Tela_Cadastros; ScreenTransition.None);
+    "usuarios"; Navigate(Tela_Usuarios; ScreenTransition.None)
+)
+

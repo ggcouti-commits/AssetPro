@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — btnUsrDesignar · ícones</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1;
+    --okbg:#C6E5C5; --oktx:#2D752C;
+    --sel:#E8F1FB;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px}
+  body.shot{padding:0}
+  body.shot .doc{display:none}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  h1{font-size:22px; font-weight:650; margin-bottom:8px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:980px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+
+  .board{
+    width:1280px; height:720px; background:var(--page);
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  body.shot .board{border:0; border-radius:0}
+  .bh{height:66px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 22px}
+  .bt{font-size:18px; font-weight:700; color:var(--title)}
+  .bs{font-size:12px; color:var(--label); margin-top:2px}
+  .pill{height:26px; padding:0 10px; border-radius:999px; font-size:11px; font-weight:700; display:flex; align-items:center; background:var(--navy); color:#fff}
+
+  .grid{flex:1; display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:16px 20px 20px; min-height:0}
+
+  .card{background:#fff; border:1px solid var(--border); border-radius:12px; padding:18px 20px; display:flex; flex-direction:column; gap:12px; position:relative}
+  .card.pick{border-color:#9EC4F0; background:#F7FBFF; box-shadow:inset 3px 0 0 var(--navy)}
+  .tag{position:absolute; top:16px; right:16px; height:22px; padding:0 9px; border-radius:999px; font-size:10px; font-weight:700; display:flex; align-items:center}
+  .tag.yes{background:var(--okbg); color:var(--oktx)}
+  .tag.no{background:#EBEAEA; color:#706F6E}
+  .iname{font-size:15px; font-weight:700; color:var(--title); padding-right:90px}
+  .imeta{font-size:12.5px; color:var(--label); line-height:1.45}
+  .imeta code{font-family:Consolas,monospace; font-size:11.5px; color:var(--navy)}
+
+  .preview{margin-top:auto; padding-top:14px; border-top:1px solid #EDF0F3; display:flex; align-items:center; justify-content:flex-end; gap:10px}
+  .ghost{
+    height:40px; padding:0 16px; border-radius:8px; font-size:13px; font-weight:700;
+    display:flex; align-items:center; gap:8px;
+    background:#fff; color:var(--navy); border:1px solid #C5D4E6;
+  }
+  .card.pick .ghost{border:2px solid var(--primary); box-shadow:0 0 0 6px rgba(52,143,253,.18)}
+  .save{height:40px; padding:0 18px; border-radius:8px; background:var(--primaryD30); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center}
+  .ghost svg{flex:0 0 18px}
+</style>
+</head>
+<body>
+  <div class="doc">
+    <div class="kicker">DESKTOP · BTNUSRDESIGNAR · ÍCONE</div>
+    <h1>Location. Instalação é lugar.</h1>
+    <p class="lead">Botão moderno: propriedade <b>Icon</b> = <code>Location</code>. Clássico: <code>Icon.Location</code>. Não usa People (parece Novo slot) nem Add (parece Adicionar na tela seguinte).</p>
+  </div>
+  <div class="board" id="cmp">
+    <header class="bh">
+      <div>
+        <div class="bt">Ícone de Designar instalações</div>
+        <div class="bs">btnUsrDesignar · Fluent / Power Apps</div>
+      </div>
+      <div class="pill">Recomendado: Location</div>
+    </header>
+    <div class="grid">
+      <div class="card pick">
+        <div class="tag yes">Usar este</div>
+        <div class="iname">Location</div>
+        <div class="imeta">Pino de mapa. Casa com <b>instalação / SE</b>. Não compete com Novo slot nem com Adicionar na Tela_Alocacoes.</div>
+        <div class="imeta">Modern: <code>Location</code> · clássico: <code>Icon.Location</code></div>
+        <div class="preview">
+          <div class="ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.3"/></svg>
+            Designar instalações
+          </div>
+          <div class="save">Salvar</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tag no">2º</div>
+        <div class="iname">Pin</div>
+        <div class="imeta">Alfinete. “Esta SE fica neste slot.” Serve, mas Pin no Fluent parece recado, não lugar.</div>
+        <div class="imeta">Modern: <code>Pin</code> · clássico: <code>Icon.Pin</code></div>
+        <div class="preview">
+          <div class="ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5h6l1.2 7.2-2.4 1.2V20l-2.6-3.2-2.6 3.2v-7.1L7.8 11.7 9 4.5z"/></svg>
+            Designar instalações
+          </div>
+          <div class="save">Salvar</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tag no">Evitar</div>
+        <div class="iname">People</div>
+        <div class="imeta">Duas pessoas. O escritório lê “usuário”, não “SE”. Briga com o sentido da galeria UsadoPor.</div>
+        <div class="imeta">Modern: <code>People</code> · clássico: <code>Icon.People</code></div>
+        <div class="preview">
+          <div class="ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.4-3 2.6-5 5.5-5s5.1 2 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 14.2c2.3.4 4 2.2 4.4 4.8"/></svg>
+            Designar instalações
+          </div>
+          <div class="save">Salvar</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tag no">Evitar</div>
+        <div class="iname">Add</div>
+        <div class="imeta">Mais. Na tela seguinte o botão da SE já é Adicionar. Dois “mais” seguidos confundem.</div>
+        <div class="imeta">Modern: <code>Add</code> · clássico: <code>Icon.Add</code></div>
+        <div class="preview">
+          <div class="ghost">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            Designar instalações
+          </div>
+          <div class="save">Salvar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    if (location.search.indexOf("shot") >= 0) document.body.classList.add("shot");
+  </script>
+</body>
+</html>

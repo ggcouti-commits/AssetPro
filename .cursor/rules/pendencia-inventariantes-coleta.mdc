@@ -1,0 +1,118 @@
+---
+description: Pendência — Desktop Inventariantes (coleta + filtros SE)
+alwaysApply: true
+---
+
+# Pendência — Desktop Inventariantes · Coleta / EditarItem
+
+Relato 02.11.2026 (Fenômeno). **App Inventariantes** (`b82aebfb-…`). Não montar sem ok.
+
+## 1. Manter a aba/filtro ao salvar item
+
+- **Onde:** `Tela_EditarItemColeta` → salvar (item / sobra) → `Navigate(Tela_InventarioColeta)`.
+- **Hoje:** ao voltar, a coleta pode cair em outra aba (`BASE` / `FALTA` / `SOBRAS`) ou o `OnVisible` da Coleta zera contexto (`Set(varColAba, "FALTA")` no OnVisible).
+- **Fazer:** se estava em **Sobras**, continua em Sobras; se **Base**, Base; se **Falta**, Falta. Preservar `varColAba` (e o modo coerente) no Salvar; no `OnVisible` da Coleta, **não** forçar `FALTA` quando `varInvVoltandoColeta` / volta do EditarItem — só resetar aba na entrada “fresca” na SE.
+
+## 2. Gerar código da sobra **antes** de salvar (para foto na criação)
+
+- **Onde:** `Tela_EditarItemColeta` · modo `SOBRA_NOVA` · `+ Item` / ficha nova.
+- **Hoje:** `CodAsset` (`SOBRA-{CodSE}-{nn}`), e campos ligados (`IdUC` se aplicável), só nascem no **Salvar sobra** (`btnColSalvarSobra` → `Set(varColNovoCod, …)` + `Patch`). Sem código ainda, a foto de item na criação não amarra no `CodAsset`.
+- **Fazer:** ao abrir `SOBRA_NOVA` (ou no primeiro foco da ficha), **já** calcular e gravar em vars (`varColNovoCod` / espelho IdUC se o fluxo usar) o próximo código, **antes** do Patch. Foto (`attColFotoEdi` / envio) usa `Coalesce(varColItem.CodAsset, varColNovoCod, "")` com o código já preenchido. No Salvar, reutilizar esse código (não gerar outro), com cuidado de corrida se duas sobras abrirem juntos.
+- Spec código: `docs/fotos-campos.md` · padrão `SOBRA-{CodSE}-{nn}`.
+
+## 3. Card de progresso da SE não conta sobras
+
+- **Onde:** `Tela_InventarioColeta` — `lblColProgTxt`, `lblColProgPct`, barra (`cColBarra` / Width), chip **BASE (`ColTotalBase`)**.
+- **Hoje:** named formulas `ColItensBase` / `ColTotalBase` / `ColDecididosBase` / `ColPendentesBase` em `App.Formulas` **excluem** sobra (`SOBRA_FISICA` / `StartsWith(CodAsset,"SOBRA-")`). Barra e “X de Y itens revisados” / % só olham base.
+- **Fazer:** alinhar ao card da galeria de SEs (já corrigido 02.11): progresso = **base + sobras**. Total e decididos incluem sobras físicas (Status `ADERENTE` / `NÃO_ELEGIVEL` e/ou marca de sobra). Chip SOBRAS pode continuar `CountRows(colColItens) - ColTotalBase` **só se** `ColTotalBase` voltar a ser “só base”; se unificar o card, renomear/redefinir chips para não duplicar.
+- Spec Formulas: `App.pa.yaml` → `ColItensBase` … `ColPendentesBase`.
+
+## 4. Combobox A1–A6 — ordem pelo código do atributo
+
+- **Onde:** `Tela_EditarItemColeta` → `cmbColA1` … `cmbColA6` (Items / lista do atributo).
+- **Hoje:** opções saem bagunçadas (não seguem `00`, `01`, `02`, `03`…).
+- **Fazer:** ordenar por **código** (`CodTabela` numérico / texto com `SortByColumns(..., "CodTabela", SortOrder.Ascending)` ou `Sort(..., Value(CodTabela))` — o que casar com o tipo da coluna). Rótulo pode continuar `Text(CodTabela, "00") & " - " & DescricaoItem`. Vale nos seis combos LISTA.
+- Relato 02.11.2026 (Fenômeno).
+
+## 5. Salvar texto em caixa alta (igual Mobile)
+
+- **Onde:** `Tela_EditarItemColeta` → Salvar item / Salvar sobra (`Patch` Inventario + espelho em `colColItens` / `colInventarioBase`).
+- **Hoje:** grava o texto como digitado (minúsculas misturadas).
+- **Fazer:** igual ao **Mobile** — no Salvar, passar campos texto por `Upper(...)` antes do Patch (Fabricante, Modelo, NumSerie, CodOperacao, Observacoes, DescricaoBem, ValorA* LIVRE/FAIXA em texto, Bay se texto, etc.). Não upper em códigos numéricos / IDs. Espelhar `docs/powerfx/Tela_EditarItem-formulas.txt` (mobile).
+- Relato 02.11.2026 (Fenômeno).
+
+## 6. TUC — trocar dropdown por combobox
+
+- **Onde:** `Tela_EditarItemColeta` → `drpColTUC` (e `inpColTUC` se existir só como apoio).
+- **Hoje:** dropdown clássico / lista fechada — difícil achar TUC na lista longa.
+- **Fazer:** virar **Modern Combobox** (buscar/digitar), no padrão dos `cmbColA*`: Items ordenados por código (`CodigoTUC`), display `Text(CodigoTUC) & " — " & DescricaoTUC`, DefaultSelectedItems a partir de `varColTUC` / item. Reapontar OnChange / Salvar / Visible que leem `drpColTUC.Selected` para o novo controle (renomear p.ex. `cmbColTUC` se colar limpo).
+- Relato 02.11.2026 (Fenômeno).
+
+## 7. Lista de itens — mostrar TUC e A1
+
+- **Onde:** `Tela_InventarioColeta` → galeria de itens (`galColItens` / cards da aba BASE · FALTA · SOBRAS).
+- **Hoje:** o card mostra código / descrição / status, sem **TUC** nem **A1** visíveis na linha.
+- **Fazer:** na lista, exibir **TUC** (`CodTUC` + descrição curta se couber) e **A1** (código `AtributoA1` / texto via `colLookup` da tabela do A1 do TUC — mesmo padrão de rótulo `00 - desc` se houver espaço). Layout: não estourar o card; sobra e item de base iguais nesse meta.
+- Relato 02.11.2026 (Fenômeno).
+
+## 8. Editar item — título com IdUC / CodAsset
+
+- **Onde:** `Tela_EditarItemColeta` → `lblEdiTitulo` (linha de cima do header).
+- **Hoje:** prioriza a **descrição** (`inpColDescBem` / `DescricaoBem` / `DescricaoTUC`); só cai em Imobilizado/CodAsset se descrição vazia. Sobra nova = `"Nova sobra"`.
+- **Fazer:** no título, mostrar **`Coalesce(IdUC; CodAsset)`** (prioridade IdUC, senão CodAsset). Sobra nova: `varColNovoCod` (ou “Nova sobra · ” & código quando §2 existir). Descrição continua no formulário (`inpColDescBem`), não no header.
+- Relato 02.11.2026 (Fenômeno).
+
+## 9. Filtros Todas / Pendente / Em campo / Finalizada — contagem do inventariante + tipo
+
+- **Onde:** `Tela_Inventarios` → chips `btnInvFTodas`, `btnInvFPendente`, `btnInvFEmCampo`, `btnInvFFinalizada` (passo 2 · lista SE/Rede).
+- **Hoje:** o número no chip conta **todas** as instalações do projeto (`Filter(colSubestacoes, CodInventario = …)`), sem `colAlocacoes` e **sem** `gblFiltroGrupo`. Inventariante vê total do projeto (ex.: Todas 59) mesmo com perfil inventariante; na aba **Redes** o número ainda mistura SE+Rede. `btnInvAtualizar` reconstrói `colSubestacoes` só por campanha, **sem** Alocacoes.
+- **Fazer:**
+  - Contagem dos quatro chips = **mesmo universo da `galInvSEs`**:
+    1. `CodInventario` do projeto aberto;
+    2. **Quem:** `varPerfil = "ESCRITORIO"` → tudo; senão só `CodSE` em `colAlocacoes` (`Login = gblUsuario.Login` · `Ativo = "Sim"`);
+    3. **Tipo:** `gblFiltroGrupo = "Subestacoes"` → só SE (`EhRede <> "Sim"` e não `REDE-`); `gblFiltroGrupo = "Redes"` → só rede (`EhRede = "Sim"` ou `REDE-`). Trocar Subestações ↔ Redes **recalcula** os quatro números.
+  - Escritório: tudo do tipo escolhido (sem recorte Alocacoes).
+  - **Atualizar:** ao remontar `colSubestacoes`, aplicar Alocacoes (inventariante).
+- Relato 02.11.2026 (Fenômeno). Print: chips com totais do projeto na aba Redes.
+
+## 10. Foto — enviar várias de uma vez
+
+- **Onde:** `Tela_InventarioColeta` (`attColFoto` · visão geral / ambiente) e `Tela_EditarItemColeta` (`attColFotoEdi` · foto do item).
+- **Hoje:** `MaxAttachments = 1` e o Enviar faz `First(….Attachments)` → **uma foto por vez**; processo lento em SE com muitas fotos.
+- **Fazer:** permitir **vários anexos** no AddMedia/Attachments; no Enviar, `ForAll` em `Self.Attachments` / `attColFoto.Attachments` (e o equivalente Edi), um `Patch(Fotos, …)` por arquivo (mesmo `TipoFoto` / `CodSE` / `CodAsset`), validar extensão em cada um, `Collect` em `colColFotos`, limpar anexos no fim. Manter exclusão/zoom por item. Limite prático (ex. 10) se o Studio ou o SharePoint engasgar — combinar no ok.
+- Relato 02.11.2026 (Fenômeno).
+
+## 11. Para-raios — A6 (externo / interno) não aparece
+
+- **Onde:** `Tela_EditarItemColeta` · item TUC de **para-raios** · card `cCardA6` / `cmbColA6` (Visible depende de `!IsBlank(varAtrA6)`).
+- **Hoje:** A6 **externo / interno** não mostra no para-raios (card some ou lista vazia).
+- **Hipótese (mesma família da TUC 575 resolvida 22.10):** falta linha **A6** em `TabelaAtributos` (SharePoint) para o `CodTUC` do para-raios, ou `ChaveTabela` / catálogo (`colLookup`) sem opções externo/interno; ou Inventariantes carrega `colAtributos` sem essa linha.
+- **Fazer:** conferir no SP a TUC do para-raios (ex. se for **575** ou outra) — linha A6 + `ChaveTabela` correta + itens na tabela unificada; no app, `LookUp` A6 e Items do combo. Se for só catálogo: corrigir planilha/lista e baixar dados de novo. Se for fórmula Visible/LookUp no Inventariantes: alinhar ao Desktop/Mobile que já mostra.
+- Relato 02.11.2026 (Fenômeno). Ver também `pendencia-tuc-575-a6.mdc` (já resolvida no SP para 575 — validar se o caso atual é outra TUC ou só cache do Inventariantes).
+
+## 12. Popup Local — coordenadas digitáveis (+ botão coletar)
+
+- **Onde:** App Inventariantes · `Tela_InventarioColeta` (entrada na SE / ícone Local) — popup no padrão do Mobile (`Tela_ItensVisita` · `cPopLocal` / `docs/powerfx/Tela_ItensVisita-local.txt`).
+- **Hoje:** Inventariantes **não** tem o popup Local completo; se houver faixa X/Y, não dá para **digitar** coordenada (só leitura / inexistente). No mobile, coleta via `btnColetarCoord` (`Location.Longitude` → `CoordX`, `Location.Latitude` → `CoordY`); labels X/Y no popup não são input.
+- **Fazer:** popup com **Local de instalação**, **Arranjo físico** (e **TI**, se alinhar 100% ao mobile — base já traz e inventariante corrige) + **coordenadas digitáveis** (`TextInput` X = longitude `CoordX`, Y = latitude `CoordY`, seis casas com ponto) **e** botão **Coletar** que preenche os inputs / grava via `Location` (igual mobile). Salvar grava em `colSubestacoes` + `Patch(Subestacoes, …)` quando online. SE finalizada = só leitura. Rede / Linha: coordenada no item, não neste popup (ver `pendencia-criar-se-linha`).
+- Relato 02.11.2026 (Fenômeno).
+
+## 13. TUC 125 — A1 não deve aparecer
+
+- **Onde:** `Tela_EditarItemColeta` (e alinhar Mobile/Desktop se o mesmo sintoma) · item com `CodTUC = 125` · card `cCardA1` / `cmbColA1` (Visible via `!IsBlank(varAtrA1)`).
+- **Hoje:** A1 aparece para TUC **125** e **não deveria**.
+- **Hipótese:** linha A1 indevida em `TabelaAtributos` (SharePoint) para CodTUC 125 — o app só mostra o card se existir LookUp A1; ou cache `colAtributos` velho.
+- **Fazer:** preferir corrigir no **catálogo** (remover / não publicar A1 para 125 em `TabelaAtributos` + baixar dados de novo). Só hardcode no Visible (`CodTUC <> 125`) se o MCPSE realmente tiver A1 e o negócio mandar ocultar. Confirmar se vale também no Mobile / Escritório.
+- Relato 02.11.2026 (Fenômeno).
+
+## 14. TUC 580 — A1 não aparece
+
+- **Onde:** `Tela_EditarItemColeta` · item com `CodTUC = 580` · card `cCardA1` / `cmbColA1` (Visible via `!IsBlank(varAtrA1)`).
+- **Hoje:** no TUC **580** o **A1** não aparece (card some ou lista vazia).
+- **Hipótese:** falta linha **A1** em `TabelaAtributos` (SharePoint) para CodTUC 580, ou `ChaveTabela` / opções em `colLookup` vazias; ou Inventariantes `colAtributos` sem a linha (cache). Mesma família da TUC 575 / §11 para-raios.
+- **Fazer:** conferir no SP a TUC 580 — linha A1 + `ChaveTabela` correta + itens na tabela unificada; no app, `LookUp` A1 e Items do combo. Se for só catálogo: corrigir planilha/lista e baixar dados de novo. Se for fórmula Visible/LookUp no Inventariantes: alinhar ao Desktop/Mobile.
+- Relato 02.11.2026 (Fenômeno); esclarecido 03.11.2026 — é **A1**.
+
+## Não montar agora
+
+Anotar só. Montar com ok do Fenômeno (`perguntar-antes`).

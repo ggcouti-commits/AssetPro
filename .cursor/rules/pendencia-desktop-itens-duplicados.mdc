@@ -1,0 +1,13 @@
+---
+description: Resolvida — itens duplicados (JSON + Inventario de hoje) Desktop e Mobile
+alwaysApply: true
+---
+
+# Resolvida — itens duplicados (Desktop + Mobile)
+
+Relato 19–22.10.2026 (Fenômeno). Montado 22.10.2026.
+
+- **Causa:** `App.OnStart` fazia `Collect(colTabelaFinal, TabelaHojeSelecionada)` sem tirar o mesmo `CodAsset` que já veio do JSON → item do dia aparecia 2× (ex.: SP 3, app “6 de 6”).
+- **Desktop:** `App.OnStart` — `RemoveIf` por `CodAsset`+`CodInventario` antes do `Collect` de hoje; `btnAtualizarItens` — `Refresh(Inventario)` e substitui a SE em `colTabelaFinal` / `colInventarioBase`.
+- **Mobile:** mesmo `RemoveIf` no `App.OnStart`; `btnBaixarDados` — `Refresh(Inventario)` + overlay de hoje da campanha com `RemoveIf` antes de montar `colInventarioBase`.
+- **Teste:** fechar/abrir o app (ou Desktop: Atualizar; Mobile: Baixar dados). SE com 3 itens no SP deve mostrar 3 / “3 de 3”.

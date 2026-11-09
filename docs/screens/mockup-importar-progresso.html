@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Popup de sucesso com barra de progresso</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --primaryD30:#2464B1; --primaryD60:#153965;
+    --neutralL30:#706F6E; --neutralL60:#ADADAC; --neutralL90:#EBEAEA;
+    --success:#40A73F; --successD30:#2D752C; --successL70:#C6E5C5;
+    --okbg:#DFF3E3; --fieldbg:#D6E8FF; --fieldtx:#1B4C86;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; color:var(--text); padding:22px 22px 30px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin:26px 0 6px}
+  .kicker:first-child{margin-top:0}
+  h1{font-size:22px; font-weight:650; color:#1a1a1a; margin-bottom:6px}
+  .lead{font-size:13.5px; color:#3d444e; line-height:1.55; max-width:1080px; margin-bottom:16px}
+  .lead b{color:#1a1a1a}
+
+  .app{
+    width:1280px; height:720px; display:flex;
+    border:1px solid var(--border); border-radius:12px; overflow:hidden;
+    background:var(--page); position:relative;
+  }
+  .sb{width:240px; flex:0 0 240px; background:var(--navy); color:#fff; display:flex; flex-direction:column; padding:14px 12px 12px}
+  .brand{display:flex; align-items:center; gap:10px; padding:4px 8px 14px}
+  .logo{width:32px; height:32px; border-radius:8px; background:#0E2E55; display:flex; align-items:center; justify-content:center}
+  .brandname{font-size:14px; font-weight:700}
+  .user{display:flex; align-items:center; gap:9px; padding:0 8px 16px}
+  .av{width:28px; height:28px; border-radius:14px; background:#9EC4F0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:var(--navy)}
+  .uname{font-size:11.5px; color:#C9DCF2; line-height:1.25}
+  .uname b{display:block; color:#fff; font-size:12px}
+  .nav{display:flex; flex-direction:column; gap:6px; flex:1}
+  .ni{height:40px; border-radius:8px; display:flex; align-items:center; gap:12px; padding:0 12px; font-size:13.5px; font-weight:600; color:#E8F0FA}
+  .ni.on{background:var(--navy3); color:#fff}
+  .dot{width:16px; height:16px; border-radius:5px; background:rgba(255,255,255,.28); flex:0 0 16px}
+  .ni.on .dot{background:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px; border-radius:17px; background:rgba(255,255,255,.12); display:flex; padding:3px; gap:2px}
+  .theme span{flex:1; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:#C9DCF2}
+  .theme .on{background:var(--primary); color:#fff}
+  .ver{font-size:10px; color:#8AA8C9; text-align:center; margin-top:8px}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .top{height:66px; background:#fff; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 22px}
+  .toptitle{font-size:20px; font-weight:700; color:var(--title)}
+  .topsub{font-size:12px; color:var(--label); margin-top:2px}
+  .topright{text-align:right}
+  .trl{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .trv{font-size:12.5px; font-weight:600; color:var(--title); margin-top:2px}
+  .body{padding:16px 20px 18px; display:flex; flex-direction:column; gap:12px; flex:1; min-height:0}
+  .kpis{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .kpi{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 16px}
+  .kpil{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--label); text-transform:uppercase}
+  .kpiv{font-size:26px; font-weight:700; line-height:1.1; margin-top:4px}
+  .kpisub{font-size:12px; color:var(--label); margin-top:3px}
+  .kpi.in .kpiv{color:var(--fieldtx)}
+  .kpi.out .kpiv{color:var(--successD30)}
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0}
+  .panel{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:16px 18px; display:flex; flex-direction:column}
+  .ph{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px}
+  .pt{font-size:15px; font-weight:700; color:var(--title)}
+  .ps{font-size:12px; color:var(--label)}
+  .drop{flex:1; border:1.5px dashed #B7C8DC; border-radius:12px; background:#F7FAFD; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:18px}
+  .dropt{font-size:15px; font-weight:700; color:var(--title)}
+  .drops{font-size:12.5px; color:var(--label); max-width:300px; line-height:1.45}
+
+  .mask{position:absolute; inset:0; background:rgba(18,59,110,.42); display:flex; align-items:center; justify-content:center; padding:18px}
+  .dlg{width:600px; background:#fff; border-radius:14px; border:1px solid var(--border); box-shadow:0 18px 48px rgba(18,59,110,.22); overflow:hidden}
+  .okhd{display:flex; align-items:center; gap:14px; padding:22px 24px 16px}
+  .okico{width:56px; height:56px; border-radius:16px; background:var(--successL70); flex:0 0 56px; display:flex; align-items:center; justify-content:center}
+  .okt{font-size:19px; font-weight:700; color:var(--successD30)}
+  .oks{font-size:14px; color:var(--neutralL30); margin-top:3px}
+  .oks b{color:var(--primaryD30)}
+  .nums{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 24px 14px}
+  .num{border:1px solid var(--border); border-radius:11px; background:#F7FAFD; padding:12px 14px}
+  .numv{font-size:24px; font-weight:700; color:var(--successD30); line-height:1.1}
+  .numl{font-size:11px; font-weight:700; letter-spacing:.3px; color:var(--label); text-transform:uppercase; margin-top:3px}
+  .selist{padding:0 24px 4px}
+  .sel{font-size:11px; font-weight:700; letter-spacing:.3px; color:var(--label); text-transform:uppercase; margin-bottom:6px}
+  .setab{width:100%; border-collapse:collapse; font-size:13px}
+  .setab td{padding:6px 0; border-bottom:1px solid var(--neutralL90)}
+  .setab td.c{color:var(--primaryD30); font-weight:700; white-space:nowrap; padding-right:10px}
+  .setab td.n{color:var(--neutralL30)}
+  .setab td.q{color:var(--neutralL30); font-weight:700; text-align:right; white-space:nowrap}
+  .pasta{margin:12px 24px 0; border:1px solid #AED2FE; border-radius:10px; background:#EBF4FF; padding:10px 12px; font-size:13px; color:var(--primaryD30)}
+  .pasta b{color:var(--primaryD60)}
+
+  /* progresso */
+  .prog{padding:14px 24px 0}
+  .progtxt{font-size:12.5px; font-weight:600; color:var(--neutralL30); margin-bottom:7px}
+  .progtxt b{color:var(--successD30)}
+  .trilha{height:8px; border-radius:4px; background:var(--neutralL90); overflow:hidden}
+  .barra{height:8px; border-radius:4px; background:var(--successD30)}
+  .progdone{font-size:12.5px; font-weight:700; color:var(--successD30); padding:14px 24px 0}
+
+  .dlgft{display:flex; justify-content:flex-end; padding:16px 24px 18px}
+  .pri{height:38px; padding:0 20px; border-radius:8px; font-size:13px; font-weight:700; border:1px solid var(--primaryD60); background:var(--primaryD60); color:#fff; display:flex; align-items:center}
+
+  /* comparativo de estados */
+  .estados{width:980px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  .est{background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px 18px 18px}
+  .estl{font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--primary); text-transform:uppercase; margin-bottom:10px}
+  .estsub{font-size:11.5px; color:var(--label); margin-top:9px; line-height:1.45}
+  .estsub code{font-family:Consolas,"Courier New",monospace; font-size:11px; color:var(--primaryD30)}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TELA_EXPORTAR · POPUP + PROGRESSO</div>
+  <h1>A barra mede o que o fluxo ainda está fazendo.</h1>
+  <p class="lead">O <b>flxImportarCampanha</b> responde ao App no passo 18 e só cria os itens no passo 20. Quando este popup abre, as SEs e as pastas já existem e o <b>Aplicar_Itens</b> ainda está rodando — é essa fase que a barra mostra. Total = <b>saida.qtditens</b> (contado pelo script). Criados = <b>flxProgressoImportacao</b>, chamado pelo <b>tmrProgresso</b> a cada 3 s. Terminou, a barra sai e fica só o texto.</p>
+
+  <div class="app" id="popup-progresso">
+    <aside class="sb">
+      <div class="brand">
+        <div class="logo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M12 2l8.66 5v10L12 22 3.34 17V7z"/><circle cx="12" cy="12" r="2.1" fill="#fff" stroke="none"/></svg></div>
+        <div class="brandname">Infralytics</div>
+      </div>
+      <div class="user">
+        <div class="av">GC</div>
+        <div class="uname"><b>Gustavo Coutinho</b>escritório</div>
+      </div>
+      <nav class="nav">
+        <div class="ni on"><span class="dot"></span>Home</div>
+        <div class="ni"><span class="dot"></span>Projetos</div>
+        <div class="ni"><span class="dot"></span>Conferência</div>
+        <div class="ni"><span class="dot"></span>Cadastros</div>
+      </nav>
+      <div class="foot">
+        <div class="theme"><span class="on">Light</span><span>Dark</span></div>
+        <div class="ver">v.1.0.0</div>
+      </div>
+    </aside>
+    <section class="main">
+      <header class="top">
+        <div>
+          <div class="toptitle">Importar / Exportar</div>
+          <div class="topsub">Arquivo da base e saída das SEs finalizadas</div>
+        </div>
+        <div class="topright">
+          <div class="trl">Última importação</div>
+          <div class="trv">Enel Goiás · 13/09/2026</div>
+        </div>
+      </header>
+      <div class="body">
+        <div class="kpis">
+          <div class="kpi in"><div class="kpil">Entrada</div><div class="kpiv">6</div><div class="kpisub">projetos no sistema</div></div>
+          <div class="kpi out"><div class="kpil">Saída pronta</div><div class="kpiv">18</div><div class="kpisub">SEs Finalizada · podem baixar agora</div></div>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <div class="ph"><div class="pt">Importar</div><div class="ps">Cria projeto + SEs + itens</div></div>
+            <div class="drop">
+              <div class="dropt">Novo projeto</div>
+              <div class="drops">Excel da base (SAP / GIS). Um projeto por arquivo.</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="pt">Exportar</div><div class="ps">Só SEs Finalizada deste projeto</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="mask">
+      <div class="dlg">
+        <div class="okhd">
+          <div class="okico">
+            <svg width="30" height="30" viewBox="0 0 512 512" fill="none" stroke="#2D752C" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><path d="M416 128L192 384l-96-96"/></svg>
+          </div>
+          <div>
+            <div class="okt">Projeto importado</div>
+            <div class="oks"><b>INV-004</b> · Enel Goiás Out 2026</div>
+          </div>
+        </div>
+        <div class="nums">
+          <div class="num"><div class="numv">5</div><div class="numl">instalações</div></div>
+          <div class="num"><div class="numv">65</div><div class="numl">itens</div></div>
+        </div>
+        <div class="selist">
+          <div class="sel">Instalações criadas</div>
+          <table class="setab">
+            <tr><td class="c">7SEBRA001</td><td class="n">SE U 138KV BRASILIA LESTE</td><td class="q">11</td></tr>
+            <tr><td class="c">7SEGU001</td><td class="n">SE U 138KV GUARA II CONSTR</td><td class="q">12</td></tr>
+            <tr><td class="c">7SESOB001</td><td class="n">SE U 69KV SOBRADINHO</td><td class="q">15</td></tr>
+            <tr><td class="c">7SETAG001</td><td class="n">SE U 34.5KV TAGUATINGA</td><td class="q">13</td></tr>
+            <tr><td class="c">7SEVA001</td><td class="n">SE U 69KV VALE DO AMANHECER</td><td class="q">14</td></tr>
+          </table>
+        </div>
+        <div class="pasta">Pasta criada: <b>Enel Goiás Out 2026_INV-004</b></div>
+        <div class="prog">
+          <div class="progtxt">42 de 65 itens · <b>65%</b></div>
+          <div class="trilha"><div class="barra" style="width:65%"></div></div>
+        </div>
+        <div class="dlgft"><div class="pri">Fechar</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kicker">OS TRÊS ESTADOS DA MESMA ÁREA</div>
+  <div class="estados" id="estados-progresso">
+    <div class="est">
+      <div class="estl">1 · popup acabou de abrir</div>
+      <div class="progtxt">0 de 65 itens · <b>0%</b></div>
+      <div class="trilha"><div class="barra" style="width:0%"></div></div>
+      <div class="estsub"><code>varImportCriados = 0</code> · o <code>tmrProgresso</code> ainda não bateu os 3 s. Trilha <code>Cor.NeutralL90</code>.</div>
+    </div>
+    <div class="est">
+      <div class="estl">2 · aplicar_itens rodando</div>
+      <div class="progtxt">42 de 65 itens · <b>65%</b></div>
+      <div class="trilha"><div class="barra" style="width:65%"></div></div>
+      <div class="estsub">Cada volta do Timer chama <code>flxProgressoImportacao</code> e atualiza <code>varImportCriados</code>. Barra <code>Cor.SuccessD30</code>.</div>
+    </div>
+    <div class="est">
+      <div class="estl">3 · terminou</div>
+      <div class="progdone" style="padding:0">Todos os 65 itens criados</div>
+      <div class="estsub" style="margin-top:20px">Barra e trilha com <code>Visible = varImportCriados &lt; varImportTotal</code> saem da tela. O <code>Start</code> do Timer vira false e ele para de chamar o fluxo.</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+---
+description: Desktop usa cmpToast; Mobile usa Notify nativo
+alwaysApply: true
+---
+
+# Notificação — Desktop ≠ Mobile
+
+Decisão 2026-09-18 (Fenômeno).
+
+- **Desktop:** `cmpToast` (`varToastMsg` / `varToastTipo` / `varToastOn`). O `Notify` nativo no canvas desktop é feio.
+- **Mobile:** `Notify(...)` nativo. A bandeja do aparelho já fica boa. **Não** montar `cmpToast` no app mobile.
+
+| App | Como avisar |
+|-----|-------------|
+| Desktop (`Tela_Exportar`, `Tela_Usuarios`, Home desktop, Alocações…) | `Set(varToastMsg; "...");; Set(varToastTipo; "OK");; Set(varToastOn; false);; Set(varToastOn; true)` |
+| Mobile (`Tela_Home` visita, login, baixar dados, enviar visita…) | `Notify("..."; NotificationType.Success)` / `.Error` / `.Information` |
+
+Spec toast: `docs/powerfx/toast-desktop.txt`. Locale PT-BR: `;` nos argumentos.

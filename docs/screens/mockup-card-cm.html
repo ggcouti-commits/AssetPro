@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tela_EditarItem — card Centro modular (CM) em primeiro</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy2:#1B4C86; --track:#0E2E55; --green:#3BAA48;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA; --title:#1B3E6F;
+    --label:#6B7683; --oktx:#2E7D32; --dangertx:#B3261E; --primary:#348FFD;
+    --input:#F4F6F8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{width:1024px}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; background:#FAFBFC; color:#1a1a1a}
+  .slide{width:1024px; min-height:576px; padding:26px 30px; display:flex; gap:28px; align-items:flex-start}
+  .notes{flex:1; min-width:0; padding-top:4px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--primary); margin-bottom:6px}
+  h2{font-size:22px; font-weight:650; margin-bottom:12px; line-height:1.25}
+  .p{font-size:13.5px; color:#3d444e; line-height:1.62; margin-bottom:11px}
+  .p b{font-weight:650; color:#1a1a1a}
+  .order{list-style:none; margin:14px 0 0; padding:0}
+  .order li{display:flex; align-items:center; gap:10px; font-size:13px; color:#3d444e; padding:5px 0}
+  .n{width:22px; height:22px; border-radius:11px; background:#E8EEF5; color:var(--title); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:0 0 auto}
+  .n.on{background:var(--navy); color:#fff}
+  .fade{opacity:.42}
+
+  .phones{display:flex; gap:18px; flex:0 0 auto}
+  .col{width:300px}
+  .tag{font-size:11px; font-weight:700; letter-spacing:.3px; margin-bottom:8px}
+  .rec{color:var(--primary)}
+
+  .phone{width:300px; border:1px solid var(--border); border-radius:15px; overflow:hidden; background:var(--page); height:520px; position:relative}
+  .hd{background:var(--navy); padding:10px 12px; display:flex; align-items:center; gap:9px}
+  .hdt{color:#fff; font-size:13.5px; font-weight:700}
+  .hd2{background:var(--navy2); padding:6px 12px; color:#C9DCF2; font-size:10px}
+  .scroll{padding:10px 12px 72px; display:flex; flex-direction:column; gap:10px; height:418px; overflow:hidden}
+  .sec{font-size:10px; font-weight:700; color:var(--label); letter-spacing:.7px; padding:2px 4px 0}
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:15px; padding:12px 13px 13px}
+  .card.hi{box-shadow:0 0 0 2px #348FFD44; border-color:#9CC4F5}
+  .rowtop{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px}
+  .lbl{font-size:12.5px; font-weight:700; color:var(--label)}
+  .base{font-size:12.5px; font-weight:700; color:var(--label)}
+  .field{display:flex; align-items:center; gap:8px}
+  .inp{flex:1; height:40px; border:1px solid var(--border); border-radius:8px; background:var(--input); display:flex; align-items:center; padding:0 12px; font-size:14px; font-weight:650; color:var(--title)}
+  .badge{font-size:11.5px; font-weight:700; flex:0 0 auto}
+  .ok{color:var(--oktx)}
+  .div{color:var(--dangertx)}
+  .ghost{opacity:.38}
+  .ghost .inp{height:32px; font-size:12px}
+
+  .dock{position:absolute; left:0; right:0; bottom:0; background:var(--page); border-top:1px solid var(--border); padding:10px 12px; display:flex; gap:10px}
+  .btn{flex:1; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700}
+  .cancel{background:#fff; border:1px solid var(--border); color:var(--label)}
+  .save{background:var(--green); color:#fff}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="notes">
+    <div class="kicker">TELA_EDITARITEM · CARD CM</div>
+    <h2>Centro modular é o primeiro dos dados técnicos</h2>
+    <p class="p">Quantidade e TUC ficam no topo (classificação do bem). Em seguida entra o <b>CM</b> — o técnico localiza o vão antes de ler a plaqueta.</p>
+    <p class="p">Campo SharePoint: <b>Inventario.CM</b>. O rótulo na tela é “Centro modular”. Se a base tiver valor e o técnico mudar, o label vai para <b>diverge</b>.</p>
+    <ul class="order">
+      <li><span class="n">1</span> Quantidade</li>
+      <li><span class="n">2</span> Classificação TUC</li>
+      <li><span class="n on">3</span> <b>Centro modular (CM)</b></li>
+      <li class="fade"><span class="n">4</span> Fabricante, modelo, série…</li>
+    </ul>
+  </div>
+
+  <div class="phones">
+    <div class="col">
+      <div class="tag">A — CONFERE <span class="rec">igual à base</span></div>
+      <div class="phone">
+        <div class="hd">
+          <svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+          <div class="hdt">Editar item</div>
+        </div>
+        <div class="hd2">210.03 · Disjuntor tripolar 72,5 kV</div>
+        <div class="scroll">
+          <div class="card ghost">
+            <div class="rowtop"><span class="lbl">Quantidade</span><span class="base">base: 1</span></div>
+            <div class="field"><div class="inp">1</div></div>
+          </div>
+          <div class="card ghost">
+            <div class="rowtop"><span class="lbl">Classificação TUC</span><span class="base">base: 210</span></div>
+            <div class="field"><div class="inp">210 — Disjuntor</div></div>
+          </div>
+          <div class="sec">DADOS TÉCNICOS DO EQUIPAMENTO</div>
+          <div class="card hi">
+            <div class="rowtop"><span class="lbl">Centro modular</span><span class="base">base: 01</span></div>
+            <div class="field"><div class="inp">01</div><span class="badge ok">confere</span></div>
+          </div>
+          <div class="card ghost">
+            <div class="rowtop"><span class="lbl">Fabricante</span><span class="base">base: —</span></div>
+            <div class="field"><div class="inp">Siemens</div></div>
+          </div>
+        </div>
+        <div class="dock"><div class="btn cancel">Cancelar</div><div class="btn save">Salvar</div></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="tag">B — DIVERGE <span class="rec">técnico alterou</span></div>
+      <div class="phone">
+        <div class="hd">
+          <svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+          <div class="hdt">Editar item</div>
+        </div>
+        <div class="hd2">210.03 · Disjuntor tripolar 72,5 kV</div>
+        <div class="scroll">
+          <div class="card ghost">
+            <div class="rowtop"><span class="lbl">Quantidade</span><span class="base">base: 1</span></div>
+            <div class="field"><div class="inp">1</div></div>
+          </div>
+          <div class="card ghost">
+            <div class="rowtop"><span class="lbl">Classificação TUC</span><span class="base">base: 210</span></div>
+            <div class="field"><div class="inp">210 — Disjuntor</div></div>
+          </div>
+          <div class="sec">DADOS TÉCNICOS DO EQUIPAMENTO</div>
+          <div class="card hi">
+            <div class="rowtop"><span class="lbl">Centro modular</span><span class="base">base: 01</span></div>
+            <div class="field"><div class="inp">03</div><span class="badge div">diverge</span></div>
+          </div>
+          <div class="card ghost">
+            <div class="rowtop"><span class="lbl">Fabricante</span><span class="base">base: —</span></div>
+            <div class="field"><div class="inp">Siemens</div></div>
+          </div>
+        </div>
+        <div class="dock"><div class="btn cancel">Cancelar</div><div class="btn save">Salvar</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

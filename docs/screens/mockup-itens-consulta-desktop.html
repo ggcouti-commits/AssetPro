@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Desktop — Itens da SE (consulta · painel lateral)</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy3:#1B4C86;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA;
+    --title:#1B3E6F; --label:#6B7683; --text:#2A3138;
+    --primary:#348FFD; --green:#3BAA48;
+    --okbg:#DFF3E3; --oktx:#2E7D32;
+    --warnbg:#FDF0DC; --warntx:#8A5300;
+    --fieldbg:#D6E8FF; --fieldtx:#1B4C86;
+    --pendbg:#EEF0F3; --pendtx:#6B7683;
+    --sel:#E8F1FB;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#E8ECF0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;color:var(--text);padding:22px 22px 32px}
+  .kicker{font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--primary);margin-bottom:6px}
+  h1{font-size:22px;font-weight:650;color:#1a1a1a;margin-bottom:6px}
+  .lead{font-size:13.5px;color:#3d444e;line-height:1.55;max-width:1180px;margin-bottom:20px}
+  .lead b{color:#1a1a1a}
+  .states{display:flex;flex-direction:column;gap:28px}
+  .statecap{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:8px;letter-spacing:.3px}
+  .app{width:1280px;height:720px;display:flex;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--page)}
+  .sb{width:240px;flex:0 0 240px;background:var(--navy);color:#fff;display:flex;flex-direction:column;padding:14px 12px 12px}
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 14px}
+  .logo{width:32px;height:32px;border-radius:8px;background:#0E2E55;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .brandname{font-size:14px;font-weight:700}
+  .user{display:flex;align-items:center;gap:9px;padding:0 8px 16px}
+  .av{width:28px;height:28px;border-radius:14px;background:#9EC4F0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy)}
+  .uname{font-size:11.5px;color:#C9DCF2;line-height:1.25}
+  .uname b{display:block;color:#fff;font-size:12px}
+  .nav{display:flex;flex-direction:column;gap:6px;flex:1}
+  .ni{height:40px;border-radius:8px;display:flex;align-items:center;gap:12px;padding:0 12px;font-size:13.5px;font-weight:600;color:#E8F0FA}
+  .ni.on{background:var(--navy3);color:#fff}
+  .foot{padding-top:10px}
+  .theme{height:34px;border-radius:17px;background:rgba(255,255,255,.12);display:flex;padding:3px;gap:2px}
+  .theme span{flex:1;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#C9DCF2}
+  .theme .on{background:var(--primary);color:#fff}
+  .ver{font-size:10px;color:#8AA8C9;text-align:center;margin-top:8px}
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .top{height:66px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px 0 22px;gap:14px}
+  .topt{display:flex;align-items:center;gap:10px;min-width:0}
+  .back{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex:0 0 34px;background:#fff;color:var(--navy);font-size:18px}
+  .toptitle{font-size:20px;font-weight:700;color:var(--title);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topsub{font-size:12px;color:var(--label);margin-top:2px}
+  .hint{font-size:12px;font-weight:600;color:var(--label);flex:0 0 auto}
+  .btnfoto{height:34px;padding:0 12px;border-radius:8px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;border:1px solid #C5D4E6;background:#fff;color:var(--navy);position:relative;margin-right:10px}
+  .badge{position:absolute;top:-6px;right:-4px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--primary);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .body{padding:14px 20px 16px;display:flex;flex-direction:column;gap:10px;min-height:0;flex:1}
+  .ctx{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:16px}
+  .ctxh{flex:1}
+  .ctxname{font-size:14px;font-weight:700;color:var(--title)}
+  .ctxmeta{font-size:12px;color:var(--label);margin-top:2px}
+  .barwrap{width:200px;flex:0 0 200px}
+  .bar{height:6px;background:#E6EAEE;border-radius:3px}
+  .bar i{display:block;height:100%;background:var(--green);border-radius:3px}
+  .barfoot{display:flex;justify-content:space-between;font-size:11px;color:var(--label);margin-top:4px}
+  .barfoot b{color:var(--title)}
+  .tools{display:flex;align-items:center;gap:8px}
+  .search{height:34px;flex:1;border:1px solid var(--border);border-radius:9px;background:#fff;display:flex;align-items:center;padding:0 12px;gap:8px;color:#9AA3AE;font-size:13px}
+  .tab{height:28px;padding:0 11px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--label);display:flex;align-items:center}
+  .tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .work{display:flex;gap:0;min-height:0;flex:1;position:relative}
+  .listwrap{flex:1;min-width:0;display:flex;flex-direction:column;transition:flex .2s}
+  .listwrap.shrink{flex:0 0 52%}
+  .gal{border:1px solid var(--border);border-radius:12px;background:#fff;flex:1;min-height:0;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+  .ic{border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:#fff;cursor:pointer}
+  .ic.on{outline:2px solid #7AADD8;background:var(--sel);box-shadow:inset 3px 0 0 var(--navy)}
+  .it{font-size:13px;font-weight:700;color:var(--title);line-height:1.3}
+  .icmeta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+  .qtd{display:flex;gap:14px}
+  .qk{font-size:9px;font-weight:700;color:var(--label);letter-spacing:.4px}
+  .qv{font-size:12px;font-weight:700;color:var(--title);margin-top:1px}
+  .qv.amber{color:var(--warntx)}
+  .st{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap}
+  .st-pend{background:var(--pendbg);color:var(--pendtx)}
+  .st-ok{background:var(--okbg);color:var(--oktx)}
+  .st-no{background:var(--warnbg);color:var(--warntx)}
+  .panel{
+    width:0;opacity:0;overflow:hidden;border-left:0 solid var(--border);
+    background:var(--card);display:flex;flex-direction:column;min-height:0;
+    transition:width .25s ease,opacity .2s ease,border .2s;
+  }
+  .panel.open{width:48%;opacity:1;border-left-width:1px;border-radius:0 12px 12px 0}
+  .panelhd{padding:12px 14px 0;border-bottom:1px solid var(--border)}
+  .paneltitle{font-size:14px;font-weight:700;color:var(--title);line-height:1.3;padding:0 2px 10px}
+  .panelmeta{font-size:11px;color:var(--label);padding:0 2px 10px}
+  .paneltabs{display:flex;gap:6px;padding-bottom:10px}
+  .ptab{height:30px;padding:0 14px;border-radius:8px;font-size:12px;font-weight:700;border:1px solid var(--border);background:#fff;color:var(--label);display:flex;align-items:center;gap:6px;cursor:pointer}
+  .ptab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+  .ptabbadge{min-width:17px;height:17px;padding:0 5px;border-radius:999px;background:rgba(255,255,255,.22);font-size:10px;display:flex;align-items:center;justify-content:center}
+  .ptab:not(.on) .ptabbadge{background:var(--fieldbg);color:var(--fieldtx)}
+  .panelbody{padding:14px;overflow:auto;flex:1}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
+  .fld label{display:block;font-size:10px;font-weight:700;color:var(--label);letter-spacing:.3px;margin-bottom:4px}
+  .fld div{font-size:12.5px;font-weight:600;color:var(--text);background:var(--page);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+  .chiprow{margin-bottom:12px}
+  .chip{display:inline-flex;align-items:center;height:22px;padding:0 10px;border-radius:999px;font-size:10px;font-weight:700;background:var(--okbg);color:var(--oktx)}
+  .photogrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .ph{aspect-ratio:4/3;border-radius:10px;background:linear-gradient(145deg,#DDE4EC,#C8D2DE);border:1px solid var(--border);position:relative;overflow:hidden}
+  .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.35));pointer-events:none}
+  .phcap{position:absolute;left:8px;bottom:8px;font-size:10px;font-weight:700;color:#fff;z-index:1}
+  .emptylist{color:var(--label);font-size:13px;text-align:center;padding:40px 20px}
+  .closepanel{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:#fff;color:var(--label);font-size:16px;display:none;align-items:center;justify-content:center;cursor:pointer}
+  .panel.open .closepanel{display:flex}
+  .note{margin-top:24px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:10px;font-size:13px;line-height:1.55;color:#3d444e;max-width:1280px}
+  .note b{color:#1a1a1a}
+</style>
+</head>
+<body>
+  <div class="kicker">DESKTOP · TELA_ITENSCONSULTA · PAINEL LATERAL</div>
+  <h1>Lista à esquerda · painel desliza à direita no clique · abas Informações / Fotos.</h1>
+  <p class="lead">Estado 1: só a lista (painel <b>invisível</b>). Estado 2: item selecionado → <b>cPainelDetalhe</b> abre com aba Informações. Estado 3: mesma seleção, aba <b>Fotos</b>. Sem Confirmar, Adicionar ou editar — consulta pura.</p>
+
+  <div class="states">
+
+    <!-- ESTADO 1 — sem seleção -->
+    <div>
+      <div class="statecap">ESTADO 1 — nenhum item selecionado (cPainelDetalhe.Visible = false)</div>
+      <div class="app">
+        <aside class="sb">
+          <div class="brand"><div class="logo">⚡</div><div class="brandname">Asset Pro</div></div>
+          <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+          <nav class="nav"><div class="ni on">Home</div><div class="ni">Importar / Exportar</div><div class="ni">Inventários</div></nav>
+          <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+        </aside>
+        <section class="main">
+          <header class="top">
+            <div class="topt">
+              <div class="back">←</div>
+              <div><div class="toptitle">SE-0142 — Sub. Est. Fortaleza Norte</div><div class="topsub">Enel Ceará Jul 2026 · Fortaleza · 138 kV</div></div>
+            </div>
+            <div style="display:flex;align-items:center"><div class="btnfoto">📷 Fotos da SE<span class="badge">12</span></div><div class="hint">Consulta · sem inserção</div></div>
+          </header>
+          <div class="body">
+            <div class="ctx">
+              <div class="ctxh"><div class="ctxname">Itens desta instalação</div><div class="ctxmeta">Clique em um item para ver detalhes e fotos</div></div>
+              <div class="barwrap"><div class="bar"><i style="width:75%"></i></div><div class="barfoot"><span><b>18</b> de 24 revisados</span><span>75%</span></div></div>
+            </div>
+            <div class="tools">
+              <div class="search">🔍 Buscar item, TUC ou código</div>
+              <div class="tab on">BASE (22)</div>
+              <div class="tab">SOBRAS (2)</div>
+            </div>
+            <div class="work">
+              <div class="listwrap">
+                <div class="gal">
+                  <div class="ic"><div class="it">570.01 — TRANSFORMADOR DE FORÇA</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv">1,0 UN</div></div></div><span class="st st-ok">Confirmado</span></div></div>
+                  <div class="ic"><div class="it">210.03 — DISJUNTOR TRIPOLAR 72,5 kV</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv amber">—</div></div></div><span class="st st-no">Não encontrado</span></div></div>
+                  <div class="ic"><div class="it">110.1 — ARMAZENAGEM DE COMBUSTÍVEL</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv amber">—</div></div></div><span class="st st-pend">Pendente</span></div></div>
+                  <div class="ic"><div class="it">230.01 — SECCIONADORA TRIPOLAR</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">2,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv amber">—</div></div></div><span class="st st-pend">Pendente</span></div></div>
+                </div>
+              </div>
+              <!-- painel fechado -->
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ESTADO 2 — painel aberto · aba Informações -->
+    <div>
+      <div class="statecap">ESTADO 2 — item selecionado · aba Informações (gblAbaDetalheItem = "INFO")</div>
+      <div class="app">
+        <aside class="sb">
+          <div class="brand"><div class="logo">⚡</div><div class="brandname">Asset Pro</div></div>
+          <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+          <nav class="nav"><div class="ni on">Home</div><div class="ni">Importar / Exportar</div><div class="ni">Inventários</div></nav>
+          <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+        </aside>
+        <section class="main">
+          <header class="top">
+            <div class="topt">
+              <div class="back">←</div>
+              <div><div class="toptitle">SE-0142 — Sub. Est. Fortaleza Norte</div><div class="topsub">Enel Ceará Jul 2026 · Fortaleza · 138 kV</div></div>
+            </div>
+            <div style="display:flex;align-items:center"><div class="btnfoto">📷 Fotos da SE<span class="badge">12</span></div><div class="hint">Consulta · sem inserção</div></div>
+          </header>
+          <div class="body">
+            <div class="ctx">
+              <div class="ctxh"><div class="ctxname">Itens desta instalação</div><div class="ctxmeta">Técnico: Ricardo Alves</div></div>
+              <div class="barwrap"><div class="bar"><i style="width:75%"></i></div><div class="barfoot"><span><b>18</b> de 24 revisados</span><span>75%</span></div></div>
+            </div>
+            <div class="tools">
+              <div class="search">🔍 Buscar item, TUC ou código</div>
+              <div class="tab on">BASE (22)</div>
+              <div class="tab">SOBRAS (2)</div>
+            </div>
+            <div class="work">
+              <div class="listwrap shrink">
+                <div class="gal">
+                  <div class="ic on"><div class="it">570.01 — TRANSFORMADOR DE FORÇA</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv">1,0 UN</div></div></div><span class="st st-ok">Confirmado</span></div></div>
+                  <div class="ic"><div class="it">210.03 — DISJUNTOR TRIPOLAR 72,5 kV</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv amber">—</div></div></div><span class="st st-no">Não encontrado</span></div></div>
+                  <div class="ic"><div class="it">110.1 — ARMAZENAGEM DE COMBUSTÍVEL</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv amber">—</div></div></div><span class="st st-pend">Pendente</span></div></div>
+                </div>
+              </div>
+              <div class="panel open">
+                <button class="closepanel" title="Fechar painel">×</button>
+                <div class="panelhd">
+                  <div class="paneltitle">570.01 — TRANSFORMADOR DE FORÇA</div>
+                  <div class="panelmeta">CodAsset 100234 · CM 1 Equipamentos</div>
+                  <div class="paneltabs">
+                    <div class="ptab on">Informações</div>
+                    <div class="ptab">Fotos <span class="ptabbadge">3</span></div>
+                  </div>
+                </div>
+                <div class="panelbody">
+                  <div class="chiprow"><span class="chip">Confirmado</span></div>
+                  <div class="grid2">
+                    <div class="fld"><label>Validado por</label><div>Ricardo Alves</div></div>
+                    <div class="fld"><label>Quantidade contada</label><div>1,0 UN</div></div>
+                    <div class="fld"><label>Fabricante</label><div>ABB</div></div>
+                    <div class="fld"><label>Modelo</label><div>ONAN 138/13,8 kV</div></div>
+                    <div class="fld"><label>Nº série</label><div>BR-8844221</div></div>
+                    <div class="fld"><label>Ano</label><div>2018</div></div>
+                    <div class="fld"><label>Cód. operação</label><div>OP-570-0142</div></div>
+                    <div class="fld"><label>Centro modular</label><div>1 — Equipamentos</div></div>
+                    <div class="fld" style="grid-column:1/-1"><label>Observações</label><div>Placa legível. Sem avarias visíveis.</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ESTADO 3 — painel aberto · aba Fotos -->
+    <div>
+      <div class="statecap">ESTADO 3 — mesmo item · aba Fotos (gblAbaDetalheItem = "FOTOS")</div>
+      <div class="app">
+        <aside class="sb">
+          <div class="brand"><div class="logo">⚡</div><div class="brandname">Asset Pro</div></div>
+          <div class="user"><div class="av">GC</div><div class="uname"><b>Gustavo Coutinho</b>escritório</div></div>
+          <nav class="nav"><div class="ni on">Home</div><div class="ni">Importar / Exportar</div><div class="ni">Inventários</div></nav>
+          <div class="foot"><div class="theme"><span class="on">Light</span><span>Dark</span></div><div class="ver">v.1.0.0</div></div>
+        </aside>
+        <section class="main">
+          <header class="top">
+            <div class="topt">
+              <div class="back">←</div>
+              <div><div class="toptitle">SE-0142 — Sub. Est. Fortaleza Norte</div><div class="topsub">Enel Ceará Jul 2026 · Fortaleza · 138 kV</div></div>
+            </div>
+            <div style="display:flex;align-items:center"><div class="btnfoto">📷 Fotos da SE<span class="badge">12</span></div><div class="hint">Consulta · sem inserção</div></div>
+          </header>
+          <div class="body">
+            <div class="ctx">
+              <div class="ctxh"><div class="ctxname">Itens desta instalação</div><div class="ctxmeta">Técnico: Ricardo Alves</div></div>
+              <div class="barwrap"><div class="bar"><i style="width:75%"></i></div><div class="barfoot"><span><b>18</b> de 24 revisados</span><span>75%</span></div></div>
+            </div>
+            <div class="tools">
+              <div class="search">🔍 Buscar item, TUC ou código</div>
+              <div class="tab on">BASE (22)</div>
+              <div class="tab">SOBRAS (2)</div>
+            </div>
+            <div class="work">
+              <div class="listwrap shrink">
+                <div class="gal">
+                  <div class="ic on"><div class="it">570.01 — TRANSFORMADOR DE FORÇA</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv">1,0 UN</div></div></div><span class="st st-ok">Confirmado</span></div></div>
+                  <div class="ic"><div class="it">210.03 — DISJUNTOR TRIPOLAR 72,5 kV</div><div class="icmeta"><div class="qtd"><div><div class="qk">BASE</div><div class="qv">1,0 UN</div></div><div><div class="qk">CONTADO</div><div class="qv amber">—</div></div></div><span class="st st-no">Não encontrado</span></div></div>
+                </div>
+              </div>
+              <div class="panel open">
+                <button class="closepanel">×</button>
+                <div class="panelhd">
+                  <div class="paneltitle">570.01 — TRANSFORMADOR DE FORÇA</div>
+                  <div class="panelmeta">CodAsset 100234 · CM 1 Equipamentos</div>
+                  <div class="paneltabs">
+                    <div class="ptab">Informações</div>
+                    <div class="ptab on">Fotos <span class="ptabbadge">3</span></div>
+                  </div>
+                </div>
+                <div class="panelbody">
+                  <div class="photogrid">
+                    <div class="ph"><span class="phcap">Placa · 06/08/2026</span></div>
+                    <div class="ph"><span class="phcap">Visão geral · 06/08/2026</span></div>
+                    <div class="ph"><span class="phcap">Detalhe isolador · 06/08/2026</span></div>
+                  </div>
+                  <p style="margin-top:12px;font-size:12px;color:var(--label)">Somente visualização — sem captura nem exclusão nesta trilha.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Power Apps:</b> <code>cPainelDetalhe</code> com <code>Visible = !IsBlank(gblItemConsultaSelecionado)</code>.
+    Largura da galeria encolhe com <code>FillPortions</code> ou <code>Width = If(panel aberto; Parent.Width*0.52; Parent.Width)</code>.
+    Abas internas: <code>cDetInfo.Visible = gblAbaDetalheItem = "INFO"</code> ·
+    <code>cDetFotos.Visible = gblAbaDetalheItem = "FOTOS"</code>.
+    Fechar (×) → <code>Set(gblItemConsultaSelecionado; Blank())</code>.
+    Clique no <b>mesmo</b> card de novo pode fechar (toggle) — opcional.
+  </div>
+</body>
+</html>

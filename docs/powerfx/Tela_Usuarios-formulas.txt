@@ -1,0 +1,798 @@
+# Tela_Usuarios (Desktop)
+#
+# CRUD da lista Inventariantes. Escritorio cria/inativa slot e define senha.
+# Inventariante NAO entra nesta tela. Alocacoes (projeto/SE) e segunda instancia.
+# Locale PT-BR: ; nos argumentos | ;; nas instrucoes
+# Mockup: docs/screens/mockup-usuarios-desktop.html · docs/screens/mockup-usuarios-designar-botao.html
+# PNG: docs/screens/usuarios-desktop.png · docs/screens/usuarios-desktop-novo.png
+#      docs/screens/usuarios-designar-botao.png · docs/screens/usuarios-designar-botao-novo.png
+# Popup excluir: docs/screens/mockup-usuarios-excluir-popup.html · docs/screens/usuarios-excluir-popup.png
+# Login mobile: docs/powerfx/Tela_Login-formulas.txt
+
+## Recorte
+
+# Slot = linha. Inventariante01 e o login; UsadoPor e quem esta com o tablet.
+# Login existente e editavel. Excluir = Remove (nao so inativar).
+# Ativo nesta lista e texto "Sim" / "Nao" (igual Concessionarias), nao Sim/Nao nativo.
+# Toggle (varUsrAtivo) continua boolean. Na borda: le = "Sim", grava If(...; "Sim"; "Nao").
+# Senha: o escritorio define aqui. Campo vazio no editar = nao troca.
+# SessaoVersao (número): cada Salvar soma 1. O Mobile compara e manda de volta pro login.
+
+---
+
+## Studio — dados e tela
+
+### 1. App (Desktop) → Dados → Adicionar dados
+
+SharePoint → site AssetPro → marca a lista **Inventariantes**.
+
+### 1b. SharePoint → lista Inventariantes → coluna SessaoVersao
+
+Número. Sem obrigatoriedade. Sem isso o Patch do Salvar quebra.
+
+### 2. Nova tela → Tela_Usuarios
+
+# Melhor: duplicar uma tela Desktop que ja tem cmpMenuV1_1 (Campanhas ou Cadastros).
+# Renomeia para Tela_Usuarios. Apaga o conteudo, deixa o menu.
+# Fill da tela = Cor.BackgroundScreen. Layout Tablet.
+#
+# Arvore:
+#   cmpMenuV1_1
+#   cUsrTop (horizontal, Height 66, Fill Cor.BackgroundStandard)
+#     lblUsrTitulo | lblUsrSub | btnUsrNovo
+#   cUsrBody (horizontal, gap ~14)
+#     cUsrLista (Width 360, Fill Cor.BackgroundStandard, Radius 12)
+#       galUsuarios (lblGalLogin, lblGalMeta, lblGalChip)
+#     cUsrForm (Fill Cor.BackgroundStandard, Radius 12)
+#       lblFormTitulo, lblFormSub,
+#       LOGIN, PERFIL, USADO POR / NOME, SENHA, tglUsrAtivo, lblUsrErro
+#       btnUsrCancelar | btnUsrExcluir | btnUsrDesignar | btnUsrSalvar
+
+### 3. cmpMenuV1_1 → OnSelect
+
+# No case inventariantes, aponta para esta tela. Apaga o Navigate(Tela_Cadastros)
+# daquela chave. Cola o Switch inteiro se o menu ainda manda cadastros:
+
+```
+Switch(
+    varMenuKey;
+    "home"; Navigate(Tela_Home; ScreenTransition.None);
+    "exportar"; Navigate(Tela_Exportar; ScreenTransition.None);
+    "campanhas"; Navigate(Tela_Campanhas; ScreenTransition.None);
+    "conferencia"; Navigate(Tela_Conferência; ScreenTransition.None);
+    "inventarios"; Navigate(Tela_Inventarios; ScreenTransition.None);
+    "cadastros"; Navigate(Tela_Cadastros; ScreenTransition.None);
+    "concessionarias"; Navigate(Tela_Cadastros; ScreenTransition.None);
+    "inventariantes"; Navigate(Tela_Inventariantes; ScreenTransition.None)
+)
+```
+
+---
+
+## Cabecalho
+
+### 4. lblUsrTitulo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Usuários"
+```
+
+# Color = Cor.PrimaryD60 | Size = 20 | FontWeight = FontWeight.Bold
+
+### 5. lblUsrSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    CountRows(galUsuarios.AllItems) = 1;
+    "1 slot";
+    CountRows(galUsuarios.AllItems) & " slots"
+)
+```
+
+# Color = Cor.NeutralL30 | Size = 12
+
+### 6. btnUsrNovo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; "Cancelar"; "Novo slot")
+```
+
+# Height = 34 | Radius* = 8 | Size = 12 | BorderColor = Cor.PrimaryD60
+
+### 6b. btnUsrNovo → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; Cor.BackgroundStandard; Cor.PrimaryD60)
+```
+
+### 6c. btnUsrNovo → Color
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; Cor.PrimaryD60; Cor.TextInverted)
+```
+
+### 7. btnUsrNovo → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    varUsrNovo;
+    Set(varUsrNovo; false);;
+    Set(varUsrErro; Blank());;
+    With(
+        {
+            p: Coalesce(
+                varUsrSel;
+                First(SortByColumns(Inventariantes; "Login"; SortOrder.Ascending))
+            )
+        };
+        Set(varUsrSel; p);;
+        Set(varUsrPerfil; p.Perfil);;
+        Set(varUsrAtivo; p.Ativo = "Sim")
+    );;
+    Reset(inpUsrLogin);;
+    Reset(inpUsrUsadoPor);;
+    Reset(inpUsrNome);;
+    Reset(inpUsrSenha);;
+    Reset(drpUsrPerfil);;
+    Reset(tglUsrAtivo);
+    Set(varUsrNovo; true);;
+    Set(varUsrErro; Blank());;
+    Set(varUsrPerfil; "INVENTARIANTE");;
+    Set(varUsrAtivo; true);;
+    Reset(inpUsrLogin);;
+    Reset(inpUsrUsadoPor);;
+    Reset(inpUsrNome);;
+    Reset(inpUsrSenha);;
+    Reset(drpUsrPerfil);;
+    Reset(tglUsrAtivo)
+)
+```
+
+---
+
+## Galeria
+
+### 8. galUsuarios → Items
+
+Apaga o que estiver la. Cola:
+
+```
+SortByColumns(
+    Inventariantes;
+    "Login";
+    SortOrder.Ascending
+)
+```
+
+# Layout vertical. TemplateSize ~ 72. Width ~ 360.
+
+### 9. galUsuarios → TemplateFill
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.ID = varUsrSel.ID && !varUsrNovo;
+    Cor.PrimaryL90;
+    Cor.BackgroundStandard
+)
+```
+
+### 10. galUsuarios → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrNovo; false);;
+Set(varUsrSel; ThisItem);;
+Set(varUsrErro; Blank());;
+Set(varUsrPerfil; ThisItem.Perfil);;
+Set(varUsrAtivo; ThisItem.Ativo = "Sim");;
+Reset(inpUsrLogin);;
+Reset(inpUsrUsadoPor);;
+Reset(inpUsrNome);;
+Reset(inpUsrSenha);;
+Reset(drpUsrPerfil);;
+Reset(tglUsrAtivo)
+```
+
+### 11. lblGalLogin → Text
+
+Apaga o que estiver la. Cola:
+
+```
+Coalesce(ThisItem.UsadoPor; "Livre")
+```
+
+# FontWeight = FontWeight.Semibold | Color = Cor.PrimaryD60 | Size = 14
+# Nome de quem esta com o tablet. Sem UsadoPor = Livre.
+
+### 12. lblGalMeta → Text
+
+Apaga o que estiver la. Cola:
+
+```
+ThisItem.Login
+    & If(
+        !IsBlank(ThisItem.CodUsuario);
+        " · " & ThisItem.CodUsuario;
+        ""
+    )
+```
+
+# Color = Cor.NeutralL30 | Size = 12
+
+### 13. lblGalChip → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(ThisItem.Ativo = "Sim"; "Ativo"; "Inativo")
+```
+
+### 14. lblGalChip → Fill
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.Ativo = "Sim";
+    ColorFade(Cor.Success; 70%);
+    Cor.NeutralL90
+)
+```
+
+### 15. lblGalChip → Color
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    ThisItem.Ativo = "Sim";
+    ColorFade(Cor.Success; -0.3);
+    Cor.NeutralL30
+)
+```
+
+# Padding 4,8 | Radius 8 | Size 11 | FontWeight Semibold | Align Center
+
+---
+
+## Formulario (direita)
+
+# Container cUsrForm. Visible = varUsrNovo || !IsBlank(varUsrSel)
+
+### 16. cUsrForm → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrNovo || !IsBlank(varUsrSel)
+```
+
+### 17. lblFormTitulo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; "Novo slot"; varUsrSel.Login)
+```
+
+# Color = Cor.PrimaryD60 | Size = 16 | FontWeight = FontWeight.Semibold
+
+### 17b. lblFormSub → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(
+    varUsrNovo;
+    "Gera o próximo USR-00N ao salvar";
+    Coalesce(varUsrSel.CodUsuario; "Slot existente")
+)
+```
+
+# Color = Cor.NeutralL30 | Size = 12
+
+### 18. lblUsrLoginCampo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"LOGIN"
+```
+
+# Color = Cor.NeutralL30 | Size = 11 | FontWeight = FontWeight.Bold
+
+### 19. inpUsrLogin → Default
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; ""; varUsrSel.Login)
+```
+
+# Height = 44 | Fill = Cor.NeutralL95 | Radius* = 8 | BorderColor = Cor.Border
+# Login do slot existente nao muda (foto/visita ja apontam para ele).
+
+### 19b. inpUsrLogin → DisplayMode
+
+Apaga o que estiver la. Cola:
+
+```
+DisplayMode.Edit
+```
+
+### 20. lblUsrPerfilCampo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"PERFIL"
+```
+
+### 21. drpUsrPerfil → Items
+
+Apaga o que estiver la. Cola:
+
+```
+["INVENTARIANTE"; "ESCRITORIO"]
+```
+
+### 22. drpUsrPerfil → Default
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrPerfil
+```
+
+### 23. drpUsrPerfil → OnChange
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrPerfil; Self.Selected.Value)
+```
+
+### 24. lblUsrUsadoPorCampo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"USADO POR"
+```
+
+### 25. lblUsrUsadoPorCampo → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrPerfil = "INVENTARIANTE"
+```
+
+### 26. inpUsrUsadoPor → Default
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; ""; varUsrSel.UsadoPor)
+```
+
+# HintText = "Quem está com o tablet"
+
+### 26b. inpUsrUsadoPor → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrPerfil = "INVENTARIANTE"
+```
+
+### 27. lblUsrNomeCampo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"NOME"
+```
+
+### 28. lblUsrNomeCampo → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrPerfil = "ESCRITORIO"
+```
+
+### 29. inpUsrNome → Default
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; ""; varUsrSel.Nome)
+```
+
+### 29b. inpUsrNome → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrPerfil = "ESCRITORIO"
+```
+
+### 30. lblUsrSenhaCampo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+If(varUsrNovo; "SENHA"; "SENHA (vazio = não troca)")
+```
+
+### 31. inpUsrSenha → Mode
+
+Apaga o que estiver la. Cola:
+
+```
+TextMode.Password
+```
+
+### 31b. inpUsrSenha → Default
+
+Apaga o que estiver la. Cola:
+
+```
+""
+```
+
+# HintText: If(varUsrNovo; "Obrigatória no slot novo"; "")
+# Nunca preencher com a senha atual.
+
+### 32. tglUsrAtivo → Default
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrAtivo
+```
+
+# Label verdadeiro = "Ativo" | Label falso = "Inativo"
+# OnCheck / OnUncheck: Set(varUsrAtivo; Self.Value)  — ou so ler tglUsrAtivo.Value no salvar.
+
+### 33. tglUsrAtivo → OnChange
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrAtivo; Self.Value)
+```
+
+### 34. lblUsrErro → Text
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrErro
+```
+
+# Color = Cor.Danger | AutoHeight = true
+
+### 34b. lblUsrErro → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+!IsBlank(varUsrErro)
+```
+
+### 35. btnUsrSalvar → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Salvar"
+```
+
+# Fill = Cor.PrimaryD30 | Color = Cor.TextInverted | Height = 44 | Radius* = 8
+
+### 36. btnUsrSalvar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrErro; Blank());;
+If(
+    IsBlank(Trim(inpUsrLogin.Text));
+    Set(varUsrErro; "Login obrigatório.");
+    varUsrNovo && IsBlank(inpUsrSenha.Text);
+    Set(varUsrErro; "Senha obrigatória no slot novo.");
+    !IsBlank(
+        LookUp(
+            Inventariantes;
+            Lower(Login) = Lower(Trim(inpUsrLogin.Text))
+                && (varUsrNovo || ID <> varUsrSel.ID)
+        )
+    );
+    Set(varUsrErro; "Já existe um slot com esse login.");
+    With(
+        {
+            seq:
+                Coalesce(
+                    Max(
+                        AddColumns(
+                            Filter(Inventariantes; StartsWith(CodUsuario; "USR-"));
+                            "SeqNum";
+                            IfError(Value(Mid(CodUsuario; 5; 10)); 0)
+                        );
+                        SeqNum
+                    );
+                    0
+                ) + 1
+        };
+        Patch(
+            Inventariantes;
+            If(varUsrNovo; Defaults(Inventariantes); varUsrSel);
+            {
+                Title: Trim(inpUsrLogin.Text);
+                Login: Trim(inpUsrLogin.Text);
+                Perfil: varUsrPerfil;
+                UsadoPor:
+                    If(
+                        varUsrPerfil = "INVENTARIANTE";
+                        Trim(inpUsrUsadoPor.Text);
+                        Blank()
+                    );
+                Nome: varUsrSel.Nome;
+                Ativo: If(varUsrAtivo; "Sim"; "Nao");
+                Senha:
+                    If(
+                        IsBlank(inpUsrSenha.Text);
+                        varUsrSel.Senha;
+                        inpUsrSenha.Text
+                    );
+                CodUsuario:
+                    If(
+                        varUsrNovo;
+                        "USR-" & Text(seq; "000");
+                        varUsrSel.CodUsuario
+                    );
+                SessaoVersao:
+                    If(
+                        varUsrNovo;
+                        1;
+                        Coalesce(varUsrSel.SessaoVersao; 0) + 1
+                    )
+            }
+        );;
+        Refresh(Inventariantes);;
+        Set(varUsrSel; LookUp(Inventariantes; Login = Trim(inpUsrLogin.Text)));;
+        Set(varUsrNovo; false);;
+        Reset(inpUsrSenha);;
+        Set(varToastMsg; "Slot salvo. O campo precisa entrar de novo.");;
+        Set(varToastTipo; "OK");;
+        Set(varToastOn; false);;
+        Set(varToastOn; true)
+    )
+)
+```
+
+# Lower(Login) no LookUp de duplicata e so no Desktop, lista pequena. Sem problema.
+# Duplicata no editar ignora o proprio ID.
+
+### 36b. btnUsrExcluir → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+!varUsrNovo && !IsBlank(varUsrSel)
+```
+
+# Fill = Cor.Delete | IconText = "Excluir"
+
+### 36c. btnUsrExcluir → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrConfirmExcluir; true)
+```
+
+# Overlay na raiz da tela (por cima do menu). Mesmo padrao cConfirmaExcluirSobra.
+
+### 36d. cMaskUsrExcluir → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrConfirmExcluir
+```
+
+# X=0 Y=0 Width=Parent.Width Height=Parent.Height
+# Fill = Cor.TransparentBlack | DropShadow = None
+
+### 36e. cMaskUsrExcluir → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrConfirmExcluir; false)
+```
+
+### 36f. cPopUsrExcluir → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrConfirmExcluir
+```
+
+# Width ~ 420 | Radius 12 | Fill Cor.BackgroundStandard | Align center no mask
+
+### 36g. lblPopUsrExcluirTitulo → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Excluir slot?"
+```
+
+### 36h. lblPopUsrExcluirDesc → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"O login " & Coalesce(varUsrSel.Login; "") & " sai da lista. Esta ação não tem volta."
+```
+
+### 36i. btnUsrExcluirCancelar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrConfirmExcluir; false)
+```
+
+# Text = "Cancelar" | Fill Cor.BackgroundStandard | Color Cor.PrimaryD60 | BorderColor Cor.Border
+
+### 36j. btnUsrExcluirConfirmar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Remove(Inventariantes; varUsrSel);;
+Refresh(Inventariantes);;
+Set(varUsrConfirmExcluir; false);;
+Set(varUsrErro; Blank());;
+Set(varUsrNovo; false);;
+With(
+    {
+        p: First(SortByColumns(Inventariantes; "Login"; SortOrder.Ascending))
+    };
+    If(
+        IsBlank(p);
+        Set(varUsrSel; Blank());;
+        Set(varUsrPerfil; "INVENTARIANTE");;
+        Set(varUsrAtivo; false);
+        Set(varUsrSel; p);;
+        Set(varUsrPerfil; Coalesce(p.Perfil; "INVENTARIANTE"));;
+        Set(varUsrAtivo; p.Ativo = "Sim")
+    )
+);;
+Reset(inpUsrLogin);;
+Reset(inpUsrUsadoPor);;
+Reset(inpUsrSenha);;
+Reset(drpUsrPerfil);;
+Reset(tglUsrAtivo);;
+Set(varToastMsg; "Slot excluído.");;
+Set(varToastTipo; "OK");;
+Set(varToastOn; false);;
+Set(varToastOn; true)
+```
+
+# Text = "Excluir" | Fill Cor.Delete | Color Cor.TextInverted
+# Gallery OnSelect e btnUsrNovo: Set(varUsrConfirmExcluir; false) no comeco.
+
+### 36k. btnUsrCancelar → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+varUsrNovo || !IsBlank(varUsrSel)
+```
+
+### 36l. btnUsrCancelar → Text
+
+Apaga o que estiver la. Cola:
+
+```
+"Cancelar"
+```
+
+# Fill Cor.BackgroundStandard | Color Cor.PrimaryD60 | BorderColor Cor.Border
+# Height 40 | Radius 8 | Width ~150 | no Container67 a esquerda do Excluir
+
+### 36m. btnUsrCancelar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varUsrConfirmExcluir; false);;
+Set(varUsrErro; Blank());;
+Set(varUsrNovo; false);;
+Set(varUsrSel; Blank());;
+Set(varUsrPerfil; "INVENTARIANTE");;
+Set(varUsrAtivo; true);;
+Reset(inpUsrLogin);;
+Reset(inpUsrUsadoPor);;
+Reset(inpUsrSenha);;
+Reset(drpUsrPerfil);;
+Reset(tglUsrAtivo)
+```
+
+### 36n. lbtnUsrDesignar → Visible
+
+Apaga o que estiver la. Cola:
+
+```
+!varUsrNovo
+    && !IsBlank(varUsrSel)
+    && varUsrSel.Ativo = "Sim"
+    && varUsrSel.Perfil <> "ESCRITORIO"
+```
+
+# Slot escritorio some: ele ja ve todos os projetos e SEs. So INVENTARIANTE designa.
+# Inativo tambem some — nao designa instalacao pra slot desligado.
+
+### 36o. lbtnUsrDesignar → OnSelect
+
+Apaga o que estiver la. Cola:
+
+```
+Set(varAloCamp; Blank());;
+Navigate(Tela_Alocações; ScreenTransition.None)
+```
+
+# Tela no Studio esta Tela_Alocações (com acento). Se o nome na arvore for outro, troca so o Navigate.
+
+### 36p. btnUsrDesignar → Icon
+
+Apaga o que estiver la. Cola:
+
+```
+Location
+```
+
+# Text / IconText = "Designar instalações" | ghost, igual Cancelar
+# Icon fechado: Location (pino). Botao classico: Icon.Location
+# Nao usar People nem Add
+
+### 37. Tela_Usuarios → OnVisible
+
+Apaga o que estiver la. Cola:
+
+```
+Refresh(Inventariantes);;
+If(
+    IsBlank(varUsrSel) && !varUsrNovo;
+    With(
+        {
+            p: First(SortByColumns(Inventariantes; "Login"; SortOrder.Ascending))
+        };
+        Set(varUsrSel; p);;
+        Set(varUsrPerfil; p.Perfil);;
+        Set(varUsrAtivo; p.Ativo = "Sim")
+    )
+)
+```

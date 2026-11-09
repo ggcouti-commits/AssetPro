@@ -1,0 +1,28 @@
+---
+description: Power Fx do AssetPro/Infralytics — sempre usar locale PT-BR
+globs: "**/*.{pa.yaml,txt,md}"
+alwaysApply: true
+---
+
+# Power Fx — locale PT-BR
+
+Ao escrever ou revisar fórmulas Power Apps para este projeto:
+
+- **Separador de argumentos:** `;` (nunca `,`)
+- **Encadeamento de instruções:** `;;`
+- **Campos de registro:** `Campo: valor; OutroCampo: valor`
+- **Referência canônica:** `docs/powerfx/Tela_EditarItem-formulas.txt`
+
+Exemplo correto:
+
+```powerfx
+Set(varA1; Blank());;
+Coalesce(LookUp(colCatSimples; TabelaOrigem = chave; TipoEntrada); "LISTA")
+```
+
+Exemplo incorreto (en-US):
+
+```powerfx
+Set(varA1, Blank());
+Coalesce(LookUp(colCatSimples, TabelaOrigem = chave, TipoEntrada), "LISTA")
+```

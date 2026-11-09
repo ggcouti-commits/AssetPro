@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Fotos da subestação — Tela_ItensVisita + Tela_CapturaFoto</title>
+<style>
+  :root{
+    --navy:#123B6E; --navy2:#1B4C86; --track:#0E2E55; --green:#3BAA48;
+    --page:#F1F3F5; --card:#FFFFFF; --border:#E1E5EA; --title:#1B3E6F;
+    --label:#6B7683; --okbg:#DFF3E3; --oktx:#2E7D32;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html,body{width:1024px}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif; background:#FAFBFC; color:#1a1a1a}
+  .slide{width:1024px; min-height:576px; padding:26px 30px; display:flex; gap:28px; align-items:flex-start; border-bottom:1px solid #EDEFF2}
+  .notes{flex:1; min-width:0; padding-top:2px}
+  .kicker{font-size:11px; font-weight:700; letter-spacing:1.2px; color:#348FFD; margin-bottom:6px}
+  h2{font-size:22px; font-weight:650; margin-bottom:12px; line-height:1.2}
+  .p{font-size:13.5px; color:#3d444e; line-height:1.62; margin-bottom:11px}
+  .p b{font-weight:650; color:#1a1a1a}
+  .fx{font-family:"Cascadia Mono",Consolas,monospace; font-size:11.5px; background:#F2F4F7; border:1px solid var(--border); border-radius:6px; padding:10px 12px; color:#26303d; line-height:1.55; white-space:pre}
+  .verdict{margin-top:14px; font-size:13px; font-weight:650; color:#1a1a1a}
+
+  .phone{width:280px; flex:0 0 280px; border:1px solid var(--border); border-radius:15px; overflow:hidden; background:var(--page); position:relative; height:524px}
+  .hd{background:var(--navy); padding:10px 10px 8px; display:flex; align-items:flex-start; gap:8px}
+  .hd-mid{flex:1; min-width:0}
+  .hdt{color:#fff; font-size:13px; font-weight:700; line-height:1.25}
+  .hds{color:#9EC4F0; font-size:9.5px; margin-top:4px; display:flex; align-items:center; gap:5px}
+  .cam{width:44px; height:44px; border-radius:12px; border:1px solid rgba(255,255,255,.28); background:rgba(255,255,255,.08); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; flex:0 0 auto; position:relative}
+  .badge{position:absolute; top:-5px; right:-5px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:#3BAA48; color:#fff; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center}
+  .pg{background:var(--track); padding:6px 11px}
+  .pgt{display:flex; justify-content:space-between; color:#fff; font-size:9px; font-weight:700}
+  .bar{height:6px; background:rgba(255,255,255,.18); border-radius:4px; margin-top:4px}
+  .bar > i{display:block; width:100%; height:100%; background:var(--green); border-radius:4px}
+  .chips{display:flex; gap:7px; padding:8px 11px 6px}
+  .chip{height:28px; padding:0 13px; border-radius:999px; display:flex; align-items:center; font-size:10.5px; font-weight:700; border:1px solid var(--border); background:#fff; color:var(--label)}
+  .chip.on{background:var(--navy); border-color:var(--navy); color:#fff}
+  .list{padding:0 9px 10px; display:flex; flex-direction:column; gap:8px}
+  .item{display:flex; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden}
+  .stripe{width:5px; background:var(--green); flex:0 0 auto}
+  .body{flex:1; padding:8px 9px}
+  .t{font-size:10.5px; font-weight:700; color:var(--title); line-height:1.3}
+  .foot{display:flex; justify-content:space-between; align-items:center; margin-top:8px}
+  .pill{font-size:9px; font-weight:700; padding:3px 8px; border-radius:999px; background:var(--okbg); color:var(--oktx)}
+  .ib{width:30px; height:24px; border:1px solid var(--border); border-radius:7px; background:#fff; display:inline-flex; align-items:center; justify-content:center}
+  .fab{position:absolute; left:11px; right:11px; bottom:11px; height:42px; border-radius:10px; background:var(--navy); color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:7px}
+
+  .cap-title{padding:12px 14px 4px; display:flex; align-items:center; justify-content:space-between}
+  .cap-h{font-size:12px; font-weight:700; color:var(--label); letter-spacing:.4px}
+  .cap-n{font-size:18px; font-weight:700; color:var(--title)}
+  .shot{background:#fff; border:1px solid var(--border); border-radius:12px; margin:8px 12px; height:52px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:13px; font-weight:700; color:var(--title)}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:4px 12px 70px}
+  .thumb{height:92px; border-radius:10px; background:#C5D0DC; border:1px solid var(--border); position:relative; overflow:hidden}
+  .thumb:nth-child(1){background:linear-gradient(160deg,#6B8CAE,#3D5A78)}
+  .thumb:nth-child(2){background:linear-gradient(160deg,#8AA3B8,#4A6278)}
+  .thumb:nth-child(3){background:linear-gradient(160deg,#7A9BB0,#3E5870)}
+  .x{position:absolute; top:6px; right:6px; width:22px; height:22px; border-radius:11px; background:rgba(0,0,0,.45); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center}
+  .okbtn{position:absolute; left:20px; right:20px; bottom:12px; height:48px; border-radius:24px; background:#fff; border:1px solid var(--border); display:flex; align-items:center; justify-content:center}
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="phone">
+    <div class="hd">
+      <svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+      <div class="hd-mid">
+        <div class="hdt">SE-005 - Sub. Est. Litoral</div>
+        <div class="hds">
+          <svg width="10" height="14" viewBox="0 0 512 512" fill="none" stroke="#9EC4F0" stroke-width="40"><path d="M315 33L96 304h128l-32 173 224-269H288z"/></svg>
+          Neoenergia Pernambuco Ago 2026
+        </div>
+      </div>
+      <div class="cam">
+        <span class="badge">3</span>
+        <svg width="20" height="20" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"><path d="M350.5 148.7l-26.6-42.1C318.3 100 310.6 96 302 96h-92c-8.6 0-16.3 4-21.9 10.6l-26.6 42.1C155.9 155 148.6 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59c-8.7 0-16.9-4.8-22.5-11.3z"/><circle cx="256" cy="272" r="80"/></svg>
+      </div>
+    </div>
+    <div class="pg"><div class="pgt"><span>6 de 6 itens revisados</span><span>100%</span></div><div class="bar"><i></i></div></div>
+    <div class="chips"><div class="chip on">BASE (5)</div><div class="chip">SOBRAS (1)</div></div>
+    <div class="list">
+      <div class="item"><div class="stripe"></div><div class="body">
+        <div class="t">570.01 - TRANSFORMADOR DE FORÇA TRIPOLAR 5,0/6,25MVA</div>
+        <div class="foot"><span class="pill">Confirmado</span><span class="ib">
+          <svg width="14" height="14" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M350.5 148.7l-26.6-42.1C318 100 310 96 302 96h-92c-8.6 0-16 4-22 10.6l-26.6 42.1C156 155 149 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59z"/><circle cx="256" cy="272" r="80"/></svg>
+        </span></div>
+      </div></div>
+      <div class="item"><div class="stripe"></div><div class="body">
+        <div class="t">210.03 - DISJUNTOR TRIPOLAR 13,8KV 630A SF6</div>
+        <div class="foot"><span class="pill">Confirmado</span><span class="ib">
+          <svg width="14" height="14" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="34"><path d="M350.5 148.7l-26.6-42.1C318 100 310 96 302 96h-92c-8.6 0-16 4-22 10.6l-26.6 42.1C156 155 149 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59z"/><circle cx="256" cy="272" r="80"/></svg>
+        </span></div>
+      </div></div>
+    </div>
+    <div class="fab">+ Adicionar item</div>
+  </div>
+
+  <div class="phone">
+    <div class="hd">
+      <svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#fff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"><polyline points="244 400 100 256 244 112"/><line x1="120" y1="256" x2="412" y2="256"/></svg>
+      <div class="hd-mid">
+        <div class="hdt">SE-005 - Sub. Est. Litoral</div>
+        <div class="hds">Fotos gerais da subestação</div>
+      </div>
+    </div>
+    <div class="cap-title">
+      <div class="cap-h">FOTOS DA SUBESTAÇÃO</div>
+      <div class="cap-n">3 fotos</div>
+    </div>
+    <div class="shot">
+      <svg width="18" height="18" viewBox="0 0 512 512" fill="none" stroke="#1B3E6F" stroke-width="32"><path d="M350.5 148.7l-26.6-42.1C318 100 310 96 302 96h-92c-8.6 0-16 4-22 10.6l-26.6 42.1C156 155 149 160 140 160H80a32 32 0 00-32 32v192a32 32 0 0032 32h352a32 32 0 0032-32V192a32 32 0 00-32-32h-59z"/><circle cx="256" cy="272" r="80"/></svg>
+      Tirar foto
+    </div>
+    <div class="grid">
+      <div class="thumb"><div class="x">×</div></div>
+      <div class="thumb"><div class="x">×</div></div>
+      <div class="thumb"><div class="x">×</div></div>
+    </div>
+    <div class="okbtn">
+      <svg width="28" height="28" viewBox="0 0 12 12"><path d="M9.85 3.15a.5.5 0 010 .7l-4.5 4.5a.5.5 0 01-.7 0l-2-2a.5.5 0 11.7-.7L5 7.3l4.15-4.15a.5.5 0 01.7 0z" fill="#1B3E6F"/></svg>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="kicker">FOTOS DA SUBESTAÇÃO</div>
+    <h2>Câmera no topo da visita, galeria sem teto</h2>
+    <p class="p">O botão novo fica no <b>cTopoItensVisita</b>, à direita do nome da SE. A câmera de cada card continua sendo foto do item (máx. 5). Esta é foto de <b>ambiente</b>, ilimitada.</p>
+    <p class="p">A tela da direita <b>não é tela nova</b>: é a <b>Tela_CapturaFoto</b> com <code>varModoFoto = "AMBIENTE"</code>. Título, contador e o <code>&lt; 5</code> mudam; o <code>AddMediaButton3</code> e a galeria ficam.</p>
+    <div class="fx">btnFotoSE.OnSelect
+Set(varModoFoto; "AMBIENTE");;
+Set(varCodRef; Blank());;
+Set(varCodTemp; Blank());;
+Set(varCodSE; gblSEselecionada.CodSE);;
+Navigate(Tela_CapturaFoto; ScreenTransition.None)</div>
+    <p class="p" style="margin-top:12px">Fórmulas completas em <b>docs/powerfx/Tela_FotosSE-formulas.txt</b>.</p>
+    <div class="verdict">Badge verde = quantidade de fotos AMBIENTE desta SE.</div>
+  </div>
+</div>
+</body>
+</html>

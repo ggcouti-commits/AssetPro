@@ -1,0 +1,16 @@
+---
+description: Perguntar ao Fenômeno antes de mudar fluxo, app ou SharePoint
+alwaysApply: true
+---
+
+# Perguntar antes de mudar
+
+Decisão 08.10.2026 (Fenômeno).
+
+Antes de alterar fluxo no Automate, fórmula no Studio, lista/biblioteca no SharePoint ou comportamento do app:
+
+1. Dizer o que está errado, o que pretende mudar e por quê.
+2. Esperar o **ok** do Fenômeno.
+3. Sem ok, não salva, não reenvia run, não cola fórmula.
+
+Vale para “consertar”, “deixar igual ao outro ambiente” e para atalho que pareça óbvio. Se o fluxo documentado já funciona, a proposta é restaurar esse fluxo, não inventar outro caminho.
