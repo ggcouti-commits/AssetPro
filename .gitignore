@@ -15,6 +15,10 @@ exports/
 # Personal Claude export dumps
 docs/claude-exports/
 
+# Meeting notes / transcripts (local only — not for public portfolio)
+docs/reunioes/
+docs/_reuniao_andre_3108.txt
+
 # Client / sample Excel bases (keep generators only)
 docs/bases/*.xlsx
 docs/bases/*.xls

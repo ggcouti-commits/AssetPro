@@ -179,7 +179,6 @@ docs/
 ├── fotos-campos.md
 ├── inventario-campos.md
 ├── subestacoes-campos.md
-├── reunioes/                  # 08.09 CM · 11.09 TI · 17.09 campo · 18.09 apresentação
 ├── mcpse/                     # catálogos + ti-tipo-instalacao.md
 ├── powerfx/                    # Tela_Exportar-formulas.txt = dois botões
 ├── screens/                    # mockups + PNG
