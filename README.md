@@ -2,7 +2,7 @@
 
 App de inventário em subestações elétricas: compara o físico com a base (SAP/GIS) e gera a saída para revisão tarifária (ANEEL MCPSE).
 
-Front no desktop: **Projeto**. Lista SharePoint e fluxos: **`Campanhas`**. Spec: `.cursor/rules/projetos-nomenclatura.mdc`.
+Front no desktop: **Projeto**. Lista SharePoint e fluxos: **`Campanhas`**. Spec: `rules/projetos-nomenclatura.mdc`.
 
 ## Stack
 
@@ -33,7 +33,7 @@ Mockups: `docs/screens/exportar-planilha-fotos.png` · `pastas-fotos-apos-import
 AssetPro/
 ├── docs/            # contexto, specs, Power Fx, mockups
 ├── exports/         # solution / .msapp
-├── .cursor/rules/   # nomenclatura, pastas, Power Fx PT-BR
+├── rules/           # nomenclatura, pastas, Power Fx PT-BR
 └── README.md
 ```
 
